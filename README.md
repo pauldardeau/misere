@@ -47,6 +47,13 @@ You may find my coding style slightly peculiar, and that's ok. It's
 my personal style that I've adopted after a lot of experimentation
 about what works best for me.
 
+What's An INI File
+==================
+In the 'old days', Windows computers made extensive use of INI files.
+This was before the system registry came along. An INI file is a
+simple text file that is composed of sections, and each section
+can have keys and values.
+
 Meaning of Misère
 =================
 What does 'Misère' mean?  It's a French word that means "trouble" or "misery".
