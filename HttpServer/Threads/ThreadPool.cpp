@@ -5,26 +5,47 @@
 
 #include "ThreadPool.h"
 #include "ThreadPoolQueue.h"
+#include "Logger.h"
 
 //******************************************************************************
 
-ThreadPool::ThreadPool(ThreadPoolQueue& queue, int numWorkers) noexcept :
-   m_queue(queue),
-   m_workerCount(numWorkers),
+ThreadPool::ThreadPool(int numberWorkers) noexcept :
+   m_threadingFactory(ThreadingFactory::getThreadingFactory()),
+   m_queue(m_threadingFactory),
+   m_workerCount(numberWorkers),
+   m_workersCreated(0),
    m_isRunning(false)
 {
-   for (int i = 0; i < numWorkers; ++i) {
-      m_vecWorkers.push_back(new ThreadPoolWorker(m_queue, i));
-   }
+   Logger::logInstanceCreate("ThreadPool");
+}
+
+//******************************************************************************
+
+ThreadPool::ThreadPool(ThreadingFactory* threadingFactory, int numberWorkers) noexcept :
+   m_threadingFactory(threadingFactory),
+   m_queue(m_threadingFactory),
+   m_workerCount(numberWorkers),
+   m_workersCreated(0),
+   m_isRunning(false)
+{
+   Logger::logInstanceCreate("ThreadPool");
 }
 
 //******************************************************************************
 
 ThreadPool::~ThreadPool() noexcept
 {
+   Logger::logInstanceDestroy("ThreadPool");
+
    if (m_isRunning) {
       stop();
    }
+   
+   for (ThreadPoolWorker* worker : m_listWorkers) {
+      delete worker;
+   }
+   
+   m_listWorkers.clear();
 }
 
 //******************************************************************************
@@ -32,13 +53,13 @@ ThreadPool::~ThreadPool() noexcept
 bool ThreadPool::start() noexcept
 {
    for (int i = 0; i < m_workerCount; ++i) {
-      Thread* thread = createThreadWithRunnable(m_vecWorkers[i]);
-      thread->setPoolWorkerStatus(true);
-      thread->setWorkerId(std::to_string(i));
-      thread->start();
-      m_vecThreads.push_back(thread);
+      ++m_workersCreated;
+      ThreadPoolWorker* worker =
+         new ThreadPoolWorker(m_threadingFactory, m_queue, m_workersCreated);
+      worker->start();
+      m_listWorkers.push_back(worker);
    }
-   
+
    m_isRunning = true;
    
    return true;
@@ -49,8 +70,13 @@ bool ThreadPool::start() noexcept
 bool ThreadPool::stop() noexcept
 {
    m_queue.shutDown();
-   m_vecThreads.erase(m_vecThreads.begin(), m_vecThreads.end());
+   
+   for (ThreadPoolWorker* worker : m_listWorkers) {
+      worker->stop();
+   }
+   
    m_isRunning = false;
+   
    return true;
 }
 
@@ -65,6 +91,13 @@ bool ThreadPool::addRequest(Runnable* runnableRequest) noexcept
    m_queue.addRequest(runnableRequest);
    
    return true;
+}
+
+//******************************************************************************
+
+Thread* ThreadPool::createThreadWithRunnable(Runnable* runnable) noexcept
+{
+   return m_threadingFactory->createThread(runnable);
 }
 
 //******************************************************************************
@@ -97,20 +130,17 @@ void ThreadPool::adjustNumberWorkers(int numberToAddOrDelete) noexcept
 		const int newNumberWorkers = m_workerCount + numberToAddOrDelete;
 		
 	   for (int i = m_workerCount; i < newNumberWorkers; ++i) {
-	      m_vecWorkers.push_back(new ThreadPoolWorker(m_queue, i));
+         ++m_workersCreated;
+         ++m_workerCount;
+         ThreadPoolWorker* worker =
+            new ThreadPoolWorker(m_threadingFactory, m_queue, m_workersCreated);
+         
+         if (m_isRunning) {
+            worker->start();
+         }
+         
+	      m_listWorkers.push_back(worker);
 	   }
-      
-	   if (m_isRunning) {
-		   for (int i = m_workerCount; i < newNumberWorkers; ++i) {
-            Thread* thread = createThreadWithRunnable(m_vecWorkers[i]);
-		      thread->setPoolWorkerStatus(true);
-            thread->setWorkerId(std::to_string(i));
-		      thread->start();
-		      m_vecThreads.push_back(thread);
-		   }
-	   }
-      
-		m_workerCount += newNumberWorkers;
    } else if (numberToAddOrDelete < 0) {  // removing?
       if (m_isRunning) {
 	      // tell thread to shut down

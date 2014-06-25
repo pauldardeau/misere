@@ -7,7 +7,7 @@
 #include "TestSuite.h"
 
 
-class TestPthreadsThreadPoolQueue : public TestSuite
+class TestThreadPoolQueue : public TestSuite
 {
 protected:
    void runTests();
@@ -20,7 +20,7 @@ protected:
    void testIsEmpty();
 
 public:
-   TestPthreadsThreadPoolQueue();
+   TestThreadPoolQueue();
    
 
 };

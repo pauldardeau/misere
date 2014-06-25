@@ -24,8 +24,8 @@
 #include "TestStrUtils.h"
 #include "TestThread.h"
 #include "TestThreadManager.h"
-#include "TestPthreadsThreadPool.h"
-#include "TestPthreadsThreadPoolQueue.h"
+#include "TestThreadPool.h"
+#include "TestThreadPoolQueue.h"
 #include "TestThreadPoolWorker.h"
 
 
@@ -94,11 +94,11 @@ void Tests::run()
    TestThreadManager testThreadManager;
    testThreadManager.run();
 
-   TestPthreadsThreadPool testPthreadsThreadPool;
-   testPthreadsThreadPool.run();
+   TestThreadPool testThreadPool;
+   testThreadPool.run();
 
-   TestPthreadsThreadPoolQueue testPthreadsThreadPoolQueue;
-   testPthreadsThreadPoolQueue.run();
+   TestThreadPoolQueue testThreadPoolQueue;
+   testThreadPoolQueue.run();
 
    TestThreadPoolWorker testThreadPoolWorker;
    testThreadPoolWorker.run();

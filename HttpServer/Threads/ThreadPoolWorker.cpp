@@ -5,6 +5,7 @@
 
 #include "ThreadPoolWorker.h"
 #include "ThreadPoolQueue.h"
+#include "ThreadingFactory.h"
 #include "ThreadManager.h"
 #include "Thread.h"
 #include "BasicException.h"
@@ -12,9 +13,14 @@
 
 //******************************************************************************
 
-ThreadPoolWorker::ThreadPoolWorker(ThreadPoolQueue& queue, int workerId) noexcept :
+ThreadPoolWorker::ThreadPoolWorker(ThreadingFactory* threadingFactory,
+                                   ThreadPoolQueue& queue,
+                                   int workerId) noexcept :
+   m_threadingFactory(threadingFactory),
+   m_workerThread(nullptr),
    m_poolQueue(queue),
-   m_workerId(workerId)
+   m_workerId(workerId),
+   m_isRunning(false)
 {
    Logger::logInstanceCreate("ThreadPoolWorker");
 }
@@ -24,29 +30,40 @@ ThreadPoolWorker::ThreadPoolWorker(ThreadPoolQueue& queue, int workerId) noexcep
 ThreadPoolWorker::~ThreadPoolWorker() noexcept
 {
    Logger::logInstanceDestroy("ThreadPoolWorker");
+   
+   if (m_workerThread) {
+      delete m_workerThread;
+   }
+}
+
+//******************************************************************************
+
+void ThreadPoolWorker::start() noexcept
+{
+   if (!m_workerThread) {
+      m_workerThread = m_threadingFactory->createThread(this);
+      m_workerThread->setPoolWorkerStatus(true);
+      m_workerThread->setWorkerId(std::to_string(m_workerId));
+   }
+   
+   m_isRunning = true;
+   m_workerThread->start();
+}
+
+//******************************************************************************
+
+void ThreadPoolWorker::stop() noexcept
+{
+   m_isRunning = false;
 }
 
 //******************************************************************************
 
 void ThreadPoolWorker::run() noexcept
 {
-   bool isTimeToQuit = false;
    ThreadManager* pThreadManager = ThreadManager::getInstance();
-   Thread* workerThread = nullptr;
    
-   if (pThreadManager) {
-      workerThread = pThreadManager->getCurrentThread();
-      
-      if (!workerThread) {
-         Logger::error("no worker thread available in ThreadPoolWorker::run");
-         return;
-      }
-   } else {
-      Logger::warning("no thread manager available");
-      return;
-   }
-
-   while (!isTimeToQuit) {
+   while (m_isRunning) {
       if (Logger::isLogging(Logger::LogLevel::Debug)) {
          char message[128];
          std::snprintf(message, 128, "poolQueue taking request on thread %d", m_workerId);
@@ -54,19 +71,14 @@ void ThreadPoolWorker::run() noexcept
       }
 
       Runnable* runnable = m_poolQueue.takeRequest();
-      if (!runnable) {
-         if (!m_poolQueue.isRunning()) {
-            isTimeToQuit = true;
-            continue;
-         }
-      } else {
+      if (runnable) {
 	      // has our thread been notified to shut down?
-	      if (!workerThread->isAlive()) {
+	      if (!m_workerThread->isAlive()) {
 		      // put the request back on the front of the queue
-				isTimeToQuit = true;
+				m_isRunning = false;
 				continue;
 	      } else {
-            pThreadManager->startPoolWorker(workerThread);
+            pThreadManager->startPoolWorker(m_workerThread);
 
             try
             {
@@ -85,7 +97,7 @@ void ThreadPoolWorker::run() noexcept
                Logger::error("run method of runnable threw exception");
             }
 
-            pThreadManager->stopPoolWorker(workerThread);
+            pThreadManager->stopPoolWorker(m_workerThread);
 
             if (Logger::isLogging(Logger::LogLevel::Debug)) {
                char message[128];

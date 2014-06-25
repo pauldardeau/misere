@@ -1,19 +1,19 @@
 // Copyright Paul Dardeau, SwampBits LLC 2014
 // BSD License
 
-#include "TestPthreadsThreadPoolQueue.h"
-#include "PthreadsThreadPoolQueue.h"
+#include "TestThreadPoolQueue.h"
+#include "ThreadPoolQueue.h"
 
 //******************************************************************************
 
-TestPthreadsThreadPoolQueue::TestPthreadsThreadPoolQueue() :
-   TestSuite("TestPthreadsThreadPoolQueue")
+TestThreadPoolQueue::TestThreadPoolQueue() :
+   TestSuite("TestThreadPoolQueue")
 {
 }
 
 //******************************************************************************
 
-void TestPthreadsThreadPoolQueue::runTests()
+void TestThreadPoolQueue::runTests()
 {
    testConstructor();
    testAddRequest();
@@ -25,42 +25,42 @@ void TestPthreadsThreadPoolQueue::runTests()
 
 //******************************************************************************
 
-void TestPthreadsThreadPoolQueue::testConstructor()
+void TestThreadPoolQueue::testConstructor()
 {
    TEST_CASE("testConstructor");
 }
 
 //******************************************************************************
 
-void TestPthreadsThreadPoolQueue::testAddRequest()
+void TestThreadPoolQueue::testAddRequest()
 {
    TEST_CASE("testAddRequest");
 }
 
 //******************************************************************************
 
-void TestPthreadsThreadPoolQueue::testTakeRequest()
+void TestThreadPoolQueue::testTakeRequest()
 {
    TEST_CASE("testTakeRequest");
 }
 
 //******************************************************************************
 
-void TestPthreadsThreadPoolQueue::testShutDown()
+void TestThreadPoolQueue::testShutDown()
 {
    TEST_CASE("testShutDown");
 }
 
 //******************************************************************************
 
-void TestPthreadsThreadPoolQueue::testIsRunning()
+void TestThreadPoolQueue::testIsRunning()
 {
    TEST_CASE("testIsRunning");
 }
 
 //******************************************************************************
 
-void TestPthreadsThreadPoolQueue::testIsEmpty()
+void TestThreadPoolQueue::testIsEmpty()
 {
    TEST_CASE("testIsEmpty");
 }

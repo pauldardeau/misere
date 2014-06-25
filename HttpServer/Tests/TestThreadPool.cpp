@@ -1,19 +1,19 @@
 // Copyright Paul Dardeau, SwampBits LLC 2014
 // BSD License
 
-#include "TestPthreadsThreadPool.h"
-#include "PthreadsThreadPool.h"
+#include "TestThreadPool.h"
+#include "ThreadPool.h"
 
 //******************************************************************************
 
-TestPthreadsThreadPool::TestPthreadsThreadPool() :
-   TestSuite("TestPthreadsThreadPool")
+TestThreadPool::TestThreadPool() :
+   TestSuite("TestThreadPool")
 {
 }
 
 //******************************************************************************
 
-void TestPthreadsThreadPool::runTests()
+void TestThreadPool::runTests()
 {
    testConstructor();
    testStart();
@@ -26,14 +26,14 @@ void TestPthreadsThreadPool::runTests()
 
 //******************************************************************************
 
-void TestPthreadsThreadPool::testConstructor()
+void TestThreadPool::testConstructor()
 {
    TEST_CASE("testConstructor");
 }
 
 //******************************************************************************
 
-void TestPthreadsThreadPool::testStart()
+void TestThreadPool::testStart()
 {
    TEST_CASE("testStart");
    
@@ -41,7 +41,7 @@ void TestPthreadsThreadPool::testStart()
 
 //******************************************************************************
 
-void TestPthreadsThreadPool::testStop()
+void TestThreadPool::testStop()
 {
    TEST_CASE("testStop");
    
@@ -49,7 +49,7 @@ void TestPthreadsThreadPool::testStop()
 
 //******************************************************************************
 
-void TestPthreadsThreadPool::testAddRequest()
+void TestThreadPool::testAddRequest()
 {
    TEST_CASE("testAddRequest");
    
@@ -57,7 +57,7 @@ void TestPthreadsThreadPool::testAddRequest()
 
 //******************************************************************************
 
-void TestPthreadsThreadPool::testGetNumberWorkers()
+void TestThreadPool::testGetNumberWorkers()
 {
    TEST_CASE("testGetNumberWorkers");
    
@@ -65,7 +65,7 @@ void TestPthreadsThreadPool::testGetNumberWorkers()
 
 //******************************************************************************
 
-void TestPthreadsThreadPool::testAddWorkers()
+void TestThreadPool::testAddWorkers()
 {
    TEST_CASE("testAddWorkers");
    
@@ -73,7 +73,7 @@ void TestPthreadsThreadPool::testAddWorkers()
 
 //******************************************************************************
 
-void TestPthreadsThreadPool::testRemoveWorkers()
+void TestThreadPool::testRemoveWorkers()
 {
    TEST_CASE("testRemoveWorkers");
    

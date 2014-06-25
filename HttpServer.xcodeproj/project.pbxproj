@@ -27,8 +27,6 @@
 		DAC40DD719563E800064EFFB /* PthreadsMutex.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DAC40DC819563E800064EFFB /* PthreadsMutex.cpp */; };
 		DAC40DD819563E800064EFFB /* PthreadsThread.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DAC40DCB19563E800064EFFB /* PthreadsThread.cpp */; };
 		DAC40DD919563E800064EFFB /* PthreadsThreadManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DAC40DCF19563E800064EFFB /* PthreadsThreadManager.cpp */; };
-		DAC40DDA19563E800064EFFB /* PthreadsThreadPool.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DAC40DD119563E800064EFFB /* PthreadsThreadPool.cpp */; };
-		DAC40DDB19563E800064EFFB /* PthreadsThreadPoolQueue.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DAC40DD319563E800064EFFB /* PthreadsThreadPoolQueue.cpp */; };
 		DAC40DDC19563E800064EFFB /* ThreadPoolWorker.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DAC40DD519563E800064EFFB /* ThreadPoolWorker.cpp */; };
 		DAC40DE219563F000064EFFB /* StringTokenizer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DAC40DDE19563F000064EFFB /* StringTokenizer.cpp */; };
 		DAC40DE319563F000064EFFB /* StrUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DAC40DE019563F000064EFFB /* StrUtils.cpp */; };
@@ -44,8 +42,6 @@
 		DAC40E191957884F0064EFFB /* ThreadManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DAC40E181957884F0064EFFB /* ThreadManager.cpp */; };
 		DAC40E1C19578B8F0064EFFB /* StdThreadManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DAC40E1A19578B8F0064EFFB /* StdThreadManager.cpp */; };
 		DAC40E1F1957A8FF0064EFFB /* ThreadPool.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DAC40E1D1957A8FF0064EFFB /* ThreadPool.cpp */; };
-		DAC40E251957AD570064EFFB /* StdThreadPool.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DAC40E231957AD570064EFFB /* StdThreadPool.cpp */; };
-		DAC40E281957AE820064EFFB /* StdThreadPoolQueue.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DAC40E261957AE820064EFFB /* StdThreadPoolQueue.cpp */; };
 		DAC40E2B195874B50064EFFB /* HttpSocketServiceHandler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DAC40E29195874B50064EFFB /* HttpSocketServiceHandler.cpp */; };
 		DAC40E311959CA4C0064EFFB /* ServerObjectsDebugging.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DAC40E2F1959CA4C0064EFFB /* ServerObjectsDebugging.cpp */; };
 		DAC40E341959F1610064EFFB /* AbstractHandler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DAC40E321959F1610064EFFB /* AbstractHandler.cpp */; };
@@ -66,8 +62,8 @@
 		DAC40E82195A3A840064EFFB /* TestKeyValuePairs.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DAC40E54195A3A840064EFFB /* TestKeyValuePairs.cpp */; };
 		DAC40E83195A3A840064EFFB /* TestKqueueServer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DAC40E56195A3A840064EFFB /* TestKqueueServer.cpp */; };
 		DAC40E84195A3A840064EFFB /* TestPthreadsMutex.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DAC40E59195A3A840064EFFB /* TestPthreadsMutex.cpp */; };
-		DAC40E85195A3A840064EFFB /* TestPthreadsThreadPool.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DAC40E5B195A3A840064EFFB /* TestPthreadsThreadPool.cpp */; };
-		DAC40E86195A3A840064EFFB /* TestPthreadsThreadPoolQueue.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DAC40E5D195A3A840064EFFB /* TestPthreadsThreadPoolQueue.cpp */; };
+		DAC40E85195A3A840064EFFB /* TestThreadPool.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DAC40E5B195A3A840064EFFB /* TestThreadPool.cpp */; };
+		DAC40E86195A3A840064EFFB /* TestThreadPoolQueue.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DAC40E5D195A3A840064EFFB /* TestThreadPoolQueue.cpp */; };
 		DAC40E87195A3A840064EFFB /* TestRequestHandler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DAC40E5F195A3A840064EFFB /* TestRequestHandler.cpp */; };
 		DAC40E88195A3A840064EFFB /* Tests.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DAC40E61195A3A840064EFFB /* Tests.cpp */; };
 		DAC40E89195A3A840064EFFB /* TestServerSocket.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DAC40E63195A3A840064EFFB /* TestServerSocket.cpp */; };
@@ -82,6 +78,9 @@
 		DAC40E92195A3A840064EFFB /* TestThreadPoolWorker.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DAC40E75195A3A840064EFFB /* TestThreadPoolWorker.cpp */; };
 		DAC40E95195A3AA80064EFFB /* ThreadPoolDispatch.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DAC40E93195A3AA80064EFFB /* ThreadPoolDispatch.cpp */; };
 		DAC40E99195A3ADE0064EFFB /* ThreadingFactory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DAC40E97195A3ADE0064EFFB /* ThreadingFactory.cpp */; };
+		DAC40E9F195B38300064EFFB /* PthreadsConditionVariable.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DAC40E9D195B38300064EFFB /* PthreadsConditionVariable.cpp */; };
+		DAC40EA2195B3BDA0064EFFB /* StdConditionVariable.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DAC40EA0195B3BDA0064EFFB /* StdConditionVariable.cpp */; };
+		DAC40EA4195B3ED20064EFFB /* ThreadPoolQueue.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DAC40EA3195B3ED20064EFFB /* ThreadPoolQueue.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -143,10 +142,6 @@
 		DAC40DCE19563E800064EFFB /* ThreadInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ThreadInfo.h; path = HttpServer/Threads/ThreadInfo.h; sourceTree = "<group>"; };
 		DAC40DCF19563E800064EFFB /* PthreadsThreadManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = PthreadsThreadManager.cpp; path = HttpServer/Threads/PthreadsThreadManager.cpp; sourceTree = "<group>"; };
 		DAC40DD019563E800064EFFB /* PthreadsThreadManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PthreadsThreadManager.h; path = HttpServer/Threads/PthreadsThreadManager.h; sourceTree = "<group>"; };
-		DAC40DD119563E800064EFFB /* PthreadsThreadPool.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = PthreadsThreadPool.cpp; path = HttpServer/Threads/PthreadsThreadPool.cpp; sourceTree = "<group>"; };
-		DAC40DD219563E800064EFFB /* PthreadsThreadPool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PthreadsThreadPool.h; path = HttpServer/Threads/PthreadsThreadPool.h; sourceTree = "<group>"; };
-		DAC40DD319563E800064EFFB /* PthreadsThreadPoolQueue.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = PthreadsThreadPoolQueue.cpp; path = HttpServer/Threads/PthreadsThreadPoolQueue.cpp; sourceTree = "<group>"; };
-		DAC40DD419563E800064EFFB /* PthreadsThreadPoolQueue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PthreadsThreadPoolQueue.h; path = HttpServer/Threads/PthreadsThreadPoolQueue.h; sourceTree = "<group>"; };
 		DAC40DD519563E800064EFFB /* ThreadPoolWorker.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ThreadPoolWorker.cpp; path = HttpServer/Threads/ThreadPoolWorker.cpp; sourceTree = "<group>"; };
 		DAC40DD619563E800064EFFB /* ThreadPoolWorker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ThreadPoolWorker.h; path = HttpServer/Threads/ThreadPoolWorker.h; sourceTree = "<group>"; };
 		DAC40DDD19563ED40064EFFB /* BasicException.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = BasicException.h; path = HttpServer/Utils/BasicException.h; sourceTree = "<group>"; };
@@ -183,10 +178,6 @@
 		DAC40E1B19578B8F0064EFFB /* StdThreadManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = StdThreadManager.h; path = HttpServer/Threads/StdThreadManager.h; sourceTree = "<group>"; };
 		DAC40E1D1957A8FF0064EFFB /* ThreadPool.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ThreadPool.cpp; path = HttpServer/Threads/ThreadPool.cpp; sourceTree = "<group>"; };
 		DAC40E1E1957A8FF0064EFFB /* ThreadPool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ThreadPool.h; path = HttpServer/Threads/ThreadPool.h; sourceTree = "<group>"; };
-		DAC40E231957AD570064EFFB /* StdThreadPool.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = StdThreadPool.cpp; path = HttpServer/Threads/StdThreadPool.cpp; sourceTree = "<group>"; };
-		DAC40E241957AD570064EFFB /* StdThreadPool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = StdThreadPool.h; path = HttpServer/Threads/StdThreadPool.h; sourceTree = "<group>"; };
-		DAC40E261957AE820064EFFB /* StdThreadPoolQueue.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = StdThreadPoolQueue.cpp; path = HttpServer/Threads/StdThreadPoolQueue.cpp; sourceTree = "<group>"; };
-		DAC40E271957AE820064EFFB /* StdThreadPoolQueue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = StdThreadPoolQueue.h; path = HttpServer/Threads/StdThreadPoolQueue.h; sourceTree = "<group>"; };
 		DAC40E29195874B50064EFFB /* HttpSocketServiceHandler.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = HttpSocketServiceHandler.cpp; sourceTree = "<group>"; };
 		DAC40E2A195874B50064EFFB /* HttpSocketServiceHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HttpSocketServiceHandler.h; sourceTree = "<group>"; };
 		DAC40E2F1959CA4C0064EFFB /* ServerObjectsDebugging.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ServerObjectsDebugging.cpp; path = HttpServer/Handlers/ServerObjectsDebugging.cpp; sourceTree = "<group>"; };
@@ -228,10 +219,10 @@
 		DAC40E58195A3A840064EFFB /* TestMacros.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TestMacros.h; path = HttpServer/Tests/TestMacros.h; sourceTree = "<group>"; };
 		DAC40E59195A3A840064EFFB /* TestPthreadsMutex.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TestPthreadsMutex.cpp; path = HttpServer/Tests/TestPthreadsMutex.cpp; sourceTree = "<group>"; };
 		DAC40E5A195A3A840064EFFB /* TestPthreadsMutex.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TestPthreadsMutex.h; path = HttpServer/Tests/TestPthreadsMutex.h; sourceTree = "<group>"; };
-		DAC40E5B195A3A840064EFFB /* TestPthreadsThreadPool.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TestPthreadsThreadPool.cpp; path = HttpServer/Tests/TestPthreadsThreadPool.cpp; sourceTree = "<group>"; };
-		DAC40E5C195A3A840064EFFB /* TestPthreadsThreadPool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TestPthreadsThreadPool.h; path = HttpServer/Tests/TestPthreadsThreadPool.h; sourceTree = "<group>"; };
-		DAC40E5D195A3A840064EFFB /* TestPthreadsThreadPoolQueue.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TestPthreadsThreadPoolQueue.cpp; path = HttpServer/Tests/TestPthreadsThreadPoolQueue.cpp; sourceTree = "<group>"; };
-		DAC40E5E195A3A840064EFFB /* TestPthreadsThreadPoolQueue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TestPthreadsThreadPoolQueue.h; path = HttpServer/Tests/TestPthreadsThreadPoolQueue.h; sourceTree = "<group>"; };
+		DAC40E5B195A3A840064EFFB /* TestThreadPool.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TestThreadPool.cpp; path = HttpServer/Tests/TestThreadPool.cpp; sourceTree = "<group>"; };
+		DAC40E5C195A3A840064EFFB /* TestThreadPool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TestThreadPool.h; path = HttpServer/Tests/TestThreadPool.h; sourceTree = "<group>"; };
+		DAC40E5D195A3A840064EFFB /* TestThreadPoolQueue.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TestThreadPoolQueue.cpp; path = HttpServer/Tests/TestThreadPoolQueue.cpp; sourceTree = "<group>"; };
+		DAC40E5E195A3A840064EFFB /* TestThreadPoolQueue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TestThreadPoolQueue.h; path = HttpServer/Tests/TestThreadPoolQueue.h; sourceTree = "<group>"; };
 		DAC40E5F195A3A840064EFFB /* TestRequestHandler.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TestRequestHandler.cpp; path = HttpServer/Tests/TestRequestHandler.cpp; sourceTree = "<group>"; };
 		DAC40E60195A3A840064EFFB /* TestRequestHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TestRequestHandler.h; path = HttpServer/Tests/TestRequestHandler.h; sourceTree = "<group>"; };
 		DAC40E61195A3A840064EFFB /* Tests.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Tests.cpp; path = HttpServer/Tests/Tests.cpp; sourceTree = "<group>"; };
@@ -261,6 +252,12 @@
 		DAC40E96195A3AD30064EFFB /* Runnable.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Runnable.h; path = HttpServer/Threads/Runnable.h; sourceTree = "<group>"; };
 		DAC40E97195A3ADE0064EFFB /* ThreadingFactory.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ThreadingFactory.cpp; path = HttpServer/Threads/ThreadingFactory.cpp; sourceTree = "<group>"; };
 		DAC40E98195A3ADE0064EFFB /* ThreadingFactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ThreadingFactory.h; path = HttpServer/Threads/ThreadingFactory.h; sourceTree = "<group>"; };
+		DAC40E9B195B35CB0064EFFB /* ConditionVariable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ConditionVariable.h; path = HttpServer/Threads/ConditionVariable.h; sourceTree = "<group>"; };
+		DAC40E9D195B38300064EFFB /* PthreadsConditionVariable.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = PthreadsConditionVariable.cpp; path = HttpServer/Threads/PthreadsConditionVariable.cpp; sourceTree = "<group>"; };
+		DAC40E9E195B38300064EFFB /* PthreadsConditionVariable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PthreadsConditionVariable.h; path = HttpServer/Threads/PthreadsConditionVariable.h; sourceTree = "<group>"; };
+		DAC40EA0195B3BDA0064EFFB /* StdConditionVariable.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = StdConditionVariable.cpp; path = HttpServer/Threads/StdConditionVariable.cpp; sourceTree = "<group>"; };
+		DAC40EA1195B3BDA0064EFFB /* StdConditionVariable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = StdConditionVariable.h; path = HttpServer/Threads/StdConditionVariable.h; sourceTree = "<group>"; };
+		DAC40EA3195B3ED20064EFFB /* ThreadPoolQueue.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ThreadPoolQueue.cpp; path = HttpServer/Threads/ThreadPoolQueue.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -362,10 +359,10 @@
 				DAC40E58195A3A840064EFFB /* TestMacros.h */,
 				DAC40E59195A3A840064EFFB /* TestPthreadsMutex.cpp */,
 				DAC40E5A195A3A840064EFFB /* TestPthreadsMutex.h */,
-				DAC40E5B195A3A840064EFFB /* TestPthreadsThreadPool.cpp */,
-				DAC40E5C195A3A840064EFFB /* TestPthreadsThreadPool.h */,
-				DAC40E5D195A3A840064EFFB /* TestPthreadsThreadPoolQueue.cpp */,
-				DAC40E5E195A3A840064EFFB /* TestPthreadsThreadPoolQueue.h */,
+				DAC40E5B195A3A840064EFFB /* TestThreadPool.cpp */,
+				DAC40E5C195A3A840064EFFB /* TestThreadPool.h */,
+				DAC40E5D195A3A840064EFFB /* TestThreadPoolQueue.cpp */,
+				DAC40E5E195A3A840064EFFB /* TestThreadPoolQueue.h */,
 				DAC40E5F195A3A840064EFFB /* TestRequestHandler.cpp */,
 				DAC40E60195A3A840064EFFB /* TestRequestHandler.h */,
 				DAC40E61195A3A840064EFFB /* Tests.cpp */,
@@ -397,29 +394,26 @@
 		DAC40D721956372D0064EFFB /* Threads */ = {
 			isa = PBXGroup;
 			children = (
+				DAC40E9B195B35CB0064EFFB /* ConditionVariable.h */,
 				DAC40E0619576DC80064EFFB /* Mutex.h */,
 				DAC40DCA19563E800064EFFB /* MutexLock.h */,
+				DAC40E9D195B38300064EFFB /* PthreadsConditionVariable.cpp */,
+				DAC40E9E195B38300064EFFB /* PthreadsConditionVariable.h */,
 				DAC40DC819563E800064EFFB /* PthreadsMutex.cpp */,
 				DAC40DC919563E800064EFFB /* PthreadsMutex.h */,
 				DAC40DCB19563E800064EFFB /* PthreadsThread.cpp */,
 				DAC40DCC19563E800064EFFB /* PthreadsThread.h */,
 				DAC40DCF19563E800064EFFB /* PthreadsThreadManager.cpp */,
 				DAC40DD019563E800064EFFB /* PthreadsThreadManager.h */,
-				DAC40DD119563E800064EFFB /* PthreadsThreadPool.cpp */,
-				DAC40DD219563E800064EFFB /* PthreadsThreadPool.h */,
-				DAC40DD319563E800064EFFB /* PthreadsThreadPoolQueue.cpp */,
-				DAC40DD419563E800064EFFB /* PthreadsThreadPoolQueue.h */,
 				DAC40E96195A3AD30064EFFB /* Runnable.h */,
+				DAC40EA0195B3BDA0064EFFB /* StdConditionVariable.cpp */,
+				DAC40EA1195B3BDA0064EFFB /* StdConditionVariable.h */,
 				DAC40E0719576ED20064EFFB /* StdMutex.cpp */,
 				DAC40E0819576ED20064EFFB /* StdMutex.h */,
 				DAC40E10195773F90064EFFB /* StdThread.cpp */,
 				DAC40E11195773F90064EFFB /* StdThread.h */,
 				DAC40E1A19578B8F0064EFFB /* StdThreadManager.cpp */,
 				DAC40E1B19578B8F0064EFFB /* StdThreadManager.h */,
-				DAC40E231957AD570064EFFB /* StdThreadPool.cpp */,
-				DAC40E241957AD570064EFFB /* StdThreadPool.h */,
-				DAC40E261957AE820064EFFB /* StdThreadPoolQueue.cpp */,
-				DAC40E271957AE820064EFFB /* StdThreadPoolQueue.h */,
 				DAC40E0D195772430064EFFB /* Thread.cpp */,
 				DAC40E0E195772430064EFFB /* Thread.h */,
 				DAC40DCD19563E800064EFFB /* ThreadCompletionObserver.h */,
@@ -431,6 +425,7 @@
 				DAC40E93195A3AA80064EFFB /* ThreadPoolDispatch.cpp */,
 				DAC40E94195A3AA80064EFFB /* ThreadPoolDispatch.h */,
 				DAC40E01195744B20064EFFB /* ThreadPoolDispatcher.h */,
+				DAC40EA3195B3ED20064EFFB /* ThreadPoolQueue.cpp */,
 				DAC40E16195783700064EFFB /* ThreadPoolQueue.h */,
 				DAC40DD519563E800064EFFB /* ThreadPoolWorker.cpp */,
 				DAC40DD619563E800064EFFB /* ThreadPoolWorker.h */,
@@ -560,8 +555,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				DAC40E86195A3A840064EFFB /* TestPthreadsThreadPoolQueue.cpp in Sources */,
-				DAC40DDA19563E800064EFFB /* PthreadsThreadPool.cpp in Sources */,
+				DAC40E86195A3A840064EFFB /* TestThreadPoolQueue.cpp in Sources */,
 				DAC40DC519563E6F0064EFFB /* InvalidKeyException.cpp in Sources */,
 				DAC40DB619563E5C0064EFFB /* ServerSocket.cpp in Sources */,
 				DAC40E81195A3A840064EFFB /* TestInvalidKeyException.cpp in Sources */,
@@ -577,13 +571,12 @@
 				DAC40E88195A3A840064EFFB /* Tests.cpp in Sources */,
 				DAC40DF3195640120064EFFB /* Logger.cpp in Sources */,
 				DAC40E91195A3A840064EFFB /* TestThreadManager.cpp in Sources */,
-				DAC40DDB19563E800064EFFB /* PthreadsThreadPoolQueue.cpp in Sources */,
 				DAC40E80195A3A840064EFFB /* TestIniReader.cpp in Sources */,
 				DAC40DDC19563E800064EFFB /* ThreadPoolWorker.cpp in Sources */,
 				DAC40DF019563FF00064EFFB /* ServerDateTimeHandler.cpp in Sources */,
 				DAC40E77195A3A840064EFFB /* MockSocket.cpp in Sources */,
 				DAC40DB719563E5C0064EFFB /* Socket.cpp in Sources */,
-				DAC40E85195A3A840064EFFB /* TestPthreadsThreadPool.cpp in Sources */,
+				DAC40E85195A3A840064EFFB /* TestThreadPool.cpp in Sources */,
 				DA1DCC981912FB0F0077AB7A /* HttpResponse.cpp in Sources */,
 				DAC40E7B195A3A840064EFFB /* TestHttpException.cpp in Sources */,
 				DAC40E341959F1610064EFFB /* AbstractHandler.cpp in Sources */,
@@ -596,6 +589,7 @@
 				DAC40E78195A3A840064EFFB /* TestCase.cpp in Sources */,
 				DAC40DE219563F000064EFFB /* StringTokenizer.cpp in Sources */,
 				DAC40E0F195772430064EFFB /* Thread.cpp in Sources */,
+				DAC40EA4195B3ED20064EFFB /* ThreadPoolQueue.cpp in Sources */,
 				DAC40E82195A3A840064EFFB /* TestKeyValuePairs.cpp in Sources */,
 				DAC40DF119563FF00064EFFB /* ServerStatsHandler.cpp in Sources */,
 				DAC40DD719563E800064EFFB /* PthreadsMutex.cpp in Sources */,
@@ -609,8 +603,9 @@
 				DAC40E12195773F90064EFFB /* StdThread.cpp in Sources */,
 				DA1DCCE01915BB7D0077AB7A /* HttpException.cpp in Sources */,
 				DAC40E1F1957A8FF0064EFFB /* ThreadPool.cpp in Sources */,
+				DAC40EA2195B3BDA0064EFFB /* StdConditionVariable.cpp in Sources */,
+				DAC40E9F195B38300064EFFB /* PthreadsConditionVariable.cpp in Sources */,
 				DA1DCC951912FB0F0077AB7A /* HTTP.cpp in Sources */,
-				DAC40E251957AD570064EFFB /* StdThreadPool.cpp in Sources */,
 				DAC40E7A195A3A840064EFFB /* TestHttpClient.cpp in Sources */,
 				DAC40E89195A3A840064EFFB /* TestServerSocket.cpp in Sources */,
 				DAC40D2619548E530064EFFB /* main.cpp in Sources */,
@@ -630,7 +625,6 @@
 				DAC40E1C19578B8F0064EFFB /* StdThreadManager.cpp in Sources */,
 				DAC40DC619563E6F0064EFFB /* KeyValuePairs.cpp in Sources */,
 				DAC40E79195A3A840064EFFB /* TestHTTP.cpp in Sources */,
-				DAC40E281957AE820064EFFB /* StdThreadPoolQueue.cpp in Sources */,
 				DAC40E8E195A3A840064EFFB /* TestStrUtils.cpp in Sources */,
 				DAC40DF7195648720064EFFB /* KqueueServer.cpp in Sources */,
 				DAC40E191957884F0064EFFB /* ThreadManager.cpp in Sources */,

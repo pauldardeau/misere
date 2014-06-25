@@ -4,8 +4,12 @@
 #ifndef HttpServer_ThreadPoolQueue_h
 #define HttpServer_ThreadPoolQueue_h
 
+#include <deque>
 
+class ConditionVariable;
+class Mutex;
 class Runnable;
+class ThreadingFactory;
 
 
 /*!
@@ -15,14 +19,15 @@ class Runnable;
 class ThreadPoolQueue
 {
 public:
-   ThreadPoolQueue() noexcept {}
-   virtual ~ThreadPoolQueue() noexcept {}
+   ThreadPoolQueue(ThreadingFactory* threadingFactory) noexcept;
+   virtual ~ThreadPoolQueue() noexcept;
    
-   virtual bool addRequest(Runnable* runnableRequest) noexcept = 0;
-   virtual Runnable* takeRequest() noexcept = 0;
-   virtual void shutDown() noexcept = 0;
-   virtual bool isRunning() const noexcept = 0;
-   virtual bool isEmpty() noexcept = 0;
+   virtual bool addRequest(Runnable* runnableRequest) noexcept;
+   virtual Runnable* takeRequest() noexcept;
+   virtual void shutDown() noexcept;
+   virtual bool isRunning() const noexcept;
+   virtual bool isEmpty() const noexcept;
+   virtual bool isInitialized() const noexcept;
    
    // disallow copies
    ThreadPoolQueue(const ThreadPoolQueue&) = delete;
@@ -30,6 +35,14 @@ public:
    ThreadPoolQueue& operator=(const ThreadPoolQueue&) = delete;
    ThreadPoolQueue& operator=(ThreadPoolQueue&&) = delete;
    
+private:
+   ThreadingFactory* m_threadingFactory;
+   std::deque<Runnable*> m_queue;
+   Mutex* m_mutex;
+   ConditionVariable* m_condQueueEmpty;
+   ConditionVariable* m_condQueueNotEmpty;
+   bool m_isInitialized;
+   bool m_isRunning;
 };
 
 

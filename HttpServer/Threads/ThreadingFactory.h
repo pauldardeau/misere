@@ -9,10 +9,14 @@
 
 class Mutex;
 class Thread;
+class ConditionVariable;
 class Runnable;
 class ThreadPoolDispatcher;
 
-
+/*!
+ * ThreadingFactory is a factory for creating Thread, Mutex, and ThreadPoolDispatcher
+ * instances based on the desired ThreadingPackage.
+ */
 class ThreadingFactory
 {
 public:
@@ -22,7 +26,8 @@ public:
       GCD_LIBDISPATCH
    };
    
-   
+   static ThreadingFactory* getThreadingFactory() noexcept;
+
    ThreadingFactory(ThreadingPackage threadingPackage) noexcept;
    ~ThreadingFactory() noexcept;
    
@@ -35,6 +40,8 @@ public:
    Thread* createThread() noexcept;
    Thread* createThread(Runnable* runnable) noexcept;
    
+   ConditionVariable* createConditionVariable();
+   
    ThreadPoolDispatcher* createThreadPoolDispatcher(int numberThreads) noexcept;
    
    // disallow copies
@@ -46,7 +53,9 @@ public:
 private:
    ThreadingPackage m_threadingPackage;
    ThreadingPackage m_packageMutexType;
-   
+
+   static ThreadingFactory* threadingFactoryInstance;
+
 };
 
 #endif /* defined(__HttpServer__ThreadingFactory__) */

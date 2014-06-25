@@ -6,15 +6,25 @@
 #include "StdMutex.h"
 #include "PthreadsThread.h"
 #include "StdThread.h"
-#include "PthreadsThreadPool.h"
-#include "StdThreadPool.h"
+#include "ThreadPool.h"
 #include "ThreadPoolDispatch.h"
 #include "BasicException.h"
 #include "Logger.h"
 #include "ThreadManager.h"
 #include "StdThreadManager.h"
 #include "PthreadsThreadManager.h"
+#include "PthreadsConditionVariable.h"
+#include "StdConditionVariable.h"
 
+
+ThreadingFactory* ThreadingFactory::threadingFactoryInstance = nullptr;
+
+//******************************************************************************
+
+ThreadingFactory* ThreadingFactory::getThreadingFactory() noexcept
+{
+   return threadingFactoryInstance;
+}
 
 //******************************************************************************
 
@@ -33,6 +43,8 @@ ThreadingFactory::ThreadingFactory(ThreadingPackage threadingPackage) noexcept :
    } else {
       ThreadManager::setInstance(nullptr);
    }
+   
+   threadingFactoryInstance = this;
 }
 
 //******************************************************************************
@@ -122,16 +134,29 @@ Thread* ThreadingFactory::createThread(Runnable* runnable) noexcept
 
 //******************************************************************************
 
+ConditionVariable* ThreadingFactory::createConditionVariable()
+{
+   if (m_threadingPackage == ThreadingPackage::CPP_11) {
+      return new StdConditionVariable();
+   } else if (m_threadingPackage == ThreadingPackage::PTHREADS) {
+      return new PthreadsConditionVariable();
+   } else if (m_threadingPackage == ThreadingPackage::GCD_LIBDISPATCH) {
+      Logger::error("createConditionVariable should not be called on GCD_LIBDISPATCH");
+   }
+   
+   return nullptr;
+}
+
+//******************************************************************************
+
 ThreadPoolDispatcher* ThreadingFactory::createThreadPoolDispatcher(int numberThreads) noexcept
 {
    ThreadPoolDispatcher* threadPoolDispatcher = nullptr;
-   
-   if (m_threadingPackage == ThreadingPackage::CPP_11) {
-      threadPoolDispatcher = new StdThreadPool(numberThreads);
-   } else if (m_threadingPackage == ThreadingPackage::PTHREADS) {
-      threadPoolDispatcher = new PthreadsThreadPool(numberThreads);
-   } else if (m_threadingPackage == ThreadingPackage::GCD_LIBDISPATCH) {
+
+   if (m_threadingPackage == ThreadingPackage::GCD_LIBDISPATCH) {
       threadPoolDispatcher = new ThreadPoolDispatch();  // don't specify number threads
+   } else {
+      threadPoolDispatcher = new ThreadPool(this, numberThreads);
    }
    
    return threadPoolDispatcher;

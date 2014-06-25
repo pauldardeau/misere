@@ -4,12 +4,13 @@
 #ifndef __HttpServer__ThreadPool__
 #define __HttpServer__ThreadPool__
 
-#include <vector>
-#include <memory>
+#include <list>
 
 #include "Thread.h"
+#include "ThreadPoolQueue.h"
 #include "ThreadPoolWorker.h"
 #include "ThreadPoolDispatcher.h"
+#include "ThreadingFactory.h"
 
 class Runnable;
 
@@ -20,7 +21,9 @@ class Runnable;
 class ThreadPool : public ThreadPoolDispatcher
 {
 public:
-   ThreadPool(ThreadPoolQueue& queue, int nNumWorkers) noexcept;
+   ThreadPool(int numberWorkers) noexcept;
+   ThreadPool(ThreadingFactory* threadingFactory, int numberWorkers) noexcept;
+
    ~ThreadPool() noexcept;
    
    // ThreadPoolDispatcher
@@ -28,7 +31,7 @@ public:
    virtual bool stop() noexcept override;
    virtual bool addRequest(Runnable* runnableRequest) noexcept override;
    
-   virtual Thread* createThreadWithRunnable(Runnable* runnable) noexcept = 0;
+   virtual Thread* createThreadWithRunnable(Runnable* runnable) noexcept;
    
    int getNumberWorkers() const noexcept;
    void addWorkers(int numberNewWorkers) noexcept;
@@ -43,10 +46,11 @@ protected:
    void adjustNumberWorkers(int numberToAddOrDelete) noexcept;
    
 private:
-   std::vector<Thread*> m_vecThreads;
-   std::vector<ThreadPoolWorker*> m_vecWorkers;
-   ThreadPoolQueue& m_queue;
+   ThreadingFactory* m_threadingFactory;
+   std::list<ThreadPoolWorker*> m_listWorkers;
+   ThreadPoolQueue m_queue;
    int m_workerCount;
+   int m_workersCreated;
    bool m_isRunning;
 };
 

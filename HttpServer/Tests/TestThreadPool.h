@@ -7,7 +7,7 @@
 #include "TestSuite.h"
 
 
-class TestPthreadsThreadPool : public TestSuite
+class TestThreadPool : public TestSuite
 {
 protected:
    void runTests();
@@ -21,7 +21,7 @@ protected:
    void testRemoveWorkers();
 
 public:
-   TestPthreadsThreadPool();
+   TestThreadPool();
    
 
 };

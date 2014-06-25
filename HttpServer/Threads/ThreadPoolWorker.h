@@ -6,7 +6,9 @@
 
 #include "Runnable.h"
 
+class ThreadingFactory;
 class ThreadPoolQueue;
+class Thread;
 
 
 /*!
@@ -16,14 +18,27 @@ class ThreadPoolQueue;
 class ThreadPoolWorker : public Runnable
 {
    public:
-      ThreadPoolWorker(ThreadPoolQueue& queue, int workerId) noexcept;
+      ThreadPoolWorker(ThreadingFactory* threadingFactory,
+                       ThreadPoolQueue& queue,
+                       int workerId) noexcept;
       ~ThreadPoolWorker() noexcept;
 
+      void start() noexcept;
+      void stop() noexcept;
       void run() noexcept override;
 
+      // disallow copies
+      ThreadPoolWorker(const ThreadPoolWorker&);
+      ThreadPoolWorker(ThreadPoolWorker&&);
+      ThreadPoolWorker& operator=(const ThreadPoolWorker&);
+      ThreadPoolWorker& operator=(ThreadPoolWorker&&);
+
    private:
+      ThreadingFactory* m_threadingFactory;
+      Thread* m_workerThread;
       ThreadPoolQueue& m_poolQueue;
       int m_workerId;
+      bool m_isRunning;
 };
 
 #endif
