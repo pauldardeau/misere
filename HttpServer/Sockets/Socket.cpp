@@ -27,6 +27,18 @@ static const int DEFAULT_BUFFER_SIZE = 1024;
 
 //******************************************************************************
 
+int Socket::createSocket() noexcept
+{
+   const int socketFD = ::socket(AF_INET, SOCK_STREAM, 0);
+   if (socketFD == -1) {
+      Logger::error("unable to create socket");
+   }
+   
+   return socketFD;
+}
+
+//******************************************************************************
+
 Socket::Socket(const std::string& address, int port) :
    m_serverAddress(address),
    m_socketFD(-1),
@@ -93,9 +105,10 @@ void Socket::init() noexcept
 
 bool Socket::open() noexcept
 {
-   m_socketFD = ::socket(AF_INET, SOCK_STREAM, 0);
+   m_socketFD = Socket::createSocket();
 
    if (m_socketFD < 0) {
+      Logger::error("unable to open socket connection");
       return false;
    }
 

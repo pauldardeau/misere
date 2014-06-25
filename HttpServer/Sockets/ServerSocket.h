@@ -18,6 +18,10 @@ class Socket;
 class ServerSocket
 {
    public:
+      static bool setReuseAddr(int socketFD) noexcept;
+      static bool listen(int socketFD, int backlog) noexcept;
+      static bool bind(int socketFD, int port) noexcept;
+   
       // throws BasicException
       ServerSocket(int port);
       ~ServerSocket() noexcept;
@@ -39,7 +43,6 @@ class ServerSocket
 
       int m_serverSocket;
       int m_port;
-      struct sockaddr_in m_serverAddr;
 };
 
 

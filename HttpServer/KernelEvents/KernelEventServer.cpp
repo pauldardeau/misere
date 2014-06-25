@@ -20,6 +20,7 @@
 #include "SocketRequest.h"
 #include "MutexLock.h"
 #include "Logger.h"
+#include "ServerSocket.h"
 
 
 
@@ -85,38 +86,23 @@ bool KernelEventServer::init(SocketServiceHandler* socketServiceHandler,
    }
    
    
-   m_listenerFD = ::socket(AF_INET, SOCK_STREAM, 0);
+   m_listenerFD = Socket::createSocket();
    if (m_listenerFD == -1) {
       Logger::critical("error: unable to create server listening socket");
       return false;
    }
    
-   int yes;
-   
-   if (::setsockopt(m_listenerFD,
-                    SOL_SOCKET,
-                    SO_REUSEADDR,
-                    &yes,
-                    sizeof(int)) == -1) {
-      Logger::critical("setsockopt failed for SO_REUSEADDR");
+   if (!ServerSocket::setReuseAddr(m_listenerFD)) {
+      Logger::critical("unable to set REUSEADDR for socket");
       return false;
    }
    
-   struct sockaddr_in serveraddr;
-   
-   memset(&serveraddr, 0, sizeof(serveraddr));
-   serveraddr.sin_family = AF_INET;
-   serveraddr.sin_addr.s_addr = INADDR_ANY;
-   serveraddr.sin_port = htons(m_serverPort);
-   
-   if (::bind(m_listenerFD,
-              (struct sockaddr *)&serveraddr,
-              sizeof(serveraddr)) == -1) {
+   if (!ServerSocket::bind(m_listenerFD, m_serverPort)) {
       Logger::critical("bind failed");
       return false;
    }
    
-   if (::listen(m_listenerFD, m_listenBacklog) == -1) {
+   if (!ServerSocket::listen(m_listenerFD, m_listenBacklog)) {
       Logger::critical("listen failed");
       return false;
    }

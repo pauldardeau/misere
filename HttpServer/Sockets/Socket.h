@@ -19,6 +19,9 @@ class SocketCompletionObserver;
 class Socket
 {
 public:
+   
+   static int createSocket() noexcept;
+   
    // throws BasicException
    Socket(const std::string& address, int port);
    Socket(int socketFD) noexcept;

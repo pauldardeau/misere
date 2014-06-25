@@ -17,6 +17,58 @@ typedef socklen_t SOCKLEN_T;
 
 //******************************************************************************
 
+bool ServerSocket::setReuseAddr(int socketFD) noexcept
+{
+   int val_to_set = 1;
+   
+   if (0 == ::setsockopt(socketFD,
+                         SOL_SOCKET,
+                         SO_REUSEADDR,
+                         (char *) &val_to_set,
+                         sizeof(val_to_set))) {
+      return true;
+   } else {
+      return false;
+   }
+}
+
+//******************************************************************************
+
+bool ServerSocket::listen(int socketFD, int backlog) noexcept
+{
+   if (::listen(socketFD, backlog) != 0) {
+      Logger::error("unable to listen on server socket");
+      return false;
+   } else {
+      return true;
+   }
+}
+
+//******************************************************************************
+
+bool ServerSocket::bind(int socketFD, int port) noexcept
+{
+   struct sockaddr_in serverAddr;
+   ::memset((void *) &serverAddr, 0, sizeof(serverAddr));
+   
+   serverAddr.sin_family = AF_INET;
+   serverAddr.sin_port = htons(port);
+   serverAddr.sin_addr.s_addr = INADDR_ANY;
+   
+   const int rc = ::bind(socketFD,
+                         (struct sockaddr*) &serverAddr,
+                         sizeof(serverAddr));
+   
+   if (rc < 0) {
+      Logger::error("unable to bind server socket to port");
+      return false;
+   } else {
+      return true;
+   }
+}
+
+//******************************************************************************
+
 ServerSocket::ServerSocket(int port) :
    m_port(port),
    m_serverSocket(-1)
@@ -46,46 +98,22 @@ ServerSocket::~ServerSocket() noexcept
 
 bool ServerSocket::create() noexcept
 {
-   m_serverSocket = ::socket(AF_INET, SOCK_STREAM, 0);
+   m_serverSocket = Socket::createSocket();
 
    if (m_serverSocket < 0) {
+      Logger::error("unable to create server socket");
       return false;
    }
 
-   int val_to_set = 1;
-
-   ::setsockopt(m_serverSocket,
-                SOL_SOCKET,
-                SO_REUSEADDR,
-                (char *) &val_to_set,
-                sizeof(val_to_set));
-
-   ::memset((void *) &m_serverAddr, 0, sizeof(m_serverAddr));
-
-   m_serverAddr.sin_family = AF_INET;
-   m_serverAddr.sin_port = htons(m_port);
-   m_serverAddr.sin_addr.s_addr = INADDR_ANY;
-
-   const int rc = ::bind(m_serverSocket,
-                         (struct sockaddr*) &m_serverAddr,
-                         sizeof(m_serverAddr));
-
-   if (rc < 0) {
-      return false;
-   } else {
-      return true;
-   }
+   ServerSocket::setReuseAddr(m_serverSocket);
+   return ServerSocket::bind(m_serverSocket, m_port);
 }
 
 //******************************************************************************
 
 bool ServerSocket::listen() noexcept
 {
-   if (::listen(m_serverSocket, BACKLOG) != 0) {
-      return false;
-   } else {
-      return true;
-   }
+   return ServerSocket::listen(m_serverSocket, BACKLOG);
 }
 
 //******************************************************************************
