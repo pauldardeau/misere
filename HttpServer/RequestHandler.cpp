@@ -130,8 +130,8 @@ void RequestHandler::run()
       responseCode = HTTP::HTTP_RESP_SERV_ERR_HTTP_VERSION_UNSUPPORTED;
       Logger::warning("unsupported protocol: " + protocol);
    } else if (nullptr == pHandler) { // path recognized?
-      responseCode = HTTP::HTTP_RESP_CLIENT_ERR_BAD_REQUEST;
-      Logger::warning("bad request: " + path);
+      responseCode = HTTP::HTTP_RESP_CLIENT_ERR_NOT_FOUND;
+      //Logger::warning("bad request: " + path);
    } else if (!pHandler->isAvailable()) { // is our handler available?
       responseCode = HTTP::HTTP_RESP_SERV_ERR_SERVICE_UNAVAILABLE;
       Logger::warning("handler not available: " + path);
@@ -187,14 +187,6 @@ void RequestHandler::run()
          mapHeaders[HTTP_CONTENT_LENGTH] = std::to_string(responseBody.length());
       } else {
          mapHeaders[HTTP_CONTENT_LENGTH] = ZERO;
-      }
-   } else {
-      // is it a GET request for /favicon.ico?
-      if ((responseCode == HTTP::HTTP_RESP_CLIENT_ERR_METHOD_NOT_ALLOWED) &&
-         (method == HTTP::HTTP_METHOD_GET) &&
-         (path == FAVICON_ICO)) {
-         // send a not found (404)
-         responseCode = HTTP::HTTP_RESP_CLIENT_ERR_NOT_FOUND;
       }
    }
    
