@@ -187,7 +187,6 @@ void KernelEventServer::run() noexcept
                }
                
                {
-                  //MutexLock lock(_hwmConnectionsMutex);
                   ++m_concurrentConnections;
                   if (m_concurrentConnections > m_maxConcurrentConnections) {
                      // new high water mark
@@ -212,18 +211,12 @@ void KernelEventServer::run() noexcept
                   Logger::debug(msg);
                }
                
-               {
-                  //MutexLock lock(_hwmConnectionsMutex);
-                  --m_concurrentConnections;
-               }
+               --m_concurrentConnections;
                
-               {
-                  //MutexLock lock(_fdMutex);
-                  // was it busy?
-                  if (m_listBusyFlags[index]) {
-                     m_listBusyFlags[index] = false;
-                     --m_concurrentRequests;
-                  }
+               // was it busy?
+               if (m_listBusyFlags[index]) {
+                  m_listBusyFlags[index] = false;
+                  --m_concurrentRequests;
                }
                
                if (!removeFileDescriptorFromRead(client_fd)) {
@@ -232,7 +225,6 @@ void KernelEventServer::run() noexcept
                
                ::close(client_fd);
             } else if (isEventRead(index)) {
-               //MutexLock lock(_fdMutex);
                
                // are we already busy with this socket?
                const bool isAlreadyBusy = m_listBusyFlags[index];
@@ -333,17 +325,12 @@ void KernelEventServer::notifySocketComplete(Socket* pSocket) noexcept
    }
    
    // mark the fd as not being busy anymore
-   {
-      m_listBusyFlags[userIndex] = false;
-      --m_concurrentRequests;
-   }
+   m_listBusyFlags[userIndex] = false;
+   --m_concurrentRequests;
    
    if (!pSocket->isConnected()) {
-      {
-         //MutexLock lock(m_hwmConnectionsMutex);
-         --m_concurrentConnections;
-      }
       
+      --m_concurrentConnections;
       
       // remove file descriptor and close socket
       if (isLoggingDebug) {
