@@ -27,6 +27,7 @@ public:
    
    std::thread::native_handle_type getHandle() noexcept;
    
+   std::thread::id getStdThreadId() const noexcept;
    
    // disallow copying
    StdThread(const StdThread&) = delete;

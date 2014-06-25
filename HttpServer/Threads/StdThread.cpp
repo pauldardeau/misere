@@ -115,4 +115,10 @@ std::thread::native_handle_type StdThread::getHandle() noexcept
 
 //******************************************************************************
 
+std::thread::id StdThread::getStdThreadId() const noexcept
+{
+   return m_thread.get_id();
+}
+
+//******************************************************************************
 

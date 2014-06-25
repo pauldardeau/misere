@@ -3,6 +3,7 @@
 
 #include "StdThreadManager.h"
 #include "Logger.h"
+#include "StdThread.h"
 
 //******************************************************************************
 
@@ -37,14 +38,19 @@ int StdThreadManager::getCurrentThreadId() const noexcept
 
 void StdThreadManager::deleteThreadHandleAtIndex(int threadIndex) noexcept
 {
-
+   m_vecThreadIds.erase(m_vecThreadIds.begin() + threadIndex);
 }
 
 //******************************************************************************
 
 void StdThreadManager::addThread(Thread* thread) noexcept
 {
+   StdThread* stdThread = dynamic_cast<StdThread*>(thread);
    
+   if (stdThread) {
+      m_vecThreadIds.push_back(stdThread->getStdThreadId());
+   }
 }
 
 //******************************************************************************
+
