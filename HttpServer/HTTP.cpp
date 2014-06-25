@@ -6,7 +6,8 @@
 #include "HTTP.h"
 
 // protocol
-const std::string HTTP::HTTP_PROTOCOL    = "HTTP/1.1";
+const std::string HTTP::HTTP_PROTOCOL1_0    = "HTTP/1.0";
+const std::string HTTP::HTTP_PROTOCOL1_1    = "HTTP/1.1";
 
 // methods
 const std::string HTTP::HTTP_METHOD_CONNECT = "CONNECT";

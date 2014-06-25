@@ -67,7 +67,7 @@ void HttpClient::buildHeader(std::string& header,
    header += SPACE;
    header += url;
    header += SPACE;
-   header += HTTP::HTTP_PROTOCOL;  // HTTP/1.1
+   header += HTTP::HTTP_PROTOCOL1_0;  // HTTP/1.1
    header += EOL;
 
    // host

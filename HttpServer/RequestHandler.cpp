@@ -127,7 +127,8 @@ void RequestHandler::run()
       mapHeaders[HTTP_DATE] = systemDate;
       mapHeaders[HTTP_CONTENT_TYPE] = CONTENT_TYPE_HTML;
    
-      if (HTTP::HTTP_PROTOCOL != protocol) {
+      if ((HTTP::HTTP_PROTOCOL1_0 != protocol) &&
+          (HTTP::HTTP_PROTOCOL1_1 != protocol)) {
          responseCode = HTTP::HTTP_RESP_SERV_ERR_HTTP_VERSION_UNSUPPORTED;
          Logger::warning("unsupported protocol: " + protocol);
       } else if (nullptr == pHandler) { // path recognized?

@@ -855,7 +855,7 @@ std::string HttpServer::buildHeader(const std::string& responseCode,
    std::string sb;
 
    if (!responseCode.empty()) {
-      sb += HTTP::HTTP_PROTOCOL;
+      sb += HTTP::HTTP_PROTOCOL1_0;
       sb += SPACE;
       sb += responseCode;
       sb += EOL;

@@ -15,7 +15,8 @@ class HTTP
 {
    public:
       // protocol
-      static const std::string HTTP_PROTOCOL;
+      static const std::string HTTP_PROTOCOL1_0;
+      static const std::string HTTP_PROTOCOL1_1;
 
       // methods
       static const std::string HTTP_METHOD_CONNECT;
