@@ -109,15 +109,17 @@ void StdLogger::setLogInstanceLifecycles(bool logInstanceLifecycles) noexcept
 
 void StdLogger::logInstanceCreate(const std::string& className) noexcept
 {
-   MutexLock lock(*m_lockLifecycleStats);
-   auto it = m_mapClassLifecycleStats.find(className);
-   if (it != m_mapClassLifecycleStats.end()) {
-      LifecycleStats& stats = it->second;
-      ++stats.m_instancesCreated;
-   } else {
-      LifecycleStats stats;
-      ++stats.m_instancesCreated;
-      m_mapClassLifecycleStats[className] = stats;
+   if (m_lockLifecycleStats) {
+      MutexLock lock(*m_lockLifecycleStats);
+      auto it = m_mapClassLifecycleStats.find(className);
+      if (it != m_mapClassLifecycleStats.end()) {
+         LifecycleStats& stats = it->second;
+         ++stats.m_instancesCreated;
+      } else {
+         LifecycleStats stats;
+         ++stats.m_instancesCreated;
+         m_mapClassLifecycleStats[className] = stats;
+      }
    }
 }
 
@@ -125,13 +127,15 @@ void StdLogger::logInstanceCreate(const std::string& className) noexcept
 
 void StdLogger::logInstanceDestroy(const std::string& className) noexcept
 {
-   MutexLock lock(*m_lockLifecycleStats);
-   auto it = m_mapClassLifecycleStats.find(className);
-   if (it != m_mapClassLifecycleStats.end()) {
-      LifecycleStats& stats = it->second;
-      ++stats.m_instancesDestroyed;
-   } else {
-      error("unable to find class lifecycle stats for destroy of " + className);
+   if (m_lockLifecycleStats) {
+      MutexLock lock(*m_lockLifecycleStats);
+      auto it = m_mapClassLifecycleStats.find(className);
+      if (it != m_mapClassLifecycleStats.end()) {
+         LifecycleStats& stats = it->second;
+         ++stats.m_instancesDestroyed;
+      } else {
+         error("unable to find class lifecycle stats for destroy of " + className);
+      }
    }
 }
 

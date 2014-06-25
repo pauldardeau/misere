@@ -126,23 +126,31 @@ Runnable* ThreadPoolQueue::takeRequest() noexcept
       return nullptr;
    }
    
-   // is the queue empty?
-   while (m_queue.empty() && m_isRunning) {
-      Logger::log(Logger::LogLevel::Debug, "queue is empty, waiting for QUEUE_NOT_EMPTY event");
+   Runnable* request = nullptr;
+   
+   while (!request) {
+      // is the queue empty?
+      while (m_queue.empty() && m_isRunning) {
+         Logger::log(Logger::LogLevel::Debug, "queue is empty, waiting for QUEUE_NOT_EMPTY event");
       
-      // empty queue -- wait for QUEUE_NOT_EMPTY event
-      m_condQueueNotEmpty->wait(m_mutex);
-   }
+         // empty queue -- wait for QUEUE_NOT_EMPTY event
+         m_condQueueNotEmpty->wait(m_mutex);
+      }
    
-   // take a request from the queue
-   Runnable* request = m_queue.front();
-   m_queue.pop_front();
+      if (m_queue.empty()) {
+         continue;
+      }
+      
+      // take a request from the queue
+      request = m_queue.front();
+      m_queue.pop_front();
    
-   // did we empty the queue?
-   if (m_queue.empty()) {
-      Logger::log(Logger::LogLevel::Debug, "--- signalling queue_empty_event");
-      // signal that queue is now empty
-      m_condQueueEmpty->notifyOne();
+      // did we empty the queue?
+      if (m_queue.empty()) {
+         Logger::log(Logger::LogLevel::Debug, "--- signalling queue_empty_event");
+         // signal that queue is now empty
+         m_condQueueEmpty->notifyOne();
+      }
    }
    
    return request;

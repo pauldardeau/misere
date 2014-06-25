@@ -4,6 +4,8 @@
 #include <cstdio>
 #include <cstring>
 
+#include <errno.h>
+
 #include "ServerSocket.h"
 #include "Socket.h"
 #include "BasicException.h"
@@ -61,6 +63,44 @@ bool ServerSocket::bind(int socketFD, int port) noexcept
    
    if (rc < 0) {
       Logger::error("unable to bind server socket to port");
+      std::string errMsg;
+      
+      switch(errno) {
+         case EACCES:
+            errMsg = "EACCES";
+            break;
+         case EADDRINUSE:
+            errMsg = "EADDRINUSE";
+            break;
+         case EADDRNOTAVAIL:
+            errMsg = "EADDRNOTAVAIL";
+            break;
+         case EAFNOSUPPORT:
+            errMsg = "EAFNOSUPPORT";
+            break;
+         case EBADF:
+            errMsg = "EBADF";
+            break;
+         case EDESTADDRREQ:
+            errMsg = "EDESTADDRREQ";
+            break;
+         case EFAULT:
+            errMsg = "EFAULT";
+            break;
+         case EINVAL:
+            errMsg = "EINVAL";
+            break;
+         case ENOTSOCK:
+            errMsg = "ENOTSOCK";
+            break;
+         case EOPNOTSUPP:
+            errMsg = "EOPNOTSUPP";
+            break;
+         default:
+            errMsg = "<other>";
+            break;
+      }
+      printf("errno = %d (%s)\n", errno, errMsg.c_str());
       return false;
    } else {
       return true;

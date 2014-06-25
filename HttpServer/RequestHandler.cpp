@@ -93,151 +93,155 @@ void RequestHandler::run()
    
    HttpRequest request(*socket);
 
-   if (isLoggingDebug) {
-      Logger::debug("ending parse of HttpRequest");
-   }
+   if (request.isInitialized()) {
+      if (isLoggingDebug) {
+         Logger::debug("ending parse of HttpRequest");
+      }
    
-   const std::string& method = request.getMethod();
-   const std::string& protocol = request.getProtocol();
-   const std::string& path = request.getPath();
+      const std::string& method = request.getMethod();
+      const std::string& protocol = request.getProtocol();
+      const std::string& path = request.getPath();
    
-   HttpHandler* pHandler = m_server.getPathHandler(path);
-   bool handlerAvailable = false;
+      HttpHandler* pHandler = m_server.getPathHandler(path);
+      bool handlerAvailable = false;
    
-   if (pHandler == nullptr) {
-      Logger::info("no handler for request: " + path);
-   }
+      if (pHandler == nullptr) {
+         Logger::info("no handler for request: " + path);
+      }
    
-   // assume the worst
-   std::string responseCode = HTTP::HTTP_RESP_SERV_ERR_INTERNAL_ERROR;
+      // assume the worst
+      std::string responseCode = HTTP::HTTP_RESP_SERV_ERR_INTERNAL_ERROR;
    
-   const std::string systemDate = m_server.getSystemDateGMT();
+      const std::string systemDate = m_server.getSystemDateGMT();
    
-   std::unordered_map<std::string, std::string> mapHeaders;
+      std::unordered_map<std::string, std::string> mapHeaders;
    
-   mapHeaders[HTTP_CONNECTION] = CONNECTION_CLOSE;
+      mapHeaders[HTTP_CONNECTION] = CONNECTION_CLOSE;
    
-   const std::string& serverString = m_server.getServerId();
+      const std::string& serverString = m_server.getServerId();
    
-   if (!serverString.empty()) {
-      mapHeaders[HTTP_SERVER] = serverString;
-   }
+      if (!serverString.empty()) {
+         mapHeaders[HTTP_SERVER] = serverString;
+      }
    
-   mapHeaders[HTTP_DATE] = systemDate;
-   mapHeaders[HTTP_CONTENT_TYPE] = CONTENT_TYPE_HTML;
+      mapHeaders[HTTP_DATE] = systemDate;
+      mapHeaders[HTTP_CONTENT_TYPE] = CONTENT_TYPE_HTML;
    
-   if (HTTP::HTTP_PROTOCOL != protocol) {
-      responseCode = HTTP::HTTP_RESP_SERV_ERR_HTTP_VERSION_UNSUPPORTED;
-      Logger::warning("unsupported protocol: " + protocol);
-   } else if (nullptr == pHandler) { // path recognized?
-      responseCode = HTTP::HTTP_RESP_CLIENT_ERR_NOT_FOUND;
-      //Logger::warning("bad request: " + path);
-   } else if (!pHandler->isAvailable()) { // is our handler available?
-      responseCode = HTTP::HTTP_RESP_SERV_ERR_SERVICE_UNAVAILABLE;
-      Logger::warning("handler not available: " + path);
-   } else {
-      handlerAvailable = true;
-   }
+      if (HTTP::HTTP_PROTOCOL != protocol) {
+         responseCode = HTTP::HTTP_RESP_SERV_ERR_HTTP_VERSION_UNSUPPORTED;
+         Logger::warning("unsupported protocol: " + protocol);
+      } else if (nullptr == pHandler) { // path recognized?
+         responseCode = HTTP::HTTP_RESP_CLIENT_ERR_NOT_FOUND;
+         //Logger::warning("bad request: " + path);
+      } else if (!pHandler->isAvailable()) { // is our handler available?
+         responseCode = HTTP::HTTP_RESP_SERV_ERR_SERVICE_UNAVAILABLE;
+         Logger::warning("handler not available: " + path);
+      } else {
+         handlerAvailable = true;
+      }
    
-   const std::string httpHeader = request.getRawHeader();
-   const std::string httpBody = request.getBody();
+      const std::string httpHeader = request.getRawHeader();
+      const std::string httpBody = request.getBody();
    
-   if (isLoggingDebug) {
-      Logger::debug("HttpServer method: " + method);
-      Logger::debug("HttpServer path: " + path);
-      Logger::debug("HttpServer protocol: " + protocol);
+      if (isLoggingDebug) {
+         Logger::debug("HttpServer method: " + method);
+         Logger::debug("HttpServer path: " + path);
+         Logger::debug("HttpServer protocol: " + protocol);
       
-      Logger::debug("HttpServer header:");
-      Logger::debug(httpHeader);
+         Logger::debug("HttpServer header:");
+         Logger::debug(httpHeader);
       
-      Logger::debug("HttpServer body:");
-      Logger::debug(httpBody);
-   }
+         Logger::debug("HttpServer body:");
+         Logger::debug(httpBody);
+      }
    
-   std::string responseBody;
+      std::string responseBody;
    
-   if ((nullptr != pHandler) && handlerAvailable) {
-      try
-      {
-         HttpResponse response;
-         pHandler->serviceRequest(request, response);
-         responseCode = std::to_string(response.getStatusCode());
-         responseBody = response.getBody();
+      if ((nullptr != pHandler) && handlerAvailable) {
+         try
+         {
+            HttpResponse response;
+            pHandler->serviceRequest(request, response);
+            responseCode = std::to_string(response.getStatusCode());
+            responseBody = response.getBody();
          
-         response.populateWithHeaders(mapHeaders);
-      }
-      catch (const BasicException& be)
-      {
-         responseCode = HTTP::HTTP_RESP_SERV_ERR_INTERNAL_ERROR;
-         Logger::error("exception handling request: " + be.whatString());
-      }
-      catch (const std::exception& e)
-      {
-         responseCode = HTTP::HTTP_RESP_SERV_ERR_INTERNAL_ERROR;
-         Logger::error("exception handling request: " + std::string(e.what()));
-      }
-      catch (...)
-      {
-         responseCode = HTTP::HTTP_RESP_SERV_ERR_INTERNAL_ERROR;
-         Logger::error("unknown exception handling request");
-      }
+            response.populateWithHeaders(mapHeaders);
+         }
+         catch (const BasicException& be)
+         {
+            responseCode = HTTP::HTTP_RESP_SERV_ERR_INTERNAL_ERROR;
+            Logger::error("exception handling request: " + be.whatString());
+         }
+         catch (const std::exception& e)
+         {
+            responseCode = HTTP::HTTP_RESP_SERV_ERR_INTERNAL_ERROR;
+            Logger::error("exception handling request: " + std::string(e.what()));
+         }
+         catch (...)
+         {
+            responseCode = HTTP::HTTP_RESP_SERV_ERR_INTERNAL_ERROR;
+            Logger::error("unknown exception handling request");
+         }
       
       
+         if (!responseBody.empty()) {
+            mapHeaders[HTTP_CONTENT_LENGTH] = std::to_string(responseBody.length());
+         } else {
+            mapHeaders[HTTP_CONTENT_LENGTH] = ZERO;
+         }
+      }
+   
+      std::string clientIPAddress;
+   
+      socket->getPeerIPAddress(clientIPAddress);
+   
+      // log the request
+      if (m_isThreadPooling) {
+         const std::string& runByWorkerThreadId = getRunByThreadWorkerId();
+      
+         if (!runByWorkerThreadId.empty()) {
+            m_server.logRequest(clientIPAddress,
+                                request.getRequestLine(),
+                                responseCode,
+                                runByWorkerThreadId);
+         } else {
+            m_server.logRequest(clientIPAddress,
+                                request.getRequestLine(),
+                                responseCode);
+         }
+      } else {
+         m_server.logRequest(clientIPAddress,
+                             request.getRequestLine(),
+                             responseCode);
+      }
+   
+      std::string response = m_server.buildHeader(responseCode, mapHeaders);
+   
       if (!responseBody.empty()) {
-         mapHeaders[HTTP_CONTENT_LENGTH] = std::to_string(responseBody.length());
-      } else {
-         mapHeaders[HTTP_CONTENT_LENGTH] = ZERO;
+         response += responseBody;
       }
-   }
    
-   std::string clientIPAddress;
+      socket->write(response);
    
-   socket->getPeerIPAddress(clientIPAddress);
+      /*
+       if (isLoggingDebug) {
+         Logger::debug("response written, calling read so that client can close first");
+       }
    
-   // log the request
-   if (m_isThreadPooling) {
-      const std::string& runByWorkerThreadId = getRunByThreadWorkerId();
-      
-      if (!runByWorkerThreadId.empty()) {
-         m_server.logRequest(clientIPAddress,
-                            request.getRequestLine(),
-                            responseCode,
-                            runByWorkerThreadId);
-      } else {
-         m_server.logRequest(clientIPAddress,
-                            request.getRequestLine(),
-                            responseCode);
-      }
+       // invoke a read to give the client the chance to close the socket
+       // first. this also lets us easily detect the close on the client
+       // end of the connection.  we won't actually read any data here,
+       // this is just a wait to allow the client to close first
+       char readBuffer[5];
+       socket->read(readBuffer, 4);
+       */
+   
+      //if (m_socketRequest != nullptr) {
+      //   m_socketRequest->requestComplete();
+      //}
    } else {
-      m_server.logRequest(clientIPAddress,
-                         request.getRequestLine(),
-                         responseCode);
+      printf("error: unable to initialize HttpRequest\n");
    }
-   
-   std::string response = m_server.buildHeader(responseCode, mapHeaders);
-   
-   if (!responseBody.empty()) {
-      response += responseBody;
-   }
-   
-   socket->write(response);
-   
-   /*
-   if (isLoggingDebug) {
-      Logger::debug("response written, calling read so that client can close first");
-   }
-   
-   // invoke a read to give the client the chance to close the socket
-   // first. this also lets us easily detect the close on the client
-   // end of the connection.  we won't actually read any data here,
-   // this is just a wait to allow the client to close first
-   char readBuffer[5];
-   socket->read(readBuffer, 4);
-   */
-   
-   //if (m_socketRequest != nullptr) {
-   //   m_socketRequest->requestComplete();
-   //}
    
    socket->close();
 }

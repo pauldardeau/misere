@@ -179,7 +179,6 @@ void Socket::closeConnection() noexcept
 void Socket::close() noexcept
 {
    if (m_socketFD > -1) {
-      ::shutdown(m_socketFD, 1); // no more sends
       ::close(m_socketFD);
       m_socketFD = -1;
       m_isConnected = false;
@@ -439,6 +438,8 @@ bool Socket::readLine(std::string& line) noexcept
             // our connection has been closed by the other process. nothing
             // more we can do!!!
             Logger::debug("connection reset by peer");
+            close();
+            return false;
          } else {
             if (EINTR == errno) {  // interrupted?
                // not really an error
@@ -586,6 +587,8 @@ bool Socket::readSocket(char* buffer, int nBytesToRead) noexcept
             // our connection has been closed by the other process. nothing
             // more we can do!!!
             Logger::debug("connection reset by peer");
+            close();
+            return false;
          } else {
             if (EINTR == errno) {  // interrupted?
                // not really an error

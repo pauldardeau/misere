@@ -88,6 +88,12 @@ static const std::string CFG_SERVER_SEND_BUFFER_SIZE        = "socket_send_buffe
 static const std::string CFG_SERVER_RECEIVE_BUFFER_SIZE     = "socket_receive_buffer_size";
 static const std::string CFG_SERVER_ALLOW_BUILTIN_HANDLERS  = "allow_builtin_handlers";
 static const std::string CFG_SERVER_STRING                  = "server_string";
+static const std::string CFG_SERVER_SOCKETS                 = "sockets";
+
+// socket options
+static const std::string CFG_SOCKETS_SOCKET_SERVER          = "socket_server";
+static const std::string CFG_SOCKETS_KERNEL_EVENTS          = "kernel_events";
+
 
 // threading options
 static const std::string CFG_THREADING_PTHREADS             = "pthreads";
@@ -382,6 +388,17 @@ bool HttpServer::init(int port)
                m_threadPoolSize = poolSize;
             }
          }
+         
+         // defaults
+         m_sockets = CFG_SOCKETS_SOCKET_SERVER;
+         
+         if (kvpServerSettings.hasKey(CFG_SERVER_SOCKETS)) {
+            const std::string& sockets = kvpServerSettings.getValue(CFG_SERVER_SOCKETS);
+            if (sockets == CFG_SOCKETS_KERNEL_EVENTS) {
+               m_isUsingKernelEventServer = true;
+               m_sockets = CFG_SOCKETS_KERNEL_EVENTS;
+            }
+         }
 
          if (kvpServerSettings.hasKey(CFG_SERVER_LOG_LEVEL)) {
             m_logLevel =
@@ -637,22 +654,24 @@ bool HttpServer::init(int port)
    }
 
 
-   try {
-      if (isLoggingDebug) {
-         char msg[128];
-         std::snprintf(msg, 128, "creating server socket on port=%d", port);
-         Logger::debug(std::string(msg));
-      }
+   if (!m_isUsingKernelEventServer) {
+      try {
+         if (isLoggingDebug) {
+            char msg[128];
+            std::snprintf(msg, 128, "creating server socket on port=%d", port);
+            Logger::debug(std::string(msg));
+         }
       
-      std::unique_ptr<ServerSocket> serverSocket(new ServerSocket(port));
-      m_serverSocket = std::move(serverSocket);
-   }
-   catch (...)
-   {
-      std::string exception = "unable to open server socket port '";
-      exception += std::to_string(port);
-      exception += "'";
-      throw BasicException(exception);
+         std::unique_ptr<ServerSocket> serverSocket(new ServerSocket(port));
+         m_serverSocket = std::move(serverSocket);
+      }
+      catch (...)
+      {
+         std::string exception = "unable to open server socket port '";
+         exception += std::to_string(port);
+         exception += "'";
+         throw BasicException(exception);
+      }
    }
 
 
@@ -708,6 +727,9 @@ bool HttpServer::init(int port)
    startupMsg += portAsString;
    startupMsg += " (request concurrency: ";
    startupMsg += concurrencyModel;
+   startupMsg += ")";
+   startupMsg += " (sockets: ";
+   startupMsg += m_sockets;
    startupMsg += ")";
 
    std::printf("%s\n", startupMsg.c_str());
@@ -958,7 +980,6 @@ int HttpServer::runSocketServer() noexcept
 int HttpServer::runKernelEventServer() noexcept
 {
    const int MAX_CON = 1200;
-   
    
    int rc = 0;
    

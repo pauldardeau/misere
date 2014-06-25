@@ -72,11 +72,12 @@ static const std::string SPACE         = " ";
 
 //******************************************************************************
 
-HttpRequest::HttpRequest(Socket& socket)
+HttpRequest::HttpRequest(Socket& socket) :
+   m_initialized(false)
 {
    Logger::logInstanceCreate("HttpRequest");
    
-   streamFromSocket(socket);
+   m_initialized = streamFromSocket(socket);
 }
 
 //******************************************************************************
@@ -85,7 +86,8 @@ HttpRequest::HttpRequest(const HttpRequest& copy) noexcept :
    HttpTransaction(copy),
    m_method(copy.m_method),
    m_path(copy.m_path),
-   m_arguments(copy.m_arguments)
+   m_arguments(copy.m_arguments),
+   m_initialized(copy.m_initialized)
 {
    Logger::logInstanceCreate("HttpRequest");
 }
@@ -96,9 +98,11 @@ HttpRequest::HttpRequest(HttpRequest&& move) noexcept :
    HttpTransaction(move),
    m_method(std::move(move.m_method)),
    m_path(std::move(move.m_path)),
-   m_arguments(std::move(move.m_arguments))
+   m_arguments(std::move(move.m_arguments)),
+   m_initialized(move.m_initialized)
 {
    Logger::logInstanceCreate("HttpRequest");
+   move.m_initialized = false;
 }
 
 //******************************************************************************
@@ -163,6 +167,13 @@ bool HttpRequest::streamFromSocket(Socket& socket)
          m_method = vecFirstLineValues[0];
          m_path = vecFirstLineValues[1];
          setProtocol(vecFirstLineValues[2]);
+         
+         if (isLoggingDebug) {
+            Logger::debug("HttpRequest: calling parseBody");
+         }
+         
+         parseBody();
+         streamSuccess = true;
       } else {
          if (Logger::isLogging(Logger::LogLevel::Warning)) {
             char msg[128];
@@ -174,20 +185,21 @@ bool HttpRequest::streamFromSocket(Socket& socket)
             }
          }
          
-         throw BasicException("unable to parse request line");
+         //throw BasicException("unable to parse request line");
       }
 
-      if (isLoggingDebug) {
-         Logger::debug("HttpRequest: calling parseBody");
-      }
-      
-      parseBody();
-      streamSuccess = true;
    } else {
-      throw BasicException("unable to parse headers");
+      //throw BasicException("unable to parse headers");
    }
    
    return streamSuccess;
+}
+
+//******************************************************************************
+
+bool HttpRequest::isInitialized() const noexcept
+{
+   return m_initialized;
 }
 
 //******************************************************************************

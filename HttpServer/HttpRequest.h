@@ -33,6 +33,8 @@ class HttpRequest : public HttpTransaction
 
 
       virtual bool streamFromSocket(Socket& socket) override;
+   
+      bool isInitialized() const noexcept;
 
       const std::string& getRequest() const noexcept;
       const std::string& getMethod() const noexcept;
@@ -53,6 +55,7 @@ class HttpRequest : public HttpTransaction
       std::string m_method;
       std::string m_path;
       KeyValuePairs m_arguments;
+      bool m_initialized;
 
 };
 

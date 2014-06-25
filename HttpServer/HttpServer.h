@@ -101,6 +101,7 @@ class HttpServer
 		std::string m_startupTime;
       std::string m_serverString;
       std::string m_threading;
+      std::string m_sockets;
       bool m_isDone;
       bool m_isThreaded;
       bool m_isUsingKernelEventServer;

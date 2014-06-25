@@ -101,6 +101,10 @@ HttpTransaction& HttpTransaction::operator=(HttpTransaction&& move) noexcept
 bool HttpTransaction::parseHeaders() noexcept
 {
    bool parseSuccess = false;
+
+   if (m_vecHeaderLines.empty()) {
+      return false;
+   }
    
    m_firstLine = m_vecHeaderLines[0];
    
