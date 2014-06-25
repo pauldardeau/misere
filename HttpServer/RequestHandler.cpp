@@ -9,7 +9,6 @@
 #include "HttpRequest.h"
 #include "HttpResponse.h"
 #include "Thread.h"
-#include "ThreadManager.h"
 #include "BasicException.h"
 #include "Logger.h"
 
@@ -205,13 +204,13 @@ void RequestHandler::run()
    
    // log the request
    if (m_isThreadPooling) {
-      Thread* thread = ThreadManager::getCurrentThread();
+      const std::string& runByWorkerThreadId = getRunByThreadWorkerId();
       
-      if (thread && thread->hasWorkerId()) {
+      if (!runByWorkerThreadId.empty()) {
          m_server.logRequest(clientIPAddress,
                             request.getRequestLine(),
                             responseCode,
-                            thread->getWorkerId());
+                            runByWorkerThreadId);
       } else {
          m_server.logRequest(clientIPAddress,
                             request.getRequestLine(),

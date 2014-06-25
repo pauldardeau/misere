@@ -5,8 +5,8 @@
 #include <string>
 
 #include "Thread.h"
+#include "ThreadCompletionObserver.h"
 #include "MutexLock.h"
-#include "ThreadManager.h"
 #include "BasicException.h"
 #include "Logger.h"
 

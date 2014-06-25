@@ -6,7 +6,6 @@
 
 #include "PthreadsThread.h"
 #include "MutexLock.h"
-#include "ThreadManager.h"
 #include "BasicException.h"
 #include "Logger.h"
 
@@ -52,14 +51,6 @@ void* PthreadsThread::runThread(void* pArgs) noexcept
    std::snprintf(threadId, 128, "%lx", (long unsigned int) pThread);
    pThread->setThreadId(threadId);
    
-   ThreadManager* threadManager = ThreadManager::getInstance();
-   
-   if (threadManager) {
-      threadManager->registerThread(pThread);
-   } else {
-      Logger::error("no thread manager registered - unable to register thread");
-   }
-
    unsigned long rc = 0L;
 
    try

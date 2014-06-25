@@ -10,9 +10,6 @@
 #include "ThreadPoolDispatch.h"
 #include "BasicException.h"
 #include "Logger.h"
-#include "ThreadManager.h"
-#include "StdThreadManager.h"
-#include "PthreadsThreadManager.h"
 #include "PthreadsConditionVariable.h"
 #include "StdConditionVariable.h"
 
@@ -34,16 +31,6 @@ ThreadingFactory::ThreadingFactory(ThreadingPackage threadingPackage) noexcept :
 {
    Logger::logInstanceCreate("ThreadingFactory");
 
-   if (m_threadingPackage == ThreadingPackage::CPP_11) {
-      ThreadManager::setInstance(new StdThreadManager());
-   } else if (m_threadingPackage == ThreadingPackage::PTHREADS) {
-      ThreadManager::setInstance(new PthreadsThreadManager());
-   } else if (m_threadingPackage == ThreadingPackage::GCD_LIBDISPATCH) {
-      ThreadManager::setInstance(nullptr);  // no threading manager needed (using GCD)
-   } else {
-      ThreadManager::setInstance(nullptr);
-   }
-   
    threadingFactoryInstance = this;
 }
 

@@ -6,7 +6,6 @@
 #include "ThreadPoolWorker.h"
 #include "ThreadPoolQueue.h"
 #include "ThreadingFactory.h"
-#include "ThreadManager.h"
 #include "Thread.h"
 #include "BasicException.h"
 #include "Logger.h"
@@ -61,8 +60,6 @@ void ThreadPoolWorker::stop() noexcept
 
 void ThreadPoolWorker::run() noexcept
 {
-   ThreadManager* pThreadManager = ThreadManager::getInstance();
-   
    while (m_isRunning) {
       if (Logger::isLogging(Logger::LogLevel::Debug)) {
          char message[128];
@@ -78,8 +75,6 @@ void ThreadPoolWorker::run() noexcept
 				m_isRunning = false;
 				continue;
 	      } else {
-            pThreadManager->startPoolWorker(m_workerThread);
-
             try
             {
                runnable->run();
@@ -96,8 +91,6 @@ void ThreadPoolWorker::run() noexcept
             {
                Logger::error("run method of runnable threw exception");
             }
-
-            pThreadManager->stopPoolWorker(m_workerThread);
 
             if (Logger::isLogging(Logger::LogLevel::Debug)) {
                char message[128];

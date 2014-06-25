@@ -6,7 +6,6 @@
 #include "StdThread.h"
 #include "BasicException.h"
 #include "Logger.h"
-#include "ThreadManager.h"
 
 
 //******************************************************************************
@@ -19,13 +18,6 @@ void StdThread::runThread(StdThread* thread) noexcept
    const std::string threadIdString = ss.str();
    
    thread->setThreadId(threadIdString);
-   
-   ThreadManager* threadManager = ThreadManager::getInstance();
-   if (threadManager) {
-      threadManager->registerThread(thread);
-   } else {
-      Logger::error("no thread manager registered");
-   }
    
    unsigned long rc = 0L;
    

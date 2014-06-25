@@ -23,7 +23,6 @@
 #include "TestStringTokenizer.h"
 #include "TestStrUtils.h"
 #include "TestThread.h"
-#include "TestThreadManager.h"
 #include "TestThreadPool.h"
 #include "TestThreadPoolQueue.h"
 #include "TestThreadPoolWorker.h"
@@ -91,9 +90,6 @@ void Tests::run()
    TestThread testThread;
    testThread.run();
    
-   TestThreadManager testThreadManager;
-   testThreadManager.run();
-
    TestThreadPool testThreadPool;
    testThreadPool.run();
 
