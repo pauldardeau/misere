@@ -75,6 +75,11 @@ void ThreadPoolWorker::run() noexcept
 				m_isRunning = false;
 				continue;
 	      } else {
+            
+            // mark it
+            runnable->setRunByThreadId(m_workerId);
+            runnable->setRunByThreadWorkerId(m_workerThread->getWorkerId());
+            
             try
             {
                runnable->run();
