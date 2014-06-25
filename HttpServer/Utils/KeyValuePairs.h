@@ -16,8 +16,6 @@
 class KeyValuePairs
 {
    public:
-      typedef std::size_t size_type;
-   
       KeyValuePairs() noexcept;
       KeyValuePairs(const KeyValuePairs& copy) noexcept;
       KeyValuePairs(KeyValuePairs&& move) noexcept;
@@ -39,7 +37,7 @@ class KeyValuePairs
 
       void clear() noexcept;
    
-      size_type size() const noexcept;
+      std::size_t size() const noexcept;
    
       bool empty() const noexcept;
    

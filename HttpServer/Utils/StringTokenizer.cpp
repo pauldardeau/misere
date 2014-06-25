@@ -89,7 +89,7 @@ bool StringTokenizer::hasMoreTokens() const noexcept
 
 //******************************************************************************
 
-unsigned long StringTokenizer::countTokens() const noexcept
+std::size_t StringTokenizer::countTokens() const noexcept
 {
    return m_tokens.size();
 }

@@ -20,9 +20,10 @@ class StringTokenizer
       ~StringTokenizer() noexcept;
    
       bool hasMoreTokens() const noexcept;
+   
       // throws std::out_of_range
       std::string nextToken();
-      unsigned long countTokens() const noexcept;
+      std::size_t countTokens() const noexcept;
    
       //disallow copies
       StringTokenizer(const StringTokenizer&) = delete;
@@ -31,9 +32,12 @@ class StringTokenizer
       StringTokenizer& operator=(StringTokenizer&&) = delete;
 
    
-   private:
+   protected:
       void init() noexcept;
-         
+
+   
+   private:
+   
       const std::string& m_withTokens;
       const std::string m_delimiter;
       const char* m_posTokens;

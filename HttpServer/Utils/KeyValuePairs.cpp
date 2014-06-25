@@ -125,7 +125,7 @@ void KeyValuePairs::clear() noexcept
 
 //******************************************************************************
 
-KeyValuePairs::size_type KeyValuePairs::size() const noexcept
+std::size_t KeyValuePairs::size() const noexcept
 {
    return m_keyValues.size();
 }

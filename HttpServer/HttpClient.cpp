@@ -103,10 +103,7 @@ void HttpClient::buildHeader(std::string& header,
    std::vector<std::string> vecKeys;
    kvpAddlHeaders.getKeys(vecKeys);
 
-   const auto nKeys = vecKeys.size();
-
-   for (int i = 0; i < nKeys; ++i) {
-      const std::string& key = vecKeys[i];
+   for (const std::string& key : vecKeys) {
       const std::string& value = kvpAddlHeaders.getValue(key);
 
       header += key;

@@ -169,8 +169,8 @@ bool HttpRequest::streamFromSocket(Socket& socket)
             std::snprintf(msg, 128, "number of tokens: %lu", vecFirstLineValues.size());
             Logger::warning(std::string(msg));
             
-            for (int i = 0; i < vecFirstLineValues.size(); ++i) {
-               Logger::warning(vecFirstLineValues[i]);
+            for (const std::string& s : vecFirstLineValues) {
+               Logger::warning(s);
             }
          }
          
