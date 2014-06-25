@@ -54,7 +54,7 @@ void PthreadsThreadManager::addThread(Thread* thread) noexcept
 
 void PthreadsThreadManager::deleteThreadHandleAtIndex(int threadIndex) noexcept
 {
-   //TODO:
+   m_vecThreadHandles.erase(m_vecThreadHandles.begin() + threadIndex);
 }
 
 //******************************************************************************
