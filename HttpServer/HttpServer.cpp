@@ -440,21 +440,26 @@ bool HttpServer::init(int port)
 
                const auto posDollar = serverString.find("$");
                if (posDollar != std::string::npos) {
-                  SystemInfo systemInfo;
-                  if (systemInfo.retrievedSystemInfo()) {
-                     KeyValuePairs kvpVars;
-                     kvpVars.addPair("$PRODUCT_NAME", SERVER_NAME);
-                     kvpVars.addPair("$PRODUCT_VERSION", SERVER_VERSION);
-                     kvpVars.addPair("$OS_SYSNAME", systemInfo.sysName());
-                     kvpVars.addPair("$OS_NODENAME", systemInfo.nodeName());
-                     kvpVars.addPair("$OS_RELEASE", systemInfo.release());
-                     kvpVars.addPair("$OS_VERSION", systemInfo.version());
-                     kvpVars.addPair("$OS_MACHINE", systemInfo.machine());
+                  KeyValuePairs kvpVars;
+                  kvpVars.addPair("$PRODUCT_NAME", SERVER_NAME);
+                  kvpVars.addPair("$PRODUCT_VERSION", SERVER_VERSION);
                   
-                     replaceVariables(kvpVars, m_serverString);
-                  } else {
-                     Logger::warning("unable to retrieve system information to populate server string");
+                  const auto posDollarOS = serverString.find("$OS_");
+                  
+                  if (posDollarOS != std::string::npos) {
+                     SystemInfo systemInfo;
+                     if (systemInfo.retrievedSystemInfo()) {
+                        kvpVars.addPair("$OS_SYSNAME", systemInfo.sysName());
+                        kvpVars.addPair("$OS_NODENAME", systemInfo.nodeName());
+                        kvpVars.addPair("$OS_RELEASE", systemInfo.release());
+                        kvpVars.addPair("$OS_VERSION", systemInfo.version());
+                        kvpVars.addPair("$OS_MACHINE", systemInfo.machine());
+                     } else {
+                        Logger::warning("unable to retrieve system information to populate server string");
+                     }
                   }
+                  
+                  replaceVariables(kvpVars, m_serverString);
                }
                
                Logger::info("setting server string: '" + m_serverString + "'");
