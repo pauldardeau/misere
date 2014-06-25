@@ -6,6 +6,7 @@
 #include "ThreadPoolDispatch.h"
 #include "Runnable.h"
 #include "Logger.h"
+#include "BasicException.h"
 
 //******************************************************************************
 
@@ -50,9 +51,22 @@ bool ThreadPoolDispatch::addRequest(Runnable* runnableRequest) noexcept
       dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
    
    dispatch_async(queue, ^{
-      //TODO: if a runnable is allowed to throw an exception, wrap the run
-      // call in try/catch
-      runnableRequest->run();
+      try {
+         runnableRequest->run();
+      }
+      catch (const BasicException& be)
+      {
+         Logger::error("exception running request: " + be.whatString());
+      }
+      catch (const std::exception& e)
+      {
+         Logger::error("exception running request: " + std::string(e.what()));
+      }
+      catch (...)
+      {
+         Logger::error("unknown exception running request");
+      }
+      
       runnableRequest->notifyOnCompletion();
    });
    
