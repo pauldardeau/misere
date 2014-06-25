@@ -68,6 +68,10 @@ bool ThreadPoolDispatch::addRequest(Runnable* runnableRequest) noexcept
       }
       
       runnableRequest->notifyOnCompletion();
+      
+      if (runnableRequest->isAutoDelete()) {
+         delete runnableRequest;
+      }
    });
    
    return true;
