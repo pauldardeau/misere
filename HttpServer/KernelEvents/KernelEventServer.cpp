@@ -265,6 +265,8 @@ void KernelEventServer::run() noexcept
                   SocketRequest* pSocketRequest =
                      new SocketRequest(pClientSocket, m_socketServiceHandler);
                   pSocketRequest->run();
+                  
+                  m_listBusyFlags[index] = false;
                } else {
                   std::snprintf(msg, 128, "already busy with socket %d", client_fd);
                   Logger::warning(msg);
