@@ -923,6 +923,7 @@ int HttpServer::runSocketServer() noexcept
                m_threadPool->addRequest(pHandler);
             } else {
                Thread* pThread = m_threadingFactory->createThread(pHandler);
+               pThread->autoDelete();
                pThread->start();
             }
          } else {
