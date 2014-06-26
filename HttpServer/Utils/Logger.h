@@ -36,6 +36,9 @@ public:
    virtual void logMessage(LogLevel logLevel, const std::string& logMessage) noexcept = 0;
    virtual bool isLoggingLevel(LogLevel logLevel) const noexcept = 0;
    
+   virtual void logOccurrence(const std::string& occurrenceType,
+                              const std::string& occurrenceName) noexcept = 0;
+   
    static void setLogger(std::shared_ptr<Logger> logger) noexcept;
    static std::shared_ptr<Logger> getLogger() noexcept;
    static void log(LogLevel logLevel, const std::string& logMessage) noexcept;
@@ -47,9 +50,16 @@ public:
    static void verbose(const std::string& logMessage) noexcept;
    static bool isLogging(LogLevel logLevel) noexcept;
    
+   // object lifecycles (create/destroy objects)
    static void logInstanceCreate(const char* className) noexcept;
    static void logInstanceDestroy(const char* className) noexcept;
 
+   // counting occurrences
+   static void countOccurrence(const char* occurrenceType,
+                               const char* occurrence) noexcept;
+   static void countOccurrence(const std::string& occurrenceType,
+                               const std::string& occurrence) noexcept;
+   
    
 private:
    static std::shared_ptr<Logger> loggerInstance;

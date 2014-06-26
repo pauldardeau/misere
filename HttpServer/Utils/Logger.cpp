@@ -105,3 +105,24 @@ void Logger::logInstanceDestroy(const char* className) noexcept
 
 //******************************************************************************
 
+void Logger::countOccurrence(const char* occurrenceType,
+                             const char* occurrenceName) noexcept
+{
+   if (loggerInstance) {
+      loggerInstance->logOccurrence(std::string(occurrenceType),
+                                    std::string(occurrenceName));
+   }
+}
+
+//******************************************************************************
+
+void Logger::countOccurrence(const std::string& occurrenceType,
+                             const std::string& occurrenceName) noexcept
+{
+   if (loggerInstance) {
+      loggerInstance->logOccurrence(occurrenceType, occurrenceName);
+   }
+}
+
+//******************************************************************************
+

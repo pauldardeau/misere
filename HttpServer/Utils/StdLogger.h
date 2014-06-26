@@ -11,6 +11,7 @@
 #include "Logger.h"
 #include "Mutex.h"
 
+
 class LifecycleStats
 {
 public:
@@ -63,7 +64,11 @@ public:
    virtual void logInstanceCreate(const std::string& className) noexcept override;
    virtual void logInstanceDestroy(const std::string& className) noexcept override;
    
+   virtual void logOccurrence(const std::string& occurrenceType,
+                              const std::string& occurrenceName) noexcept override;
+
    void populateClassLifecycleStats(std::unordered_map<std::string, LifecycleStats>& mapClassLifecycleStats);
+   void populateOccurrences(std::unordered_map<std::string, std::unordered_map<std::string, long long>>& mapOccurrences);
    
    const std::string& logLevelPrefix(LogLevel level) const noexcept;
 
@@ -75,7 +80,9 @@ public:
 
 private:
    std::unordered_map<std::string, LifecycleStats> m_mapClassLifecycleStats;
+   std::unordered_map<std::string, std::unordered_map<std::string, long long>> m_mapOccurrences;
    std::unique_ptr<Mutex> m_lockLifecycleStats;
+   std::unique_ptr<Mutex> m_lockOccurrences;
    LogLevel m_logLevel;
    bool m_isLoggingInstanceLifecycles;
    
