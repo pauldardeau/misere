@@ -156,15 +156,16 @@ void RequestHandler::run()
          Logger::debug(httpBody);
       }
    
-      std::string responseBody;
+      std::string::size_type contentLength = 0;
+      HttpResponse response;
    
       if ((nullptr != pHandler) && handlerAvailable) {
          try
          {
-            HttpResponse response;
             pHandler->serviceRequest(request, response);
             responseCode = std::to_string(response.getStatusCode());
-            responseBody = response.getBody();
+            const std::string& responseBody = response.getBody();
+            contentLength = responseBody.size();
          
             response.populateWithHeaders(mapHeaders);
          }
@@ -183,15 +184,14 @@ void RequestHandler::run()
             responseCode = HTTP::HTTP_RESP_SERV_ERR_INTERNAL_ERROR;
             Logger::error("unknown exception handling request");
          }
-      
-      
-         if (!responseBody.empty()) {
-            mapHeaders[HTTP_CONTENT_LENGTH] = std::to_string(responseBody.length());
-         } else {
-            mapHeaders[HTTP_CONTENT_LENGTH] = ZERO;
-         }
       }
-   
+
+      if (contentLength > 0) {
+         mapHeaders[HTTP_CONTENT_LENGTH] = std::to_string(contentLength);
+      } else {
+         mapHeaders[HTTP_CONTENT_LENGTH] = ZERO;
+      }
+
       std::string clientIPAddress;
    
       socket->getPeerIPAddress(clientIPAddress);
@@ -216,13 +216,13 @@ void RequestHandler::run()
                              responseCode);
       }
    
-      std::string response = m_server.buildHeader(responseCode, mapHeaders);
+      std::string responseAsString = m_server.buildHeader(responseCode, mapHeaders);
    
-      if (!responseBody.empty()) {
-         response += responseBody;
+      if (contentLength > 0) {
+         responseAsString += response.getBody();
       }
    
-      socket->write(response);
+      socket->write(responseAsString);
    
       /*
        if (isLoggingDebug) {
@@ -235,11 +235,11 @@ void RequestHandler::run()
        // this is just a wait to allow the client to close first
        char readBuffer[5];
        socket->read(readBuffer, 4);
-       */
    
       //if (m_socketRequest != nullptr) {
       //   m_socketRequest->requestComplete();
       //}
+       */
    } else {
       printf("error: unable to initialize HttpRequest\n");
    }
