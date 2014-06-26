@@ -11,6 +11,7 @@
 #include "Thread.h"
 #include "BasicException.h"
 #include "Logger.h"
+#include "StrUtils.h"
 
 static const std::string HTTP_CONTENT_TYPE    = "Content-Type:";
 static const std::string HTTP_CONTENT_LENGTH  = "Content-Length:";
@@ -24,6 +25,13 @@ static const std::string ZERO                 = "0";
 static const std::string FAVICON_ICO          = "/favicon.ico";
 
 static const std::string CONTENT_TYPE_HTML    = "text/html";
+
+static const std::string COUNT_PATH           = "path";
+static const std::string COUNT_USER_AGENT     = "user_agent";
+
+static const std::string HDR_USER_AGENT       = "User-Agent";
+
+static const std::string QUESTION_MARK        = "?";
 
 
 //******************************************************************************
@@ -101,12 +109,32 @@ void RequestHandler::run()
       const std::string& method = request.getMethod();
       const std::string& protocol = request.getProtocol();
       const std::string& path = request.getPath();
+      
+      std::string routingPath = path;
+      
+      std::string clientIPAddress;
+      socket->getPeerIPAddress(clientIPAddress);
+      
+      if (StrUtils::containsString(path, QUESTION_MARK)) {
+         // strip arguments from path
+         const auto posQuestionMark = path.find(QUESTION_MARK);
+         if (posQuestionMark != std::string::npos) {
+            routingPath = path.substr(0, posQuestionMark);
+         }
+      }
+
+      Logger::countOccurrence(COUNT_PATH, routingPath);
+
+      
+      if (request.hasHeaderValue(HDR_USER_AGENT)) {
+         Logger::countOccurrence(COUNT_USER_AGENT, request.getHeaderValue(HDR_USER_AGENT));
+      }
    
-      HttpHandler* pHandler = m_server.getPathHandler(path);
+      HttpHandler* pHandler = m_server.getPathHandler(routingPath);
       bool handlerAvailable = false;
    
       if (pHandler == nullptr) {
-         Logger::info("no handler for request: " + path);
+         Logger::info("no handler for request: " + routingPath);
       }
    
       // assume the worst
@@ -136,7 +164,7 @@ void RequestHandler::run()
          //Logger::warning("bad request: " + path);
       } else if (!pHandler->isAvailable()) { // is our handler available?
          responseCode = HTTP::HTTP_RESP_SERV_ERR_SERVICE_UNAVAILABLE;
-         Logger::warning("handler not available: " + path);
+         Logger::warning("handler not available: " + routingPath);
       } else {
          handlerAvailable = true;
       }
@@ -146,7 +174,7 @@ void RequestHandler::run()
    
       if (isLoggingDebug) {
          Logger::debug("HttpServer method: " + method);
-         Logger::debug("HttpServer path: " + path);
+         Logger::debug("HttpServer path: " + routingPath);
          Logger::debug("HttpServer protocol: " + protocol);
       
          Logger::debug("HttpServer header:");
@@ -192,9 +220,6 @@ void RequestHandler::run()
          mapHeaders[HTTP_CONTENT_LENGTH] = ZERO;
       }
 
-      std::string clientIPAddress;
-   
-      socket->getPeerIPAddress(clientIPAddress);
    
       // log the request
       if (m_isThreadPooling) {

@@ -25,6 +25,10 @@ public:
    virtual void serviceRequest(const HttpRequest& request,
                                HttpResponse& response) noexcept override;
    
+   std::string constructRow(const std::string& occurrenceType,
+                            const std::string& occurrenceName,
+                            long long occurrenceCount) const noexcept;
+
 };
 
 #endif /* defined(__HttpServer__ServerStatsHandler__) */
