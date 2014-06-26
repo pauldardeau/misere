@@ -256,52 +256,49 @@ void HttpRequest::getArgumentKeys(std::vector<std::string>& vecKeys) const noexc
 void HttpRequest::parseBody() noexcept
 {
    const std::string& body = getBody();
-   StringTokenizer st1(body, AMPERSAND);
+   
+   if (!body.empty() && StrUtils::containsString(body, AMPERSAND)) {
+      StringTokenizer st1(body, AMPERSAND);
 
-   const auto numVariables = st1.countTokens();
-   std::string pair;
-   std::string::size_type posEqual;
-   std::string key;
-   std::string value;
+      while (st1.hasMoreTokens()) {
+         std::string pair(st1.nextToken());
 
-   for (int i = 0; i < numVariables; ++i) {
-      pair = st1.nextToken();
+         StrUtils::replaceAll(pair, PLUS, SPACE);
+         StrUtils::replaceAll(pair, ENC_DOUBLE_QUOTE, DOUBLE_QUOTE);
+         StrUtils::replaceAll(pair, ENC_SINGLE_QUOTE, SINGLE_QUOTE);
+         StrUtils::replaceAll(pair, ENC_AMPERSAND, AMPERSAND);
+         StrUtils::replaceAll(pair, ENC_PERCENT, PERCENT);
+         StrUtils::replaceAll(pair, ENC_ATSIGN, ATSIGN);
+         StrUtils::replaceAll(pair, ENC_DOLLAR, DOLLAR);
+         StrUtils::replaceAll(pair, ENC_POUND, POUND);
+         StrUtils::replaceAll(pair, ENC_EXCLAMATION, EXCLAMATION);
+         StrUtils::replaceAll(pair, ENC_TILDE, TILDE);
+         StrUtils::replaceAll(pair, ENC_CARET, CARET);
+         StrUtils::replaceAll(pair, ENC_OPEN_PAREN, OPEN_PAREN);
+         StrUtils::replaceAll(pair, ENC_CLOSE_PAREN, CLOSE_PAREN);
+         StrUtils::replaceAll(pair, ENC_PLUS, PLUS);
+         StrUtils::replaceAll(pair, ENC_BACKTICK, BACKTICK);
+         StrUtils::replaceAll(pair, ENC_OPEN_BRACE, OPEN_BRACE);
+         StrUtils::replaceAll(pair, ENC_CLOSE_BRACE, CLOSE_BRACE);
+         StrUtils::replaceAll(pair, ENC_VERT_BAR, VERT_BAR);
+         StrUtils::replaceAll(pair, ENC_OPEN_BRACKET, OPEN_BRACKET);
+         StrUtils::replaceAll(pair, ENC_CLOSE_BRACKET, CLOSE_BRACKET);
+         StrUtils::replaceAll(pair, ENC_BACKSLASH, BACKSLASH);
+         StrUtils::replaceAll(pair, ENC_COLON, COLON);
+         StrUtils::replaceAll(pair, ENC_SEMICOLON, SEMICOLON);
+         StrUtils::replaceAll(pair, ENC_LESS_THAN, LESS_THAN);
+         StrUtils::replaceAll(pair, ENC_GREATER_THAN, GREATER_THAN);
+         StrUtils::replaceAll(pair, ENC_QUESTION, QUESTION);
+         StrUtils::replaceAll(pair, ENC_COMMA, COMMA);
+         StrUtils::replaceAll(pair, ENC_SLASH, SLASH);
 
-      StrUtils::replaceAll(pair, PLUS, SPACE);
-      StrUtils::replaceAll(pair, ENC_DOUBLE_QUOTE, DOUBLE_QUOTE);
-      StrUtils::replaceAll(pair, ENC_SINGLE_QUOTE, SINGLE_QUOTE);
-      StrUtils::replaceAll(pair, ENC_AMPERSAND, AMPERSAND);
-      StrUtils::replaceAll(pair, ENC_PERCENT, PERCENT);
-      StrUtils::replaceAll(pair, ENC_ATSIGN, ATSIGN);
-      StrUtils::replaceAll(pair, ENC_DOLLAR, DOLLAR);
-      StrUtils::replaceAll(pair, ENC_POUND, POUND);
-      StrUtils::replaceAll(pair, ENC_EXCLAMATION, EXCLAMATION);
-      StrUtils::replaceAll(pair, ENC_TILDE, TILDE);
-      StrUtils::replaceAll(pair, ENC_CARET, CARET);
-      StrUtils::replaceAll(pair, ENC_OPEN_PAREN, OPEN_PAREN);
-      StrUtils::replaceAll(pair, ENC_CLOSE_PAREN, CLOSE_PAREN);
-      StrUtils::replaceAll(pair, ENC_PLUS, PLUS);
-      StrUtils::replaceAll(pair, ENC_BACKTICK, BACKTICK);
-      StrUtils::replaceAll(pair, ENC_OPEN_BRACE, OPEN_BRACE);
-      StrUtils::replaceAll(pair, ENC_CLOSE_BRACE, CLOSE_BRACE);
-      StrUtils::replaceAll(pair, ENC_VERT_BAR, VERT_BAR);
-      StrUtils::replaceAll(pair, ENC_OPEN_BRACKET, OPEN_BRACKET);
-      StrUtils::replaceAll(pair, ENC_CLOSE_BRACKET, CLOSE_BRACKET);
-      StrUtils::replaceAll(pair, ENC_BACKSLASH, BACKSLASH);
-      StrUtils::replaceAll(pair, ENC_COLON, COLON);
-      StrUtils::replaceAll(pair, ENC_SEMICOLON, SEMICOLON);
-      StrUtils::replaceAll(pair, ENC_LESS_THAN, LESS_THAN);
-      StrUtils::replaceAll(pair, ENC_GREATER_THAN, GREATER_THAN);
-      StrUtils::replaceAll(pair, ENC_QUESTION, QUESTION);
-      StrUtils::replaceAll(pair, ENC_COMMA, COMMA);
-      StrUtils::replaceAll(pair, ENC_SLASH, SLASH);
-
-      posEqual = pair.find('=');
-      if (posEqual != std::string::npos) {
-         key = pair.substr(0, posEqual);
-         value = pair.substr(posEqual + 1);
-         StrUtils::replaceAll(value, ENC_EQUAL, EQUAL);
-         m_arguments.addPair(key, value);
+         const auto posEqual = pair.find('=');
+         if (posEqual != std::string::npos) {
+            const std::string& key = pair.substr(0, posEqual);
+            std::string value(pair.substr(posEqual + 1));
+            StrUtils::replaceAll(value, ENC_EQUAL, EQUAL);
+            m_arguments.addPair(key, value);
+         }
       }
    }
 }
