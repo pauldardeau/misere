@@ -16,11 +16,13 @@ static const std::string SPACE = " ";
 StringTokenizer::StringTokenizer(const std::string& withTokens) noexcept :
    m_withTokens(withTokens),
    m_delimiter(SPACE),
-   m_posTokens(nullptr),
-   m_posDelimiter(nullptr),
+   m_posTokens(m_withTokens.c_str()),
+   m_posDelimiter(m_delimiter.c_str()),
    m_posCurrent(0),
+   m_stringLength(m_withTokens.length()),
    m_isDelimitersWithToken(false),
    m_isConstructing(true),
+   m_numberTokens(0),
    m_indexToken(0)
 {
    Logger::logInstanceCreate("StringTokenizer");
@@ -35,11 +37,13 @@ StringTokenizer::StringTokenizer(const std::string& withTokens,
                                  bool isDelimitersWithToken) noexcept :
    m_withTokens(withTokens),
    m_delimiter(delimiter),
-   m_posTokens(nullptr),
-   m_posDelimiter(nullptr),
+   m_posTokens(m_withTokens.c_str()),
+   m_posDelimiter(m_delimiter.c_str()),
    m_posCurrent(0),
+   m_stringLength(m_withTokens.length()),
    m_isDelimitersWithToken(isDelimitersWithToken),
    m_isConstructing(true),
+   m_numberTokens(0),
    m_indexToken(0)
 {
    Logger::logInstanceCreate("StringTokenizer");
@@ -58,22 +62,21 @@ StringTokenizer::~StringTokenizer() noexcept
 
 void StringTokenizer::init() noexcept
 {
-   m_posTokens = m_withTokens.c_str();
-   m_posDelimiter = m_delimiter.c_str();
+   if (m_isConstructing) {
+      if (m_withTokens.empty()) {
+         m_posCurrent = std::string::npos;
+      } else {
+         m_posCurrent = ::strspn(m_posTokens, m_posDelimiter);
+      
+         while (m_posCurrent != std::string::npos) { // while (hasMoreTokens()) {
+            m_tokens.push_back(extractNextToken());
+         }
+      
+         m_numberTokens = m_tokens.size();
+      }
    
-   m_stringLength = m_withTokens.length();
-
-   if (m_withTokens.empty()) {
-      m_posCurrent = std::string::npos;
-   } else {
-      m_posCurrent = ::strspn(m_posTokens, m_posDelimiter);
+      m_isConstructing = false;
    }
-
-   while (hasMoreTokens()) {
-      m_tokens.push_back(nextToken());
-   }
-
-   m_isConstructing = false;
 }
 
 //******************************************************************************
@@ -83,7 +86,7 @@ bool StringTokenizer::hasMoreTokens() const noexcept
    if (m_isConstructing) {
       return (m_posCurrent != std::string::npos);
    } else {
-      return ((m_indexToken + 1) <= m_tokens.size());
+      return (m_indexToken < m_numberTokens);
    }
 }
 
@@ -91,51 +94,54 @@ bool StringTokenizer::hasMoreTokens() const noexcept
 
 std::size_t StringTokenizer::countTokens() const noexcept
 {
-   return m_tokens.size();
+   return m_numberTokens;
 }
 
 //******************************************************************************
 
-std::string StringTokenizer::nextToken()
+const std::string& StringTokenizer::nextToken()
 {
-   if (!m_isConstructing) {
-      if ((m_indexToken + 1) <= m_tokens.size()) {
-         return std::string(m_tokens[m_indexToken++]);
-      } else {
-         throw std::out_of_range("ERROR: no more tokens");
-      }
+   if (m_indexToken < m_numberTokens) {
+      return m_tokens[m_indexToken++];
    } else {
-      if (m_posCurrent == std::string::npos) {
-         throw std::out_of_range("ERROR: no more tokens");
-      }
+      throw std::out_of_range("no more tokens");
+   }
+}
 
-      const char* posWithTokens = m_posTokens + m_posCurrent;
+//******************************************************************************
 
-      size_t numNonDelimiterChars = ::strcspn(posWithTokens, m_posDelimiter);
-
-      if (numNonDelimiterChars > 0) {
-         auto posStart = m_posCurrent;
-         m_posCurrent += numNonDelimiterChars;
-         posWithTokens += numNonDelimiterChars;
-
-         m_posCurrent += ::strspn(posWithTokens, m_posDelimiter);
-
-         if (m_posCurrent >= m_stringLength) {
-            m_posCurrent = std::string::npos;
-         }
-
-         return m_withTokens.substr(posStart, numNonDelimiterChars);
-      } else {
-         // we're on the last token
-         std::string::size_type posLastToken = m_posCurrent;
+std::string StringTokenizer::extractNextToken()
+{
+   if (m_posCurrent == std::string::npos) {
+      throw std::out_of_range("no more tokens");
+   }
+   
+   const char* posWithTokens = m_posTokens + m_posCurrent;
+   
+   const size_t numNonDelimiterChars = ::strcspn(posWithTokens, m_posDelimiter);
+   
+   if (numNonDelimiterChars > 0) {
+      auto posStart = m_posCurrent;
+      m_posCurrent += numNonDelimiterChars;
+      posWithTokens += numNonDelimiterChars;
+      
+      m_posCurrent += ::strspn(posWithTokens, m_posDelimiter);
+      
+      if (m_posCurrent >= m_stringLength) {
          m_posCurrent = std::string::npos;
-
-         if (m_posCurrent >= m_stringLength) {
-            m_posCurrent = std::string::npos;
-         }
-
-         return m_withTokens.substr(posLastToken);
       }
+      
+      return m_withTokens.substr(posStart, numNonDelimiterChars);
+   } else {
+      // we're on the last token
+      const std::string::size_type posLastToken = m_posCurrent;
+      m_posCurrent = std::string::npos;
+      
+      if (m_posCurrent >= m_stringLength) {
+         m_posCurrent = std::string::npos;
+      }
+      
+      return m_withTokens.substr(posLastToken);
    }
 }
 

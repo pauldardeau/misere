@@ -22,7 +22,7 @@ class StringTokenizer
       bool hasMoreTokens() const noexcept;
    
       // throws std::out_of_range
-      std::string nextToken();
+      const std::string& nextToken();
       std::size_t countTokens() const noexcept;
    
       //disallow copies
@@ -34,6 +34,7 @@ class StringTokenizer
    
    protected:
       void init() noexcept;
+      std::string extractNextToken();
 
    
    private:
@@ -47,6 +48,7 @@ class StringTokenizer
       bool m_isDelimitersWithToken;
       bool m_isConstructing;
       std::vector<std::string> m_tokens;
+      std::size_t m_numberTokens;
       int m_indexToken;
 };
 
