@@ -13,11 +13,13 @@
 #include "Logger.h"
 #include "StrUtils.h"
 
-static const std::string HTTP_CONTENT_TYPE    = "Content-Type:";
-static const std::string HTTP_CONTENT_LENGTH  = "Content-Length:";
+
 static const std::string HTTP_CONNECTION      = "Connection:";
-static const std::string HTTP_SERVER          = "Server:";
+static const std::string HTTP_CONTENT_LENGTH  = "Content-Length:";
+static const std::string HTTP_CONTENT_TYPE    = "Content-Type:";
 static const std::string HTTP_DATE            = "Date:";
+static const std::string HTTP_SERVER          = "Server:";
+static const std::string HTTP_USER_AGENT      = "User-Agent";
 
 static const std::string CONNECTION_CLOSE     = "close";
 
@@ -28,8 +30,6 @@ static const std::string CONTENT_TYPE_HTML    = "text/html";
 
 static const std::string COUNT_PATH           = "path";
 static const std::string COUNT_USER_AGENT     = "user_agent";
-
-static const std::string HDR_USER_AGENT       = "User-Agent";
 
 static const std::string QUESTION_MARK        = "?";
 
@@ -126,8 +126,9 @@ void RequestHandler::run()
       Logger::countOccurrence(COUNT_PATH, routingPath);
 
       
-      if (request.hasHeaderValue(HDR_USER_AGENT)) {
-         Logger::countOccurrence(COUNT_USER_AGENT, request.getHeaderValue(HDR_USER_AGENT));
+      if (request.hasHeaderValue(HTTP_USER_AGENT)) {
+         Logger::countOccurrence(COUNT_USER_AGENT,
+                                 request.getHeaderValue(HTTP_USER_AGENT));
       }
    
       HttpHandler* pHandler = m_server.getPathHandler(routingPath);
