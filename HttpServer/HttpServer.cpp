@@ -460,6 +460,8 @@ bool HttpServer::init(int port)
                   KeyValuePairs kvpVars;
                   kvpVars.addPair("$PRODUCT_NAME", SERVER_NAME);
                   kvpVars.addPair("$PRODUCT_VERSION", SERVER_VERSION);
+                  kvpVars.addPair("$CFG_SOCKETS", m_sockets);
+                  kvpVars.addPair("$CFG_THREADING", m_threading);
                   
                   const auto posDollarOS = serverString.find("$OS_");
                   
