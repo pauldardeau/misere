@@ -101,12 +101,12 @@ bool HttpResponse::streamFromSocket(Socket& socket)
 
    if (HttpTransaction::streamFromSocket(socket)) {
 
-      const std::vector<std::string>& vecFirstLineValues = getFirstLineValues();
+      const std::vector<std::string>& vecRequestLineValues = getRequestLineValues();
 
-      if (3 == vecFirstLineValues.size()) {
-         setProtocol(vecFirstLineValues[0]);
-         m_statusCode = vecFirstLineValues[1];
-         m_reasonPhrase = vecFirstLineValues[2];
+      if (3 == vecRequestLineValues.size()) {
+         setProtocol(vecRequestLineValues[0]);
+         m_statusCode = vecRequestLineValues[1];
+         m_reasonPhrase = vecRequestLineValues[2];
 
          m_statusCodeAsInteger = std::stoi(m_statusCode);
 
@@ -238,7 +238,7 @@ bool HttpResponse::streamFromSocket(Socket& socket)
 
 const std::string& HttpResponse::getStatusLine() const noexcept
 {
-   return getFirstLine();
+   return getRequestLine();
 }
 
 //******************************************************************************

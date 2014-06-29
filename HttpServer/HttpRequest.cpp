@@ -158,15 +158,15 @@ bool HttpRequest::streamFromSocket(Socket& socket)
    
    if (HttpTransaction::streamFromSocket(socket)) {
       if (isLoggingDebug) {
-         Logger::debug("calling getFirstLineValues");
+         Logger::debug("calling getRequestLineValues");
       }
       
-      const std::vector<std::string>& vecFirstLineValues = getFirstLineValues();
+      const std::vector<std::string>& vecRequestLineValues = getRequestLineValues();
 
-      if (3 == vecFirstLineValues.size()) {
-         m_method = vecFirstLineValues[0];
-         m_path = vecFirstLineValues[1];
-         setProtocol(vecFirstLineValues[2]);
+      if (3 == vecRequestLineValues.size()) {
+         m_method = vecRequestLineValues[0];
+         m_path = vecRequestLineValues[1];
+         setProtocol(vecRequestLineValues[2]);
          
          if (isLoggingDebug) {
             Logger::debug("HttpRequest: calling parseBody");
@@ -177,10 +177,10 @@ bool HttpRequest::streamFromSocket(Socket& socket)
       } else {
          if (Logger::isLogging(Logger::LogLevel::Warning)) {
             char msg[128];
-            std::snprintf(msg, 128, "number of tokens: %lu", vecFirstLineValues.size());
+            std::snprintf(msg, 128, "number of tokens: %lu", vecRequestLineValues.size());
             Logger::warning(std::string(msg));
             
-            for (const std::string& s : vecFirstLineValues) {
+            for (const std::string& s : vecRequestLineValues) {
                Logger::warning(s);
             }
          }
@@ -206,7 +206,7 @@ bool HttpRequest::isInitialized() const noexcept
 
 const std::string& HttpRequest::getRequest() const noexcept
 {
-   return getFirstLine();
+   return getRequestLine();
 }
 
 //******************************************************************************
@@ -221,13 +221,6 @@ const std::string& HttpRequest::getMethod() const noexcept
 const std::string& HttpRequest::getPath() const noexcept
 {
    return m_path;
-}
-
-//******************************************************************************
-
-const std::string& HttpRequest::getRequestLine() const noexcept
-{
-   return getFirstLine();
 }
 
 //******************************************************************************

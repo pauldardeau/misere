@@ -16,6 +16,9 @@
 		DA1DCCA41912FB300077AB7A /* HttpTransaction.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DA1DCC9C1912FB300077AB7A /* HttpTransaction.cpp */; };
 		DA1DCCD119141CDB0077AB7A /* RequestHandler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DA1DCCCF19141CDB0077AB7A /* RequestHandler.cpp */; };
 		DA1DCCE01915BB7D0077AB7A /* HttpException.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DA1DCCDE1915BB7D0077AB7A /* HttpException.cpp */; };
+		DA4DEA24195DD20F00DB1F03 /* ServerStatusHandler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DA4DEA22195DD20F00DB1F03 /* ServerStatusHandler.cpp */; };
+		DA4DEA27195DD46F00DB1F03 /* SystemStats.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DA4DEA25195DD46F00DB1F03 /* SystemStats.cpp */; };
+		DA4DEA2A1960C9DF00DB1F03 /* EchoHandler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DA4DEA281960C9DF00DB1F03 /* EchoHandler.cpp */; };
 		DAC40D2619548E530064EFFB /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DAC40D2419548E530064EFFB /* main.cpp */; };
 		DAC40DB619563E5C0064EFFB /* ServerSocket.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DAC40DB219563E5C0064EFFB /* ServerSocket.cpp */; };
 		DAC40DB719563E5C0064EFFB /* Socket.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DAC40DB419563E5C0064EFFB /* Socket.cpp */; };
@@ -113,6 +116,12 @@
 		DA1DCCDE1915BB7D0077AB7A /* HttpException.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = HttpException.cpp; sourceTree = "<group>"; };
 		DA1DCCDF1915BB7D0077AB7A /* HttpException.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HttpException.h; sourceTree = "<group>"; };
 		DA1DCCE41915C8250077AB7A /* RunCompletionObserver.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RunCompletionObserver.h; sourceTree = "<group>"; };
+		DA4DEA22195DD20F00DB1F03 /* ServerStatusHandler.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ServerStatusHandler.cpp; path = HttpServer/Handlers/ServerStatusHandler.cpp; sourceTree = "<group>"; };
+		DA4DEA23195DD20F00DB1F03 /* ServerStatusHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ServerStatusHandler.h; path = HttpServer/Handlers/ServerStatusHandler.h; sourceTree = "<group>"; };
+		DA4DEA25195DD46F00DB1F03 /* SystemStats.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SystemStats.cpp; path = HttpServer/Utils/SystemStats.cpp; sourceTree = "<group>"; };
+		DA4DEA26195DD46F00DB1F03 /* SystemStats.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SystemStats.h; path = HttpServer/Utils/SystemStats.h; sourceTree = "<group>"; };
+		DA4DEA281960C9DF00DB1F03 /* EchoHandler.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = EchoHandler.cpp; path = HttpServer/Handlers/EchoHandler.cpp; sourceTree = "<group>"; };
+		DA4DEA291960C9DF00DB1F03 /* EchoHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = EchoHandler.h; path = HttpServer/Handlers/EchoHandler.h; sourceTree = "<group>"; };
 		DAC40D2419548E530064EFFB /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		DAC40DB219563E5C0064EFFB /* ServerSocket.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ServerSocket.cpp; path = HttpServer/Sockets/ServerSocket.cpp; sourceTree = "<group>"; };
 		DAC40DB319563E5C0064EFFB /* ServerSocket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ServerSocket.h; path = HttpServer/Sockets/ServerSocket.h; sourceTree = "<group>"; };
@@ -438,6 +447,8 @@
 				DAC40DE119563F000064EFFB /* StrUtils.h */,
 				DAC40E35195A21E70064EFFB /* SystemInfo.cpp */,
 				DAC40E36195A21E70064EFFB /* SystemInfo.h */,
+				DA4DEA25195DD46F00DB1F03 /* SystemStats.cpp */,
+				DA4DEA26195DD46F00DB1F03 /* SystemStats.h */,
 			);
 			name = Utils;
 			sourceTree = "<group>";
@@ -457,6 +468,10 @@
 		DAC40D75195637420064EFFB /* Handlers */ = {
 			isa = PBXGroup;
 			children = (
+				DAC40E321959F1610064EFFB /* AbstractHandler.cpp */,
+				DAC40E331959F1610064EFFB /* AbstractHandler.h */,
+				DA4DEA281960C9DF00DB1F03 /* EchoHandler.cpp */,
+				DA4DEA291960C9DF00DB1F03 /* EchoHandler.h */,
 				DAC40DE919563FF00064EFFB /* GMTDateTimeHandler.cpp */,
 				DAC40DEA19563FF00064EFFB /* GMTDateTimeHandler.h */,
 				DAC40DEB19563FF00064EFFB /* ServerDateTimeHandler.cpp */,
@@ -465,8 +480,8 @@
 				DAC40E301959CA4C0064EFFB /* ServerObjectsDebugging.h */,
 				DAC40DED19563FF00064EFFB /* ServerStatsHandler.cpp */,
 				DAC40DEE19563FF00064EFFB /* ServerStatsHandler.h */,
-				DAC40E321959F1610064EFFB /* AbstractHandler.cpp */,
-				DAC40E331959F1610064EFFB /* AbstractHandler.h */,
+				DA4DEA22195DD20F00DB1F03 /* ServerStatusHandler.cpp */,
+				DA4DEA23195DD20F00DB1F03 /* ServerStatusHandler.h */,
 			);
 			name = Handlers;
 			sourceTree = "<group>";
@@ -548,6 +563,7 @@
 				DAC40E2B195874B50064EFFB /* HttpSocketServiceHandler.cpp in Sources */,
 				DAC40DE819563F870064EFFB /* SocketRequest.cpp in Sources */,
 				DAC40E88195A3A840064EFFB /* Tests.cpp in Sources */,
+				DA4DEA2A1960C9DF00DB1F03 /* EchoHandler.cpp in Sources */,
 				DAC40DF3195640120064EFFB /* Logger.cpp in Sources */,
 				DAC40E80195A3A840064EFFB /* TestIniReader.cpp in Sources */,
 				DAC40DDC19563E800064EFFB /* ThreadPoolWorker.cpp in Sources */,
@@ -590,8 +606,10 @@
 				DAC40E83195A3A840064EFFB /* TestKqueueServer.cpp in Sources */,
 				DAC40E99195A3ADE0064EFFB /* ThreadingFactory.cpp in Sources */,
 				DAC40E8B195A3A840064EFFB /* TestSocketRequest.cpp in Sources */,
+				DA4DEA27195DD46F00DB1F03 /* SystemStats.cpp in Sources */,
 				DA1DCC961912FB0F0077AB7A /* HttpClient.cpp in Sources */,
 				DAC40E7D195A3A840064EFFB /* TestHttpResponse.cpp in Sources */,
+				DA4DEA24195DD20F00DB1F03 /* ServerStatusHandler.cpp in Sources */,
 				DAC40DE319563F000064EFFB /* StrUtils.cpp in Sources */,
 				DAC40E8F195A3A840064EFFB /* TestSuite.cpp in Sources */,
 				DAC40E311959CA4C0064EFFB /* ServerObjectsDebugging.cpp in Sources */,

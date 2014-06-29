@@ -34,27 +34,29 @@ class HttpTransaction
       bool hasHeaderValue(const std::string& headerKey) const noexcept;
       // throws InvalidKeyException
       const std::string& getHeaderValue(const std::string& headerKey) const;
-      void getHeaderValues(std::vector< std::string >&) const noexcept;
+      void getHeaderKeys(std::vector< std::string >& headerKeys) const noexcept;
       void setHeaderValue(const std::string& key, const std::string& value) noexcept;
       const std::string& getProtocol() const noexcept;
+      const std::string& getRequestMethod() const noexcept;
+      const std::string& getRequestPath() const noexcept;
+      const std::string& getRequestLine() const noexcept;
    
       void populateWithHeaders(std::unordered_map<std::string, std::string>& hashTable) noexcept;
 
    
    protected:
-      const std::vector<std::string>& getFirstLineValues() const noexcept;
-      const std::string& getFirstLine() const noexcept;
+      const std::vector<std::string>& getRequestLineValues() const noexcept;
       void setProtocol(const std::string& protocol) noexcept;
       bool parseHeaders() noexcept;
 
 
    private:
       std::vector<std::string> m_vecHeaderLines;
-      std::vector<std::string> m_vecFirstLineValues;
+      std::vector<std::string> m_vecRequestLineValues;
       std::string m_header;
       std::string m_body;
       std::string m_protocol;
-      std::string m_firstLine;
+      std::string m_requestLine;
       std::unordered_map<std::string,std::string> m_hashHeaders;
       std::string m_method;
       int m_contentLength;

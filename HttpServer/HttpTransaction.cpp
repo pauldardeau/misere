@@ -28,11 +28,11 @@ HttpTransaction::HttpTransaction() noexcept :
 
 HttpTransaction::HttpTransaction(const HttpTransaction& copy) noexcept :
    m_vecHeaderLines(copy.m_vecHeaderLines),
-   m_vecFirstLineValues(copy.m_vecFirstLineValues),
+   m_vecRequestLineValues(copy.m_vecRequestLineValues),
    m_header(copy.m_header),
    m_body(copy.m_body),
    m_protocol(copy.m_protocol),
-   m_firstLine(copy.m_firstLine),
+   m_requestLine(copy.m_requestLine),
    m_hashHeaders(copy.m_hashHeaders),
    m_method(copy.m_method),
    m_contentLength(copy.m_contentLength)
@@ -43,11 +43,11 @@ HttpTransaction::HttpTransaction(const HttpTransaction& copy) noexcept :
 
 HttpTransaction::HttpTransaction(HttpTransaction&& move) noexcept :
    m_vecHeaderLines(std::move(move.m_vecHeaderLines)),
-   m_vecFirstLineValues(std::move(move.m_vecFirstLineValues)),
+   m_vecRequestLineValues(std::move(move.m_vecRequestLineValues)),
    m_header(std::move(move.m_header)),
    m_body(std::move(move.m_body)),
    m_protocol(std::move(move.m_protocol)),
-   m_firstLine(std::move(move.m_firstLine)),
+   m_requestLine(std::move(move.m_requestLine)),
    m_hashHeaders(std::move(move.m_hashHeaders)),
    m_method(std::move(move.m_method)),
    m_contentLength(move.m_contentLength)
@@ -63,11 +63,11 @@ HttpTransaction& HttpTransaction::operator=(const HttpTransaction& copy) noexcep
    }
 
    m_vecHeaderLines = copy.m_vecHeaderLines;
-   m_vecFirstLineValues = copy.m_vecFirstLineValues;
+   m_vecRequestLineValues = copy.m_vecRequestLineValues;
    m_header = copy.m_header;
    m_body = copy.m_body;
    m_protocol = copy.m_protocol;
-   m_firstLine = copy.m_firstLine;
+   m_requestLine = copy.m_requestLine;
    m_hashHeaders = copy.m_hashHeaders;
    m_method = copy.m_method;
    m_contentLength = copy.m_contentLength;
@@ -84,11 +84,11 @@ HttpTransaction& HttpTransaction::operator=(HttpTransaction&& move) noexcept
    }
    
    m_vecHeaderLines = std::move(move.m_vecHeaderLines);
-   m_vecFirstLineValues = std::move(move.m_vecFirstLineValues);
+   m_vecRequestLineValues = std::move(move.m_vecRequestLineValues);
    m_header = std::move(move.m_header);
    m_body = std::move(move.m_body);
    m_protocol = std::move(move.m_protocol);
-   m_firstLine = std::move(move.m_firstLine);
+   m_requestLine = std::move(move.m_requestLine);
    m_hashHeaders = std::move(move.m_hashHeaders);
    m_method = std::move(move.m_method);
    m_contentLength = move.m_contentLength;
@@ -106,15 +106,15 @@ bool HttpTransaction::parseHeaders() noexcept
       return false;
    }
    
-   m_firstLine = m_vecHeaderLines[0];
+   m_requestLine = m_vecHeaderLines[0];
    
-   StringTokenizer st(m_firstLine);
+   StringTokenizer st(m_requestLine);
    
    const auto tokenCount = st.countTokens();
    
    if (3 <= tokenCount) {
-      m_vecFirstLineValues.clear();
-      m_vecFirstLineValues.reserve(3);
+      m_vecRequestLineValues.clear();
+      m_vecRequestLineValues.reserve(3);
       
       std::string thirdValue;
       
@@ -122,15 +122,15 @@ bool HttpTransaction::parseHeaders() noexcept
          if (i > 1) {
             thirdValue += st.nextToken();
          } else {
-            m_vecFirstLineValues.push_back(st.nextToken());
+            m_vecRequestLineValues.push_back(st.nextToken());
          }
       }
       
-      m_vecFirstLineValues.push_back(thirdValue);
+      m_vecRequestLineValues.push_back(thirdValue);
       
       auto numHeaderLines = m_vecHeaderLines.size();
       
-      m_method = m_vecFirstLineValues[0];
+      m_method = m_vecRequestLineValues[0];
       
       for (int i = 1; i < numHeaderLines; ++i) {
          const std::string& headerLine = m_vecHeaderLines[i];
@@ -336,10 +336,10 @@ void HttpTransaction::setHeaderValue(const std::string& key, const std::string& 
 
 //******************************************************************************
 
-void HttpTransaction::getHeaderValues(std::vector<std::string>& vecHeaderKeys) const noexcept
+void HttpTransaction::getHeaderKeys(std::vector<std::string>& vecHeaderKeys) const noexcept
 {
-   auto it = m_hashHeaders.begin();
-   const auto itEnd = m_hashHeaders.end();
+   auto it = m_hashHeaders.cbegin();
+   const auto itEnd = m_hashHeaders.cend();
 
    for ( ; it != itEnd; ++it) {
       vecHeaderKeys.push_back((*it).first);
@@ -355,6 +355,20 @@ const std::string& HttpTransaction::getProtocol() const noexcept
 
 //******************************************************************************
 
+const std::string& HttpTransaction::getRequestMethod() const noexcept
+{
+   return m_method;
+}
+
+//******************************************************************************
+
+const std::string& HttpTransaction::getRequestPath() const noexcept
+{
+   return m_vecRequestLineValues[1];
+}
+
+//******************************************************************************
+
 void HttpTransaction::setProtocol(const std::string& protocol) noexcept
 {
    m_protocol = protocol;
@@ -362,16 +376,16 @@ void HttpTransaction::setProtocol(const std::string& protocol) noexcept
 
 //******************************************************************************
 
-const std::vector<std::string>& HttpTransaction::getFirstLineValues() const noexcept
+const std::vector<std::string>& HttpTransaction::getRequestLineValues() const noexcept
 {
-   return m_vecFirstLineValues;
+   return m_vecRequestLineValues;
 }
 
 //******************************************************************************
 
-const std::string& HttpTransaction::getFirstLine() const noexcept
+const std::string& HttpTransaction::getRequestLine() const noexcept
 {
-   return m_firstLine;
+   return m_requestLine;
 }
 
 //******************************************************************************

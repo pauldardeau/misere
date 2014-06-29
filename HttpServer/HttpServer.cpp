@@ -42,10 +42,12 @@
 #include "KqueueServer.h"
 
 // built-in handlers
-#include "ServerDateTimeHandler.h"
+#include "EchoHandler.h"
 #include "GMTDateTimeHandler.h"
-#include "ServerStatsHandler.h"
+#include "ServerDateTimeHandler.h"
 #include "ServerObjectsDebugging.h"
+#include "ServerStatsHandler.h"
+#include "ServerStatusHandler.h"
 
 
 static const std::string SERVER_NAME             = "Misere";
@@ -880,10 +882,12 @@ std::string HttpServer::buildHeader(const std::string& responseCode,
 
 bool HttpServer::addBuiltInHandlers() noexcept
 {
-   return addPathHandler("/ServerDateTime", new ServerDateTimeHandler()) &&
+   return addPathHandler("/Echo", new EchoHandler()) &&
           addPathHandler("/GMTDateTime", new GMTDateTimeHandler()) &&
+          addPathHandler("/ServerDateTime", new ServerDateTimeHandler()) &&
+          addPathHandler("/ServerObjectsDebugging", new ServerObjectsDebugging()) &&
           addPathHandler("/ServerStats", new ServerStatsHandler(*this)) &&
-          addPathHandler("/ServerObjectsDebugging", new ServerObjectsDebugging());
+          addPathHandler("/ServerStatus", new ServerStatusHandler());
 }
 
 //******************************************************************************

@@ -40,8 +40,6 @@ class HttpRequest : public HttpTransaction
       const std::string& getMethod() const noexcept;
       const std::string& getPath() const noexcept;
 
-      const std::string& getRequestLine() const noexcept;
-
       bool hasArgument(const std::string& key) const noexcept;
       const std::string& getArgument(const std::string& key) const noexcept;
       void getArgumentKeys(std::vector<std::string>& vecKeys) const noexcept;
