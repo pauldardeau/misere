@@ -5,6 +5,7 @@
 #define C10KServer_Runnable_h
 
 #include <string>
+#include <memory>
 
 #include "RunCompletionObserver.h"
 #include "Logger.h"
@@ -15,24 +16,22 @@
  * Java's Runnable interface for classes that can be used in background
  * threads.
  */
-class Runnable
+class Runnable : public virtual std::enable_shared_from_this<Runnable>
 {
 private:
-   RunCompletionObserver* m_pCompletionObserver;
+   std::shared_ptr<RunCompletionObserver> m_completionObserver;
    std::string m_runByThreadWorkerId;
    bool m_autoDelete;
    int m_runByThreadId;
    
 public:
    Runnable() noexcept :
-      m_pCompletionObserver(nullptr),
       m_autoDelete(false),
       m_runByThreadId(0)
    {
    }
    
    Runnable(bool isAutoDelete) :
-      m_pCompletionObserver(nullptr),
       m_autoDelete(isAutoDelete),
       m_runByThreadId(0)
    {
@@ -85,9 +84,9 @@ public:
       return m_autoDelete;
    }
    
-   void setCompletionObserver(RunCompletionObserver* pCompletionObserver) noexcept
+   void setCompletionObserver(std::shared_ptr<RunCompletionObserver> completionObserver) noexcept
    {
-       m_pCompletionObserver = pCompletionObserver;
+       m_completionObserver = completionObserver;
    }
    
    /*!
@@ -95,8 +94,8 @@ public:
     */
    virtual void notifyOnCompletion() noexcept
    {
-      if (m_pCompletionObserver) {
-         m_pCompletionObserver->notifyRunComplete(this);
+      if (m_completionObserver) {
+         m_completionObserver->notifyRunComplete(shared_from_this());
       }
    }
 };

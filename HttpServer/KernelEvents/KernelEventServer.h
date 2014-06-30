@@ -17,7 +17,7 @@ class SocketServiceHandler;
  * KernelEventServer is an abstract base class for kernel event server
  * mechanisms such as kqueue and epoll.
  */
-class KernelEventServer : public SocketCompletionObserver, std::enable_shared_from_this<KernelEventServer>
+class KernelEventServer : public SocketCompletionObserver
 {
 public:
    KernelEventServer(Mutex& fdMutex,
@@ -25,7 +25,7 @@ public:
                      const std::string& serverName) noexcept;
    virtual ~KernelEventServer() noexcept;
    
-   virtual bool init(SocketServiceHandler* socketServiceHandler,
+   virtual bool init(std::shared_ptr<SocketServiceHandler> socketServiceHandler,
                      int serverPort,
                      int maxConnections) noexcept;
    virtual void run() noexcept;
@@ -38,7 +38,7 @@ public:
    virtual bool isEventRead(int eventIndex) noexcept = 0;
    
    // SocketCompletionObserver
-   void notifySocketComplete(Socket* pSocket) noexcept override;
+   void notifySocketComplete(std::shared_ptr<Socket> pSocket) noexcept override;
 
    // copying not allowed
    KernelEventServer(const KernelEventServer&) = delete;
@@ -46,12 +46,13 @@ public:
    KernelEventServer& operator=(const KernelEventServer&) = delete;
    KernelEventServer& operator=(KernelEventServer&&) = delete;
 
+   
 protected:
    int getListenerSocketFileDescriptor() const noexcept;
 
 
 private:
-   SocketServiceHandler* m_socketServiceHandler;
+   std::shared_ptr<SocketServiceHandler> m_socketServiceHandler;
    bool* m_listBusyFlags;
    Mutex& m_fdMutex;
    Mutex& m_hwmConnectionsMutex;  // high water mark (concurrent connections)

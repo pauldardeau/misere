@@ -29,11 +29,13 @@ PthreadsConditionVariable::~PthreadsConditionVariable()
 
 //******************************************************************************
 
-void PthreadsConditionVariable::wait(Mutex* mutex) noexcept
+void PthreadsConditionVariable::wait(std::shared_ptr<Mutex> mutex) noexcept
 {
    if (m_initialized) {
       if (mutex) {
-         PthreadsMutex* pthreadsMutex = dynamic_cast<PthreadsMutex*>(mutex);
+         std::shared_ptr<PthreadsMutex> pthreadsMutex =
+            std::dynamic_pointer_cast<PthreadsMutex>(mutex);
+         
          if (pthreadsMutex) {
             if (0 != ::pthread_cond_wait(&m_cond, &pthreadsMutex->getPlatformPrimitive())) {
                Logger::error("unable to wait on condition variable");

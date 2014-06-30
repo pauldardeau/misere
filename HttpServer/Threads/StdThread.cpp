@@ -28,7 +28,7 @@ void StdThread::runThread(StdThread* thread) noexcept
       // if we had a runnable passed in on the constructor, use it.  otherwise,
       // call "run" on the thread object itself.
       
-      Runnable* runnable = thread->getRunnable();
+      std::shared_ptr<Runnable> runnable = thread->getRunnable();
       
       if (runnable) {
          runnable->run();
@@ -45,9 +45,9 @@ void StdThread::runThread(StdThread* thread) noexcept
    thread->setAlive(false);
    thread->notifyOnCompletion();
    
-   if (thread->isAutoDelete()) {
-      delete thread;
-   }
+//   if (thread->isAutoDelete()) {
+//      delete thread;
+//   }
 }
 
 //******************************************************************************
@@ -61,7 +61,7 @@ StdThread::StdThread() noexcept :
 
 //******************************************************************************
 
-StdThread::StdThread(Runnable* runnable) noexcept :
+StdThread::StdThread(std::shared_ptr<Runnable> runnable) noexcept :
    Thread(m_mutexAlive, runnable)
 {
    Logger::logInstanceCreate("StdThread");

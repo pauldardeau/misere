@@ -4,6 +4,8 @@
 #ifndef HttpServer_ThreadPoolDispatcher_h
 #define HttpServer_ThreadPoolDispatcher_h
 
+#include <memory>
+
 
 class Runnable;
 
@@ -20,7 +22,7 @@ public:
    
    virtual bool start() noexcept = 0;
    virtual bool stop() noexcept = 0;
-   virtual bool addRequest(Runnable* runnableRequest) noexcept = 0;
+   virtual bool addRequest(std::shared_ptr<Runnable> runnableRequest) noexcept = 0;
    
 
    // disallow copies

@@ -22,10 +22,12 @@ StdConditionVariable::~StdConditionVariable()
 
 //******************************************************************************
 
-void StdConditionVariable::wait(Mutex* mutex) noexcept
+void StdConditionVariable::wait(std::shared_ptr<Mutex> mutex) noexcept
 {
    if (mutex) {
-      StdMutex* stdMutex = dynamic_cast<StdMutex*>(mutex);
+      std::shared_ptr<StdMutex> stdMutex =
+         std::dynamic_pointer_cast<StdMutex>(mutex);
+      
       if (stdMutex) {
          std::unique_lock<std::mutex> lock(stdMutex->getPlatformPrimitive());
          m_cond.wait(lock);

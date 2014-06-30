@@ -21,7 +21,7 @@ ThreadPool::ThreadPool(int numberWorkers) noexcept :
 
 //******************************************************************************
 
-ThreadPool::ThreadPool(ThreadingFactory* threadingFactory, int numberWorkers) noexcept :
+ThreadPool::ThreadPool(std::shared_ptr<ThreadingFactory> threadingFactory, int numberWorkers) noexcept :
    m_threadingFactory(threadingFactory),
    m_queue(m_threadingFactory),
    m_workerCount(numberWorkers),
@@ -41,10 +41,6 @@ ThreadPool::~ThreadPool() noexcept
       stop();
    }
    
-   for (ThreadPoolWorker* worker : m_listWorkers) {
-      delete worker;
-   }
-   
    m_listWorkers.clear();
 }
 
@@ -54,10 +50,10 @@ bool ThreadPool::start() noexcept
 {
    for (int i = 0; i < m_workerCount; ++i) {
       ++m_workersCreated;
-      ThreadPoolWorker* worker =
-         new ThreadPoolWorker(m_threadingFactory, m_queue, m_workersCreated);
+      std::shared_ptr<ThreadPoolWorker> worker(
+         new ThreadPoolWorker(m_threadingFactory, m_queue, m_workersCreated));
       worker->start();
-      m_listWorkers.push_back(worker);
+      m_listWorkers.push_back(std::move(worker));
    }
 
    m_isRunning = true;
@@ -71,7 +67,7 @@ bool ThreadPool::stop() noexcept
 {
    m_queue.shutDown();
    
-   for (ThreadPoolWorker* worker : m_listWorkers) {
+   for (std::shared_ptr<ThreadPoolWorker>& worker : m_listWorkers) {
       worker->stop();
    }
    
@@ -82,7 +78,7 @@ bool ThreadPool::stop() noexcept
 
 //******************************************************************************
 
-bool ThreadPool::addRequest(Runnable* runnableRequest) noexcept
+bool ThreadPool::addRequest(std::shared_ptr<Runnable> runnableRequest) noexcept
 {
    if (!m_isRunning) {
       return false;
@@ -95,7 +91,7 @@ bool ThreadPool::addRequest(Runnable* runnableRequest) noexcept
 
 //******************************************************************************
 
-Thread* ThreadPool::createThreadWithRunnable(Runnable* runnable) noexcept
+std::shared_ptr<Thread> ThreadPool::createThreadWithRunnable(std::shared_ptr<Runnable> runnable) noexcept
 {
    return m_threadingFactory->createThread(runnable);
 }
@@ -132,14 +128,14 @@ void ThreadPool::adjustNumberWorkers(int numberToAddOrDelete) noexcept
 	   for (int i = m_workerCount; i < newNumberWorkers; ++i) {
          ++m_workersCreated;
          ++m_workerCount;
-         ThreadPoolWorker* worker =
-            new ThreadPoolWorker(m_threadingFactory, m_queue, m_workersCreated);
+         std::unique_ptr<ThreadPoolWorker> worker(
+            new ThreadPoolWorker(m_threadingFactory, m_queue, m_workersCreated));
          
          if (m_isRunning) {
             worker->start();
          }
          
-	      m_listWorkers.push_back(worker);
+	      m_listWorkers.push_back(std::move(worker));
 	   }
    } else if (numberToAddOrDelete < 0) {  // removing?
       if (m_isRunning) {

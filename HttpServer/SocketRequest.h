@@ -4,7 +4,7 @@
 #ifndef C10KServer_SocketRequest_h
 #define C10KServer_SocketRequest_h
 
-
+#include <memory>
 #include "Runnable.h"
 
 class Socket;
@@ -16,15 +16,15 @@ class SocketServiceHandler;
 class SocketRequest : public Runnable
 {
 private:
-   Socket* m_socket;
-   SocketServiceHandler* m_handler;
+   std::shared_ptr<Socket> m_socket;
+   std::shared_ptr<SocketServiceHandler> m_handler;
     
 public:
-   SocketRequest(Socket* socket, SocketServiceHandler* handler) noexcept;
+   SocketRequest(std::shared_ptr<Socket> socket, std::shared_ptr<SocketServiceHandler> handler) noexcept;
    ~SocketRequest() noexcept;
    void run() override;
    int getSocketFD() const noexcept;
-   Socket* getSocket() noexcept;
+   std::shared_ptr<Socket> getSocket() noexcept;
    void requestComplete() noexcept;
    
    // copies not allowed

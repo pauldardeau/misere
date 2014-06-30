@@ -8,6 +8,8 @@
 #include <netinet/in.h>
 #include <sys/socket.h>
 
+#include <memory>
+
 
 class Socket;
 
@@ -26,7 +28,7 @@ class ServerSocket
       ServerSocket(int port);
       ~ServerSocket() noexcept;
 
-      Socket* accept() noexcept;
+      std::shared_ptr<Socket> accept() noexcept;
 
       void close() noexcept;
 

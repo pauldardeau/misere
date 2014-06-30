@@ -14,11 +14,18 @@
 #include "StdConditionVariable.h"
 
 
-ThreadingFactory* ThreadingFactory::threadingFactoryInstance = nullptr;
+std::shared_ptr<ThreadingFactory> ThreadingFactory::threadingFactoryInstance = nullptr;
 
 //******************************************************************************
 
-ThreadingFactory* ThreadingFactory::getThreadingFactory() noexcept
+void ThreadingFactory::setThreadingFactory(std::shared_ptr<ThreadingFactory> threadingFactory) noexcept
+{
+   threadingFactoryInstance = threadingFactory;
+}
+
+//******************************************************************************
+
+std::shared_ptr<ThreadingFactory> ThreadingFactory::getThreadingFactory() noexcept
 {
    return threadingFactoryInstance;
 }
@@ -31,7 +38,6 @@ ThreadingFactory::ThreadingFactory(ThreadingPackage threadingPackage) noexcept :
 {
    Logger::logInstanceCreate("ThreadingFactory");
 
-   threadingFactoryInstance = this;
 }
 
 //******************************************************************************
@@ -59,12 +65,12 @@ void ThreadingFactory::setMutexType(ThreadingPackage threadingPackage)
 
 //******************************************************************************
 
-Mutex* ThreadingFactory::createMutex()
+std::shared_ptr<Mutex> ThreadingFactory::createMutex()
 {
    if (m_packageMutexType == ThreadingPackage::CPP_11) {
-      return new StdMutex();
+      return std::shared_ptr<Mutex>(new StdMutex());
    } else if (m_packageMutexType == ThreadingPackage::PTHREADS) {
-      return new PthreadsMutex();
+      return std::shared_ptr<Mutex>(new PthreadsMutex());
    } else if (m_packageMutexType == ThreadingPackage::GCD_LIBDISPATCH) {
       Logger::error("invalid package type for mutexes. see setMutexType");
       throw BasicException("Invalid threading package for mutexes");
@@ -75,12 +81,12 @@ Mutex* ThreadingFactory::createMutex()
 
 //******************************************************************************
 
-Mutex* ThreadingFactory::createMutex(const std::string& mutexName)
+std::shared_ptr<Mutex> ThreadingFactory::createMutex(const std::string& mutexName)
 {
    if (m_packageMutexType == ThreadingPackage::CPP_11) {
-      return new StdMutex(mutexName);
+      return std::shared_ptr<Mutex>(new StdMutex(mutexName));
    } else if (m_packageMutexType == ThreadingPackage::PTHREADS) {
-      return new PthreadsMutex(mutexName);
+      return std::shared_ptr<Mutex>(new PthreadsMutex(mutexName));
    } else if (m_packageMutexType == ThreadingPackage::GCD_LIBDISPATCH) {
       Logger::error("invalid package type for mutexes. see setMutexType");
       throw BasicException("Invalid threading package for mutexes");
@@ -91,26 +97,26 @@ Mutex* ThreadingFactory::createMutex(const std::string& mutexName)
 
 //******************************************************************************
 
-Thread* ThreadingFactory::createThread() noexcept
+std::shared_ptr<Thread> ThreadingFactory::createThread() noexcept
 {
    return createThread(nullptr);
 }
 
 //******************************************************************************
 
-Thread* ThreadingFactory::createThread(Runnable* runnable) noexcept
+std::shared_ptr<Thread> ThreadingFactory::createThread(std::shared_ptr<Runnable> runnable) noexcept
 {
    if (m_threadingPackage == ThreadingPackage::CPP_11) {
       if (runnable != nullptr) {
-         return new StdThread(runnable);
+         return std::shared_ptr<Thread>(new StdThread(runnable));
       } else {
-         return new StdThread();
+         return std::shared_ptr<Thread>(new StdThread());
       }
    } else if (m_threadingPackage == ThreadingPackage::PTHREADS) {
       if (runnable != nullptr) {
-         return new PthreadsThread(runnable);
+         return std::shared_ptr<Thread>(new PthreadsThread(runnable));
       } else {
-         return new PthreadsThread();
+         return std::shared_ptr<Thread>(new PthreadsThread());
       }
    } else if (m_threadingPackage == ThreadingPackage::GCD_LIBDISPATCH) {
       Logger::error("createThread should not be called on GCD_LIBDISPATCH");
@@ -121,12 +127,12 @@ Thread* ThreadingFactory::createThread(Runnable* runnable) noexcept
 
 //******************************************************************************
 
-ConditionVariable* ThreadingFactory::createConditionVariable()
+std::shared_ptr<ConditionVariable> ThreadingFactory::createConditionVariable()
 {
    if (m_threadingPackage == ThreadingPackage::CPP_11) {
-      return new StdConditionVariable();
+      return std::shared_ptr<ConditionVariable>(new StdConditionVariable());
    } else if (m_threadingPackage == ThreadingPackage::PTHREADS) {
-      return new PthreadsConditionVariable();
+      return std::shared_ptr<ConditionVariable>(new PthreadsConditionVariable());
    } else if (m_threadingPackage == ThreadingPackage::GCD_LIBDISPATCH) {
       Logger::error("createConditionVariable should not be called on GCD_LIBDISPATCH");
    }
@@ -136,17 +142,15 @@ ConditionVariable* ThreadingFactory::createConditionVariable()
 
 //******************************************************************************
 
-ThreadPoolDispatcher* ThreadingFactory::createThreadPoolDispatcher(int numberThreads) noexcept
+std::shared_ptr<ThreadPoolDispatcher> ThreadingFactory::createThreadPoolDispatcher(int numberThreads) noexcept
 {
-   ThreadPoolDispatcher* threadPoolDispatcher = nullptr;
-
    if (m_threadingPackage == ThreadingPackage::GCD_LIBDISPATCH) {
-      threadPoolDispatcher = new ThreadPoolDispatch();  // don't specify number threads
+      return std::shared_ptr<ThreadPoolDispatcher>(new ThreadPoolDispatch());  // don't specify number threads
    } else {
-      threadPoolDispatcher = new ThreadPool(this, numberThreads);
+      return std::shared_ptr<ThreadPoolDispatcher>(new ThreadPool(shared_from_this(), numberThreads));
    }
    
-   return threadPoolDispatcher;
+   return nullptr;
 }
 
 //******************************************************************************

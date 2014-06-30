@@ -56,7 +56,7 @@ KqueueServer::~KqueueServer() noexcept
 
 //******************************************************************************
 
-bool KqueueServer::init(SocketServiceHandler* socketServiceHandler,
+bool KqueueServer::init(std::shared_ptr<SocketServiceHandler> socketServiceHandler,
                         int serverPort,
                         int maxConnections) noexcept
 {

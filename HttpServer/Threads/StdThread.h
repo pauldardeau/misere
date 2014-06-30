@@ -17,7 +17,7 @@ class StdThread : public Thread
 {
 public:
    StdThread() noexcept;
-   StdThread(Runnable* runnable) noexcept;
+   StdThread(std::shared_ptr<Runnable> runnable) noexcept;
    virtual ~StdThread() noexcept;
    
    virtual bool start() noexcept override;

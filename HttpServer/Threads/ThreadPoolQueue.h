@@ -5,6 +5,7 @@
 #define HttpServer_ThreadPoolQueue_h
 
 #include <deque>
+#include <memory>
 
 class ConditionVariable;
 class Mutex;
@@ -19,11 +20,11 @@ class ThreadingFactory;
 class ThreadPoolQueue
 {
 public:
-   ThreadPoolQueue(ThreadingFactory* threadingFactory) noexcept;
+   ThreadPoolQueue(std::shared_ptr<ThreadingFactory> threadingFactory) noexcept;
    virtual ~ThreadPoolQueue() noexcept;
    
-   virtual bool addRequest(Runnable* runnableRequest) noexcept;
-   virtual Runnable* takeRequest() noexcept;
+   virtual bool addRequest(std::shared_ptr<Runnable> runnableRequest) noexcept;
+   virtual std::shared_ptr<Runnable> takeRequest() noexcept;
    virtual void shutDown() noexcept;
    virtual bool isRunning() const noexcept;
    virtual bool isEmpty() const noexcept;
@@ -36,11 +37,11 @@ public:
    ThreadPoolQueue& operator=(ThreadPoolQueue&&) = delete;
    
 private:
-   ThreadingFactory* m_threadingFactory;
-   std::deque<Runnable*> m_queue;
-   Mutex* m_mutex;
-   ConditionVariable* m_condQueueEmpty;
-   ConditionVariable* m_condQueueNotEmpty;
+   std::shared_ptr<ThreadingFactory> m_threadingFactory;
+   std::deque<std::shared_ptr<Runnable>> m_queue;
+   std::shared_ptr<Mutex> m_mutex;
+   std::shared_ptr<ConditionVariable> m_condQueueEmpty;
+   std::shared_ptr<ConditionVariable> m_condQueueNotEmpty;
    bool m_isInitialized;
    bool m_isRunning;
 };

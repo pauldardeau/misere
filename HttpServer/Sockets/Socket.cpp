@@ -75,8 +75,8 @@ Socket::Socket(int socketFD) noexcept :
 
 //******************************************************************************
 
-Socket::Socket(SocketCompletionObserver* pCompletionObserver, int socketFD) noexcept :
-   m_pCompletionObserver(pCompletionObserver),
+Socket::Socket(SocketCompletionObserver* completionObserver, int socketFD) noexcept :
+   m_completionObserver(completionObserver),
    m_socketFD(socketFD),
    m_userIndex(-1),
    m_isConnected(true),
@@ -203,8 +203,8 @@ int Socket::getFileDescriptor() const noexcept
 
 void Socket::requestComplete() noexcept
 {
-   if (m_pCompletionObserver) {
-      m_pCompletionObserver->notifySocketComplete(this);
+   if (m_completionObserver) {
+      m_completionObserver->notifySocketComplete(shared_from_this());
    }
 }
 

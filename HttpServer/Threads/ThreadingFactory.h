@@ -5,6 +5,7 @@
 #define __HttpServer__ThreadingFactory__
 
 #include <string>
+#include <memory>
 
 
 class Mutex;
@@ -17,7 +18,7 @@ class ThreadPoolDispatcher;
  * ThreadingFactory is a factory for creating Thread, Mutex, and ThreadPoolDispatcher
  * instances based on the desired ThreadingPackage.
  */
-class ThreadingFactory
+class ThreadingFactory : public std::enable_shared_from_this<ThreadingFactory>
 {
 public:
    enum class ThreadingPackage {
@@ -26,7 +27,8 @@ public:
       GCD_LIBDISPATCH
    };
    
-   static ThreadingFactory* getThreadingFactory() noexcept;
+   static std::shared_ptr<ThreadingFactory> getThreadingFactory() noexcept;
+   static void setThreadingFactory(std::shared_ptr<ThreadingFactory> threadingFactory) noexcept;
 
    ThreadingFactory(ThreadingPackage threadingPackage) noexcept;
    ~ThreadingFactory() noexcept;
@@ -34,15 +36,15 @@ public:
    // throws BasicException
    void setMutexType(ThreadingPackage threadingPackage);
    
-   Mutex* createMutex();
-   Mutex* createMutex(const std::string& mutexName);
+   std::shared_ptr<Mutex> createMutex();
+   std::shared_ptr<Mutex> createMutex(const std::string& mutexName);
    
-   Thread* createThread() noexcept;
-   Thread* createThread(Runnable* runnable) noexcept;
+   std::shared_ptr<Thread> createThread() noexcept;
+   std::shared_ptr<Thread> createThread(std::shared_ptr<Runnable> runnable) noexcept;
    
-   ConditionVariable* createConditionVariable();
+   std::shared_ptr<ConditionVariable> createConditionVariable();
    
-   ThreadPoolDispatcher* createThreadPoolDispatcher(int numberThreads) noexcept;
+   std::shared_ptr<ThreadPoolDispatcher> createThreadPoolDispatcher(int numberThreads) noexcept;
    
    // disallow copies
    ThreadingFactory(const ThreadingFactory&) = delete;
@@ -54,7 +56,7 @@ private:
    ThreadingPackage m_threadingPackage;
    ThreadingPackage m_packageMutexType;
 
-   static ThreadingFactory* threadingFactoryInstance;
+   static std::shared_ptr<ThreadingFactory> threadingFactoryInstance;
 
 };
 
