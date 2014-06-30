@@ -16,7 +16,7 @@ class SocketCompletionObserver;
  * Socket is very similar to Java's Socket class. It provides a wrapper class
  * for working with sockets.
  */
-class Socket
+class Socket : public std::enable_shared_from_this<Socket>
 {
 public:
    
@@ -25,7 +25,7 @@ public:
    // throws BasicException
    Socket(const std::string& address, int port);
    Socket(int socketFD) noexcept;
-   Socket(SocketCompletionObserver* pCompletionObserver, int socketFD) noexcept;
+   Socket(SocketCompletionObserver* completionObserver, int socketFD) noexcept;
    ~Socket() noexcept;
     
    ssize_t send(const void* sendBuffer, size_t bufferLength, int flags) noexcept;
@@ -85,7 +85,7 @@ protected:
 
     
 private:
-   SocketCompletionObserver* m_pCompletionObserver;
+   SocketCompletionObserver* m_completionObserver;
    std::string m_lineInputBuffer;
    std::string m_serverAddress;
    struct sockaddr_in m_serverAddr;

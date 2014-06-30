@@ -9,8 +9,8 @@
 
 //******************************************************************************
 
-SocketRequest::SocketRequest(Socket* socket,
-                             SocketServiceHandler* handler) noexcept :
+SocketRequest::SocketRequest(std::shared_ptr<Socket> socket,
+                             std::shared_ptr<SocketServiceHandler> handler) noexcept :
    Runnable(true),
    m_socket(socket),
    m_handler(handler)
@@ -24,9 +24,6 @@ SocketRequest::~SocketRequest() noexcept
 {
    Logger::logInstanceDestroy("SocketRequest");
    
-   if (m_socket) {
-      delete m_socket;
-   }
 }
 
 //******************************************************************************
@@ -43,7 +40,9 @@ void SocketRequest::run()
    if (m_handler) {
       try
       {
-         m_handler->serviceSocket(this);
+         std::shared_ptr<SocketRequest> socketRequest =
+            std::dynamic_pointer_cast<SocketRequest>(shared_from_this());
+         m_handler->serviceSocket(socketRequest);
       }
       catch (const BasicException& be)
       {
@@ -73,7 +72,7 @@ int SocketRequest::getSocketFD() const noexcept
 
 //******************************************************************************
 
-Socket* SocketRequest::getSocket() noexcept
+std::shared_ptr<Socket> SocketRequest::getSocket() noexcept
 {
    return m_socket;
 }

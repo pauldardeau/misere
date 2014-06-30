@@ -696,13 +696,12 @@ bool HttpServer::init(int port)
          threadingPackage = ThreadingFactory::ThreadingPackage::PTHREADS;
       }
       
-      std::unique_ptr<ThreadingFactory>
+      std::shared_ptr<ThreadingFactory>
          threadingFactory(new ThreadingFactory(threadingPackage));
+      ThreadingFactory::setThreadingFactory(threadingFactory);
       m_threadingFactory = std::move(threadingFactory);
          
-      std::unique_ptr<ThreadPoolDispatcher>
-         threadPool(m_threadingFactory->createThreadPoolDispatcher(m_threadPoolSize));
-      m_threadPool = std::move(threadPool);
+      m_threadPool = m_threadingFactory->createThreadPoolDispatcher(m_threadPoolSize);
          
       m_threadPool->start();
 
@@ -899,14 +898,14 @@ int HttpServer::platformPointerSizeBits() const noexcept
 
 //******************************************************************************
 
-void HttpServer::serviceSocket(SocketRequest* socketRequest)
+void HttpServer::serviceSocket(std::shared_ptr<SocketRequest> socketRequest)
 {
    if (nullptr != m_threadPool) {
       // Hand off the request to the thread pool for asynchronous processing
-      RequestHandler* pRequestHandler = new RequestHandler(*this, socketRequest);
-      pRequestHandler->setThreadPooling(true);
-      pRequestHandler->autoDelete();
-      m_threadPool->addRequest(pRequestHandler);
+      std::shared_ptr<RequestHandler> requestHandler(new RequestHandler(*this, socketRequest));
+      requestHandler->setThreadPooling(true);
+      //pRequestHandler->autoDelete();
+      m_threadPool->addRequest(requestHandler);
    } else {
       // no thread pool available -- process it synchronously
       RequestHandler requestHandler(*this,socketRequest);
@@ -927,9 +926,9 @@ int HttpServer::runSocketServer() noexcept
    
    while (!m_isDone) {
       
-      Socket* pSocket = m_serverSocket->accept();
+      std::shared_ptr<Socket> socket(m_serverSocket->accept());
 
-      if (nullptr == pSocket) {
+      if (nullptr == socket) {
          continue;
       }
 
@@ -940,22 +939,16 @@ int HttpServer::runSocketServer() noexcept
 
       try {
          
-         if (m_isThreaded) {
-            RequestHandler* pHandler = new RequestHandler(*this, pSocket);
-            pHandler->autoDelete();
+         if (m_isThreaded && (nullptr != m_threadPool)) {
+            std::shared_ptr<RequestHandler> handler(new RequestHandler(*this, socket));
+            //pHandler->autoDelete();
 
-            if ((0 < m_threadPoolSize) && (nullptr != m_threadPool)) {
-               pHandler->setThreadPooling(true);
+            handler->setThreadPooling(true);
 
-               // give it to the thread pool
-               m_threadPool->addRequest(pHandler);
-            } else {
-               Thread* pThread = m_threadingFactory->createThread(pHandler);
-               pThread->autoDelete();
-               pThread->start();
-            }
+            // give it to the thread pool
+            m_threadPool->addRequest(handler);
          } else {
-            RequestHandler handler(*this, pSocket);
+            RequestHandler handler(*this, socket);
             handler.run();
          }
       }
@@ -1007,9 +1000,9 @@ int HttpServer::runKernelEventServer() noexcept
       
       if (kernelEventServer != nullptr) {
          try {
-            HttpSocketServiceHandler serviceHandler(this);
+            std::shared_ptr<SocketServiceHandler> serviceHandler(new HttpSocketServiceHandler(*this));
 
-            if (kernelEventServer->init(&serviceHandler, m_serverPort, MAX_CON))
+            if (kernelEventServer->init(serviceHandler, m_serverPort, MAX_CON))
             {
                kernelEventServer->run();
             } else {

@@ -69,7 +69,7 @@ class HttpServer
    
       int platformPointerSizeBits() const noexcept;
 
-      void serviceSocket(SocketRequest* socketRequest);
+      void serviceSocket(std::shared_ptr<SocketRequest> socketRequest);
 
       bool hasTrueValue(const KeyValuePairs& kvp,
                         const std::string& setting) const noexcept;
@@ -89,8 +89,8 @@ class HttpServer
    private:
       std::unique_ptr<KernelEventServer> m_kernelEventServer;
       std::unique_ptr<ServerSocket> m_serverSocket;
-      std::unique_ptr<ThreadPoolDispatcher> m_threadPool;
-      std::unique_ptr<ThreadingFactory> m_threadingFactory;
+      std::shared_ptr<ThreadPoolDispatcher> m_threadPool;
+      std::shared_ptr<ThreadingFactory> m_threadingFactory;
       std::unordered_map<std::string, std::string> m_mapProperties;
       std::unordered_map<std::string, std::unique_ptr<HttpHandler>> m_mapPathHandlers;
 		std::string m_accessLogFile;

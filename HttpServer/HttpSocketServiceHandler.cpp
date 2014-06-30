@@ -10,7 +10,7 @@ static const std::string HANDLER_NAME = "HttpSocketServiceHandler";
 
 //******************************************************************************
 
-HttpSocketServiceHandler::HttpSocketServiceHandler(HttpServer* httpServer) :
+HttpSocketServiceHandler::HttpSocketServiceHandler(HttpServer& httpServer) :
    m_httpServer(httpServer)
 {
    Logger::logInstanceCreate("HttpSocketServiceHandler");
@@ -25,11 +25,9 @@ HttpSocketServiceHandler::~HttpSocketServiceHandler()
 
 //******************************************************************************
 
-void HttpSocketServiceHandler::serviceSocket(SocketRequest* socketRequest)
+void HttpSocketServiceHandler::serviceSocket(std::shared_ptr<SocketRequest> socketRequest)
 {
-   if (nullptr != m_httpServer) {
-      m_httpServer->serviceSocket(socketRequest);
-   }
+   m_httpServer.serviceSocket(socketRequest);
 }
 
 //******************************************************************************

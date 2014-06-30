@@ -13,7 +13,7 @@
 
 //******************************************************************************
 
-ThreadPoolQueue::ThreadPoolQueue(ThreadingFactory* threadingFactory) noexcept :
+ThreadPoolQueue::ThreadPoolQueue(std::shared_ptr<ThreadingFactory> threadingFactory) noexcept :
    m_threadingFactory(threadingFactory),
    m_mutex(nullptr),
    m_condQueueEmpty(nullptr),
@@ -23,31 +23,27 @@ ThreadPoolQueue::ThreadPoolQueue(ThreadingFactory* threadingFactory) noexcept :
 {
    Logger::logInstanceCreate("ThreadPoolQueue");
 
-   if (threadingFactory) {
-      try {
-         m_mutex = threadingFactory->createMutex();
-         m_condQueueEmpty = threadingFactory->createConditionVariable();
-         m_condQueueNotEmpty = threadingFactory->createConditionVariable();
+   try {
+      m_mutex = m_threadingFactory->createMutex();
+      m_condQueueEmpty = m_threadingFactory->createConditionVariable();
+      m_condQueueNotEmpty = m_threadingFactory->createConditionVariable();
          
-         if (m_mutex && m_condQueueEmpty && m_condQueueNotEmpty) {
-            m_isInitialized = true;
-            m_isRunning = true;
-         }
+      if (m_mutex && m_condQueueEmpty && m_condQueueNotEmpty) {
+         m_isInitialized = true;
+         m_isRunning = true;
       }
-      catch (const BasicException& be)
-      {
-         Logger::error("exception setting up thread pool queue: " + be.whatString());
-      }
-      catch (const std::exception& e)
-      {
-         Logger::error("exception setting up thread pool queue: " + std::string(e.what()));
-      }
-      catch (...)
-      {
-         Logger::error("unknown exception setting up thread pool queue");
-      }
-   } else {
-      Logger::error("unable to start thread pool queue - no threading factory provided");
+   }
+   catch (const BasicException& be)
+   {
+      Logger::error("exception setting up thread pool queue: " + be.whatString());
+   }
+   catch (const std::exception& e)
+   {
+      Logger::error("exception setting up thread pool queue: " + std::string(e.what()));
+   }
+   catch (...)
+   {
+      Logger::error("unknown exception setting up thread pool queue");
    }
 }
 
@@ -58,25 +54,11 @@ ThreadPoolQueue::~ThreadPoolQueue() noexcept
    Logger::logInstanceDestroy("ThreadPoolQueue");
    
    m_isRunning = false;
-   
-   if (m_isInitialized) {
-      if (m_mutex) {
-         delete m_mutex;
-      }
-   
-      if (m_condQueueEmpty) {
-         delete m_condQueueEmpty;
-      }
-   
-      if (m_condQueueNotEmpty) {
-         delete m_condQueueNotEmpty;
-      }
-   }
 }
 
 //******************************************************************************
 
-bool ThreadPoolQueue::addRequest(Runnable* runnableRequest) noexcept
+bool ThreadPoolQueue::addRequest(std::shared_ptr<Runnable> runnableRequest) noexcept
 {
    if (!m_isInitialized) {
       Logger::log(Logger::LogLevel::Warning, "ThreadPoolQueue::addRequest queue not initialized");
@@ -112,7 +94,7 @@ bool ThreadPoolQueue::addRequest(Runnable* runnableRequest) noexcept
 
 //******************************************************************************
 
-Runnable* ThreadPoolQueue::takeRequest() noexcept
+std::shared_ptr<Runnable> ThreadPoolQueue::takeRequest() noexcept
 {
    if (!m_isInitialized) {
       Logger::log(Logger::LogLevel::Warning, "ThreadPoolQueue::takeRequest queue not initialized");
@@ -126,7 +108,7 @@ Runnable* ThreadPoolQueue::takeRequest() noexcept
       return nullptr;
    }
    
-   Runnable* request = nullptr;
+   std::shared_ptr<Runnable> request = nullptr;
    
    while (!request) {
       // is the queue empty?

@@ -41,7 +41,7 @@ bool ThreadPoolDispatch::stop() noexcept
 
 //******************************************************************************
 
-bool ThreadPoolDispatch::addRequest(Runnable* runnableRequest) noexcept
+bool ThreadPoolDispatch::addRequest(std::shared_ptr<Runnable> runnableRequest) noexcept
 {
    if (!m_isRunning || !runnableRequest) {
       return false;
@@ -69,9 +69,9 @@ bool ThreadPoolDispatch::addRequest(Runnable* runnableRequest) noexcept
       
       runnableRequest->notifyOnCompletion();
       
-      if (runnableRequest->isAutoDelete()) {
-         delete runnableRequest;
-      }
+//      if (runnableRequest->isAutoDelete()) {
+//         delete runnableRequest;
+//      }
    });
    
    return true;

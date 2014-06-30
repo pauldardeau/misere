@@ -21,6 +21,7 @@
 #include "MutexLock.h"
 #include "Logger.h"
 #include "ServerSocket.h"
+#include "BasicException.h"
 
 
 
@@ -62,11 +63,11 @@ KernelEventServer::~KernelEventServer() noexcept
 
 //******************************************************************************
 
-bool KernelEventServer::init(SocketServiceHandler* socketServiceHandler,
-                        int serverPort,
-                        int maxConnections) noexcept
+bool KernelEventServer::init(std::shared_ptr<SocketServiceHandler> socketServiceHandler,
+                             int serverPort,
+                             int maxConnections) noexcept
 {
-   m_socketServiceHandler = socketServiceHandler;
+   m_socketServiceHandler = std::move(socketServiceHandler);
    m_serverPort = serverPort;
    m_maxConnections = maxConnections;
    
@@ -125,7 +126,7 @@ void KernelEventServer::run() noexcept
    int newfd;
    char msg[128];
    
-   const std::string handlerName = m_socketServiceHandler->getName();
+   const std::string& handlerName = m_socketServiceHandler->getName();
    
    Logger::info(std::string("using handler: ") + handlerName);
    
@@ -257,14 +258,31 @@ void KernelEventServer::run() noexcept
                   
                   m_fdMutex.unlock();
                   m_hwmConnectionsMutex.unlock();
-                  
-                  Socket* pClientSocket = new Socket(this, client_fd);
-                  pClientSocket->setUserIndex(index);
+
+                  std::shared_ptr<Socket> clientSocket(new Socket(this, client_fd));
+                  clientSocket->setUserIndex(index);
                   //TODO: stuff the stats in the socket or the socketrequest
+
+                  std::shared_ptr<SocketRequest> socketRequest(new SocketRequest(clientSocket, m_socketServiceHandler));
+
+                  try
+                  {
+                     m_socketServiceHandler->serviceSocket(socketRequest);
+                  }
+                  catch (const BasicException& be)
+                  {
+                     Logger::error("exception in serviceSocket on handler: " + be.whatString());
+                  }
+                  catch (const std::exception& e)
+                  {
+                     Logger::error("exception in serviceSocket on handler: " + std::string(e.what()));
+                  }
+                  catch (...)
+                  {
+                     Logger::error("exception in serviceSocket on handler");
+                  }
                   
-                  SocketRequest* pSocketRequest =
-                     new SocketRequest(pClientSocket, m_socketServiceHandler);
-                  pSocketRequest->run();
+                  //socketRequest->run();
                   
                   m_listBusyFlags[index] = false;
                } else {
@@ -287,19 +305,19 @@ void KernelEventServer::run() noexcept
 
 //******************************************************************************
 
-void KernelEventServer::notifySocketComplete(Socket* pSocket) noexcept
+void KernelEventServer::notifySocketComplete(std::shared_ptr<Socket> socket) noexcept
 {
    char msg[128];
    const bool isLoggingDebug = Logger::isLogging(Logger::LogLevel::Debug);
    
-   const int socketFD = pSocket->getFileDescriptor();
+   const int socketFD = socket->getFileDescriptor();
    
    if (isLoggingDebug) {
       std::snprintf(msg, 128, "completed request with socket %d", socketFD);
       Logger::debug(msg);
    }
    
-   const int userIndex = pSocket->getUserIndex();
+   const int userIndex = socket->getUserIndex();
    
    if (isLoggingDebug) {
       Logger::debug("notifySocketComplete: waiting for locks");
@@ -316,7 +334,7 @@ void KernelEventServer::notifySocketComplete(Socket* pSocket) noexcept
    m_listBusyFlags[userIndex] = false;
    --m_concurrentRequests;
    
-   if (!pSocket->isConnected()) {
+   if (!socket->isConnected()) {
       
       --m_concurrentConnections;
       

@@ -4,6 +4,8 @@
 #ifndef __HttpServer__ConditionVariable__
 #define __HttpServer__ConditionVariable__
 
+#include <memory>
+
 class Mutex;
 
 
@@ -15,7 +17,7 @@ class ConditionVariable
 public:
    virtual ~ConditionVariable() {}
    
-   virtual void wait(Mutex* mutex) noexcept = 0;
+   virtual void wait(std::shared_ptr<Mutex> mutex) noexcept = 0;
    virtual void notifyOne() noexcept = 0;
    virtual void notifyAll() noexcept = 0;
    

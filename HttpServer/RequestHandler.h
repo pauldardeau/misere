@@ -19,13 +19,13 @@ class RequestHandler : public Runnable
 {
 private:
    HttpServer& m_server;
-   Socket* m_socket;
-   SocketRequest* m_socketRequest;
+   std::shared_ptr<Socket> m_socket;
+   std::shared_ptr<SocketRequest> m_socketRequest;
    bool m_isThreadPooling;
    
 public:
-   RequestHandler(HttpServer& server, SocketRequest* socketRequest) noexcept;
-   RequestHandler(HttpServer& server, Socket* socket) noexcept;
+   RequestHandler(HttpServer& server, std::shared_ptr<SocketRequest> socketRequest) noexcept;
+   RequestHandler(HttpServer& server, std::shared_ptr<Socket> socket) noexcept;
    ~RequestHandler() noexcept;
    
    void run() override;

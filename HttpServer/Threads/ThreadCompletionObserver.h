@@ -14,7 +14,7 @@ class ThreadCompletionObserver
 {
 public:
    virtual ~ThreadCompletionObserver() noexcept {}
-   virtual void notifyThreadComplete(Thread* thread) noexcept = 0;
+   virtual void notifyThreadComplete(std::shared_ptr<Thread> thread) noexcept = 0;
 };
 
 

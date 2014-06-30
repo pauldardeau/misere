@@ -158,7 +158,7 @@ bool ServerSocket::listen() noexcept
 
 //******************************************************************************
 
-Socket* ServerSocket::accept() noexcept
+std::shared_ptr<Socket> ServerSocket::accept() noexcept
 {
    struct sockaddr_in clientAddr;
    SOCKLEN_T namelen = sizeof(clientAddr);
@@ -170,7 +170,7 @@ Socket* ServerSocket::accept() noexcept
    if (connectionSocket < 0) {
       return nullptr;
    } else {
-      return new Socket(connectionSocket);
+      return std::shared_ptr<Socket>(new Socket(connectionSocket));
    }
 }
 

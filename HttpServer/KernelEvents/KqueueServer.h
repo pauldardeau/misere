@@ -31,7 +31,7 @@ public:
    ~KqueueServer() noexcept;
    
    // KernelEventServer
-   virtual bool init(SocketServiceHandler* socketServiceHandler,
+   virtual bool init(std::shared_ptr<SocketServiceHandler> socketServiceHandler,
                      int serverPort,
                      int maxConnections) noexcept override;
    

@@ -21,7 +21,7 @@ public:
    // ThreadPoolDispatcher
    virtual bool start() noexcept override;
    virtual bool stop() noexcept override;
-   virtual bool addRequest(Runnable* runnableRequest) noexcept override;
+   virtual bool addRequest(std::shared_ptr<Runnable> runnableRequest) noexcept override;
 
    // disallow copies
    ThreadPoolDispatch(const ThreadPoolDispatch&) = delete;

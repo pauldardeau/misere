@@ -31,7 +31,7 @@ Thread::Thread(Mutex& mutexAlive) noexcept :
 
 //******************************************************************************
 
-Thread::Thread(Mutex& mutexAlive, Runnable* runnable) noexcept :
+Thread::Thread(Mutex& mutexAlive, std::shared_ptr<Runnable> runnable) noexcept :
    m_runnable(runnable),
    m_isAlive(false),
    m_isAutoDelete(false),
@@ -47,12 +47,6 @@ Thread::Thread(Mutex& mutexAlive, Runnable* runnable) noexcept :
 
 Thread::~Thread() noexcept
 {
-   if (m_runnable) {
-      if (m_runnable->isAutoDelete()) {
-         delete m_runnable;
-         m_runnable = nullptr;
-      }
-   }
 }
 
 //******************************************************************************
@@ -103,7 +97,7 @@ void Thread::setAlive(bool isAlive) noexcept
 
 //******************************************************************************
 
-void Thread::registerThreadCompletionObserver(ThreadCompletionObserver* observer) noexcept
+void Thread::registerThreadCompletionObserver(std::shared_ptr<ThreadCompletionObserver> observer) noexcept
 {
    m_threadCompletionObserver = observer;
 }
@@ -112,7 +106,7 @@ void Thread::registerThreadCompletionObserver(ThreadCompletionObserver* observer
 
 void Thread::clearThreadCompletionObserver() noexcept
 {
-   m_threadCompletionObserver = nullptr;
+   m_threadCompletionObserver.reset();
 }
 
 //******************************************************************************
@@ -120,7 +114,9 @@ void Thread::clearThreadCompletionObserver() noexcept
 void Thread::notifyOnCompletion() noexcept
 {
    if (m_threadCompletionObserver) {
-      m_threadCompletionObserver->notifyThreadComplete(this);
+      std::shared_ptr<Thread> thread =
+         std::dynamic_pointer_cast<Thread>(shared_from_this());
+      m_threadCompletionObserver->notifyThreadComplete(thread);
    }
 }
 
@@ -144,7 +140,7 @@ bool Thread::isAutoDelete() const noexcept
 
 //******************************************************************************
 
-Runnable* Thread::getRunnable() noexcept
+std::shared_ptr<Runnable> Thread::getRunnable() noexcept
 {
    return m_runnable;
 }

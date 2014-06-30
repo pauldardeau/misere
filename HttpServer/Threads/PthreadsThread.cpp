@@ -22,7 +22,7 @@ PthreadsThread::PthreadsThread() noexcept :
 
 //******************************************************************************
 
-PthreadsThread::PthreadsThread(Runnable* runnable) noexcept :
+PthreadsThread::PthreadsThread(std::shared_ptr<Runnable> runnable) noexcept :
    Thread(m_mutexAlive, runnable),
    m_threadHandle(0),
    m_exitCode(1L)
@@ -60,7 +60,7 @@ void* PthreadsThread::runThread(void* pArgs) noexcept
       // if we had a runnable passed in on the constructor, use it.  otherwise,
       // call "run" on the thread object itself.
       
-      Runnable* runnable = pThread->getRunnable();
+      std::shared_ptr<Runnable> runnable = pThread->getRunnable();
 
       if (runnable) {
          runnable->run();
@@ -77,9 +77,9 @@ void* PthreadsThread::runThread(void* pArgs) noexcept
    pThread->setAlive(false);
    pThread->notifyOnCompletion();
    
-   if (pThread->isAutoDelete()) {
-      delete pThread;
-   }
+//   if (pThread->isAutoDelete()) {
+//      delete pThread;
+//   }
 
    return (void*) rc;
 }

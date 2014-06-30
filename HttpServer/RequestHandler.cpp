@@ -37,7 +37,7 @@ static const std::string QUESTION_MARK        = "?";
 //******************************************************************************
 
 RequestHandler::RequestHandler(HttpServer& server,
-                               SocketRequest* socketRequest) noexcept :
+                               std::shared_ptr<SocketRequest> socketRequest) noexcept :
    m_server(server),
    m_socket(nullptr),
    m_socketRequest(socketRequest),
@@ -48,7 +48,7 @@ RequestHandler::RequestHandler(HttpServer& server,
 
 //******************************************************************************
 
-RequestHandler::RequestHandler(HttpServer& server, Socket* socket) noexcept :
+RequestHandler::RequestHandler(HttpServer& server, std::shared_ptr<Socket> socket) noexcept :
    m_server(server),
    m_socket(socket),
    m_socketRequest(nullptr),
@@ -65,11 +65,6 @@ RequestHandler::~RequestHandler() noexcept
 
    if (m_socket) {
       m_socket->close();
-      delete m_socket;
-   }
-   
-   if (m_socketRequest) {
-      delete m_socketRequest;
    }
 }
 
@@ -77,7 +72,7 @@ RequestHandler::~RequestHandler() noexcept
 
 void RequestHandler::run()
 {
-   Socket* socket = nullptr;
+   std::shared_ptr<Socket> socket = nullptr;
    
    if (m_socket) {
       socket = m_socket;

@@ -60,7 +60,7 @@ EpollServer::~EpollServer() noexcept
 
 //******************************************************************************
 
-bool EpollServer::init(SocketServiceHandler* pSocketServiceHandler,
+bool EpollServer::init(std::shared_ptr<SocketServiceHandler> socketServiceHandler,
                        int serverPort,
                        int maxConnections) noexcept
 {
@@ -69,7 +69,7 @@ bool EpollServer::init(SocketServiceHandler* pSocketServiceHandler,
 #endif
 
 #ifdef EPOLL_SUPPORT
-   if (KernelEventServer::init(pSocketServiceHandler, serverPort, maxConnections)) {
+   if (KernelEventServer::init(socketServiceHandler, serverPort, maxConnections)) {
       m_epfd = ::epoll_create(m_maxConnections);
       
       if (m_epfd == -1) {

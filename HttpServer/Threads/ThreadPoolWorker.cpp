@@ -12,7 +12,7 @@
 
 //******************************************************************************
 
-ThreadPoolWorker::ThreadPoolWorker(ThreadingFactory* threadingFactory,
+ThreadPoolWorker::ThreadPoolWorker(std::shared_ptr<ThreadingFactory> threadingFactory,
                                    ThreadPoolQueue& queue,
                                    int workerId) noexcept :
    m_threadingFactory(threadingFactory),
@@ -30,9 +30,6 @@ ThreadPoolWorker::~ThreadPoolWorker() noexcept
 {
    Logger::logInstanceDestroy("ThreadPoolWorker");
    
-   if (m_workerThread) {
-      delete m_workerThread;
-   }
 }
 
 //******************************************************************************
@@ -40,13 +37,14 @@ ThreadPoolWorker::~ThreadPoolWorker() noexcept
 void ThreadPoolWorker::start() noexcept
 {
    if (!m_workerThread) {
-      m_workerThread = m_threadingFactory->createThread(this);
-      m_workerThread->setPoolWorkerStatus(true);
-      m_workerThread->setWorkerId(std::to_string(m_workerId));
+      m_workerThread = m_threadingFactory->createThread(shared_from_this());
+      if (m_workerThread) {
+         m_workerThread->setPoolWorkerStatus(true);
+         m_workerThread->setWorkerId(std::to_string(m_workerId));
+         m_isRunning = true;
+         m_workerThread->start();
+      }
    }
-   
-   m_isRunning = true;
-   m_workerThread->start();
 }
 
 //******************************************************************************
@@ -67,7 +65,7 @@ void ThreadPoolWorker::run() noexcept
          Logger::debug(std::string(message));
       }
 
-      Runnable* runnable = m_poolQueue.takeRequest();
+      std::shared_ptr<Runnable> runnable = m_poolQueue.takeRequest();
       if (runnable) {
 	      // has our thread been notified to shut down?
 	      if (!m_workerThread->isAlive()) {
@@ -103,15 +101,15 @@ void ThreadPoolWorker::run() noexcept
                Logger::debug(std::string(message));
             }
             
-            if (runnable->isAutoDelete()) {
-               try
-               {
-                  delete runnable;
-               }
-               catch( ... )
-               {
-               }
-            }
+//            if (runnable->isAutoDelete()) {
+//               try
+//               {
+//                  delete runnable;
+//               }
+//               catch( ... )
+//               {
+//               }
+//            }
             
          }
       }

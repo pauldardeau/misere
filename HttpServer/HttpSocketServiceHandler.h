@@ -15,13 +15,13 @@ class HttpServer;
 class HttpSocketServiceHandler : public SocketServiceHandler
 {
 public:
-   HttpSocketServiceHandler(HttpServer* httpServer);
+   HttpSocketServiceHandler(HttpServer& httpServer);
    ~HttpSocketServiceHandler();
-   virtual void serviceSocket(SocketRequest* socketRequest);
+   virtual void serviceSocket(std::shared_ptr<SocketRequest> socketRequest) override;
    virtual const std::string& getName() const;
    
 private:
-   HttpServer* m_httpServer;
+   HttpServer& m_httpServer;
 };
 
 #endif /* defined(__HttpServer__HttpSocketServiceHandler__) */

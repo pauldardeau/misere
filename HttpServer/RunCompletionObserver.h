@@ -15,7 +15,7 @@ class RunCompletionObserver
 {
 public:
    virtual ~RunCompletionObserver() noexcept {}
-   virtual void notifyRunComplete(Runnable* pRunnable) noexcept = 0;
+   virtual void notifyRunComplete(std::shared_ptr<Runnable> runnable) noexcept = 0;
 };
 
 

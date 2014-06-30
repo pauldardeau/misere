@@ -4,6 +4,8 @@
 #ifndef THREADPOOLWORKER_H
 #define THREADPOOLWORKER_H
 
+#include <memory>
+
 #include "Runnable.h"
 
 class ThreadingFactory;
@@ -18,7 +20,7 @@ class Thread;
 class ThreadPoolWorker : public Runnable
 {
    public:
-      ThreadPoolWorker(ThreadingFactory* threadingFactory,
+      ThreadPoolWorker(std::shared_ptr<ThreadingFactory> threadingFactory,
                        ThreadPoolQueue& queue,
                        int workerId) noexcept;
       ~ThreadPoolWorker() noexcept;
@@ -34,8 +36,8 @@ class ThreadPoolWorker : public Runnable
       ThreadPoolWorker& operator=(ThreadPoolWorker&&);
 
    private:
-      ThreadingFactory* m_threadingFactory;
-      Thread* m_workerThread;
+      std::shared_ptr<ThreadingFactory> m_threadingFactory;
+      std::shared_ptr<Thread> m_workerThread;
       ThreadPoolQueue& m_poolQueue;
       int m_workerId;
       bool m_isRunning;
