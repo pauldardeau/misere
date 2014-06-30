@@ -21,7 +21,8 @@ ThreadPool::ThreadPool(int numberWorkers) noexcept :
 
 //******************************************************************************
 
-ThreadPool::ThreadPool(std::shared_ptr<ThreadingFactory> threadingFactory, int numberWorkers) noexcept :
+ThreadPool::ThreadPool(std::shared_ptr<ThreadingFactory> threadingFactory,
+                       int numberWorkers) noexcept :
    m_threadingFactory(threadingFactory),
    m_queue(m_threadingFactory),
    m_workerCount(numberWorkers),

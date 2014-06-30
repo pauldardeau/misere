@@ -173,7 +173,6 @@ bool HttpTransaction::streamFromSocket(Socket& socket)
    bool streamSuccess = false;
    bool done = false;
    bool inHeader = true;
-   bool startedReading = false;
    bool headersParsed = false;
 
    std::string sbInput;
@@ -191,7 +190,6 @@ bool HttpTransaction::streamFromSocket(Socket& socket)
 
       if (inHeader) {
          if (socket.readLine(inputLine)) {
-            startedReading = true;
 
             if (!inputLine.empty()) {
                sbInput += inputLine;
@@ -210,8 +208,6 @@ bool HttpTransaction::streamFromSocket(Socket& socket)
                } else {
                   m_body = sbInput;
                }
-
-               inHeader = false;
 
                if (contentLength < 1) {
                   done = true;
