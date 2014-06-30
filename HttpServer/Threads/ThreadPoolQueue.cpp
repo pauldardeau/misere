@@ -101,8 +101,6 @@ std::shared_ptr<Runnable> ThreadPoolQueue::takeRequest() noexcept
       return nullptr;
    }
 
-   MutexLock lock(*m_mutex);
-   
    // is the queue shut down?
    if (!m_isRunning) {
       return nullptr;
@@ -111,6 +109,9 @@ std::shared_ptr<Runnable> ThreadPoolQueue::takeRequest() noexcept
    std::shared_ptr<Runnable> request = nullptr;
    
    while (!request) {
+      
+      m_mutex->lock();
+      
       // is the queue empty?
       while (m_queue.empty() && m_isRunning) {
          Logger::log(Logger::LogLevel::Debug, "queue is empty, waiting for QUEUE_NOT_EMPTY event");
@@ -119,20 +120,20 @@ std::shared_ptr<Runnable> ThreadPoolQueue::takeRequest() noexcept
          m_condQueueNotEmpty->wait(m_mutex);
       }
    
-      if (m_queue.empty()) {
-         continue;
+      if (!m_queue.empty()) {
+         // take a request from the queue
+         request = m_queue.front();
+         m_queue.pop_front();
+         
+         // did we empty the queue?
+         if (m_queue.empty()) {
+            Logger::log(Logger::LogLevel::Debug, "--- signalling queue_empty_event");
+            // signal that queue is now empty
+            m_condQueueEmpty->notifyOne();
+         }
       }
-      
-      // take a request from the queue
-      request = m_queue.front();
-      m_queue.pop_front();
-   
-      // did we empty the queue?
-      if (m_queue.empty()) {
-         Logger::log(Logger::LogLevel::Debug, "--- signalling queue_empty_event");
-         // signal that queue is now empty
-         m_condQueueEmpty->notifyOne();
-      }
+
+      m_mutex->unlock();
    }
    
    return request;
