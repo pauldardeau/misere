@@ -21,18 +21,10 @@ class Runnable : public virtual std::enable_shared_from_this<Runnable>
 private:
    std::shared_ptr<RunCompletionObserver> m_completionObserver;
    std::string m_runByThreadWorkerId;
-   bool m_autoDelete;
    int m_runByThreadId;
    
 public:
    Runnable() noexcept :
-      m_autoDelete(false),
-      m_runByThreadId(0)
-   {
-   }
-   
-   Runnable(bool isAutoDelete) :
-      m_autoDelete(isAutoDelete),
       m_runByThreadId(0)
    {
    }
@@ -68,20 +60,6 @@ public:
    virtual const std::string& getRunByThreadWorkerId() const noexcept
    {
       return m_runByThreadWorkerId;
-   }
-   
-   virtual void autoDelete()
-   {
-      if (Logger::isLogging(Logger::LogLevel::Debug)) {
-         Logger::debug("turning on autoDelete on Runnable");
-      }
-      
-      m_autoDelete = true;
-   }
-   
-   virtual bool isAutoDelete() const
-   {
-      return m_autoDelete;
    }
    
    void setCompletionObserver(std::shared_ptr<RunCompletionObserver> completionObserver) noexcept

@@ -25,7 +25,6 @@ void TestThread::runTests()
    testGetExitCode();
    testRegisterThreadCompletionObserver();
    testClearThreadCompletionObserver();
-   testAutoDelete();
    testGetRunnable();
    testGetHandle();
    testSetAttribute();
@@ -110,14 +109,6 @@ void TestThread::testRegisterThreadCompletionObserver()
 void TestThread::testClearThreadCompletionObserver()
 {
    TEST_CASE("testClearThreadCompletionObserver");
-   
-}
-
-//******************************************************************************
-
-void TestThread::testAutoDelete()
-{
-   TEST_CASE("testAutoDelete");
    
 }
 

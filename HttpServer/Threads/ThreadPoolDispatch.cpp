@@ -69,9 +69,6 @@ bool ThreadPoolDispatch::addRequest(std::shared_ptr<Runnable> runnableRequest) n
       
       runnableRequest->notifyOnCompletion();
       
-//      if (runnableRequest->isAutoDelete()) {
-//         delete runnableRequest;
-//      }
    });
    
    return true;

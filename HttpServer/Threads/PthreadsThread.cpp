@@ -77,10 +77,6 @@ void* PthreadsThread::runThread(void* pArgs) noexcept
    pThread->setAlive(false);
    pThread->notifyOnCompletion();
    
-//   if (pThread->isAutoDelete()) {
-//      delete pThread;
-//   }
-
    return (void*) rc;
 }
 

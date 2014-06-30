@@ -37,9 +37,6 @@ public:
    void clearThreadCompletionObserver() noexcept;
    void notifyOnCompletion() noexcept;
    
-   void autoDelete() noexcept;
-   bool isAutoDelete() const noexcept;
-
    
    std::shared_ptr<Runnable> getRunnable() noexcept;
    
@@ -74,7 +71,6 @@ public:
 private:
    std::shared_ptr<Runnable> m_runnable;
    bool m_isAlive;
-   bool m_isAutoDelete;
    bool m_isPoolWorker;
    Mutex& m_mutexAlive;
    std::shared_ptr<ThreadCompletionObserver> m_threadCompletionObserver;

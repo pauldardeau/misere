@@ -101,16 +101,6 @@ void ThreadPoolWorker::run() noexcept
                Logger::debug(std::string(message));
             }
             
-//            if (runnable->isAutoDelete()) {
-//               try
-//               {
-//                  delete runnable;
-//               }
-//               catch( ... )
-//               {
-//               }
-//            }
-            
          }
       }
    }

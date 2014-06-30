@@ -28,8 +28,6 @@ protected:
    void testRegisterThreadCompletionObserver();
    void testClearThreadCompletionObserver();
    
-   void testAutoDelete();
-   
    void testGetRunnable();
    
    void testGetHandle();

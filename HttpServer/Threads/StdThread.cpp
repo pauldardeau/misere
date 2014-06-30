@@ -45,9 +45,6 @@ void StdThread::runThread(StdThread* thread) noexcept
    thread->setAlive(false);
    thread->notifyOnCompletion();
    
-//   if (thread->isAutoDelete()) {
-//      delete thread;
-//   }
 }
 
 //******************************************************************************

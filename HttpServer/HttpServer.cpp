@@ -904,7 +904,6 @@ void HttpServer::serviceSocket(std::shared_ptr<SocketRequest> socketRequest)
       // Hand off the request to the thread pool for asynchronous processing
       std::shared_ptr<RequestHandler> requestHandler(new RequestHandler(*this, socketRequest));
       requestHandler->setThreadPooling(true);
-      //pRequestHandler->autoDelete();
       m_threadPool->addRequest(requestHandler);
    } else {
       // no thread pool available -- process it synchronously
@@ -941,7 +940,6 @@ int HttpServer::runSocketServer() noexcept
          
          if (m_isThreaded && (nullptr != m_threadPool)) {
             std::shared_ptr<RequestHandler> handler(new RequestHandler(*this, socket));
-            //pHandler->autoDelete();
 
             handler->setThreadPooling(true);
 

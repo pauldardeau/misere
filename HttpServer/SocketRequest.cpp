@@ -11,7 +11,7 @@
 
 SocketRequest::SocketRequest(std::shared_ptr<Socket> socket,
                              std::shared_ptr<SocketServiceHandler> handler) noexcept :
-   Runnable(true),
+   Runnable(),
    m_socket(socket),
    m_handler(handler)
 {

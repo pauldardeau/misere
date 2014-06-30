@@ -20,7 +20,6 @@ static const std::string ATTR_WORKER_ID     = "worker_id";
 Thread::Thread(Mutex& mutexAlive) noexcept :
    m_runnable(nullptr),
    m_isAlive(false),
-   m_isAutoDelete(false),
    m_isPoolWorker(false),
    m_mutexAlive(mutexAlive)
 {
@@ -34,7 +33,6 @@ Thread::Thread(Mutex& mutexAlive) noexcept :
 Thread::Thread(Mutex& mutexAlive, std::shared_ptr<Runnable> runnable) noexcept :
    m_runnable(runnable),
    m_isAlive(false),
-   m_isAutoDelete(false),
    m_isPoolWorker(false),
    m_mutexAlive(mutexAlive)
 {
@@ -118,24 +116,6 @@ void Thread::notifyOnCompletion() noexcept
          std::dynamic_pointer_cast<Thread>(shared_from_this());
       m_threadCompletionObserver->notifyThreadComplete(thread);
    }
-}
-
-//******************************************************************************
-
-void Thread::autoDelete() noexcept
-{
-   if (Logger::isLogging(Logger::LogLevel::Debug)) {
-      Logger::debug("turning on autoDelete for Thread");
-   }
-   
-   m_isAutoDelete = true;
-}
-
-//******************************************************************************
-
-bool Thread::isAutoDelete() const noexcept
-{
-   return m_isAutoDelete;
 }
 
 //******************************************************************************
