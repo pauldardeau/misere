@@ -1,10 +1,5 @@
-//
-//  ServerObjectsDebugging.h
-//  HttpServer
-//
-//  Created by Paul Dardeau on 6/24/14.
-//  Copyright (c) 2014 SwampBits. All rights reserved.
-//
+// Copyright Paul Dardeau, SwampBits LLC 2014
+// BSD License
 
 #ifndef __HttpServer__ServerObjectsDebugging__
 #define __HttpServer__ServerObjectsDebugging__
