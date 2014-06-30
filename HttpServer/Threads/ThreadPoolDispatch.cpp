@@ -2,6 +2,7 @@
 // BSD License
 
 #include <dispatch/dispatch.h>
+#include <dispatch/queue.h>
 
 #include "ThreadPoolDispatch.h"
 #include "Runnable.h"
