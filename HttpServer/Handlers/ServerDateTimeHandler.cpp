@@ -1,6 +1,8 @@
 // Copyright Paul Dardeau, SwampBits LLC 2014
 // BSD License
 
+#include <time.h>
+
 #include "HttpResponse.h"
 #include "Logger.h"
 

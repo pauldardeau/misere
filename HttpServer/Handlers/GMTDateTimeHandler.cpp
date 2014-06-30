@@ -1,8 +1,9 @@
 // Copyright Paul Dardeau, SwampBits LLC 2014
 // BSD License
 
-#include "GMTDateTimeHandler.h"
+#include <time.h>
 
+#include "GMTDateTimeHandler.h"
 #include "HttpResponse.h"
 #include "Logger.h"
 
