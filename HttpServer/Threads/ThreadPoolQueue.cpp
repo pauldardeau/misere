@@ -70,23 +70,34 @@ bool ThreadPoolQueue::addRequest(std::shared_ptr<Runnable> runnableRequest) noex
       return false;
    }
    
-   MutexLock lock(*m_mutex);
+   //MutexLock lock(*m_mutex);
    
    if (!m_isRunning) {
       Logger::log(Logger::LogLevel::Warning, "ThreadPoolQueue::addRequest rejecting request, queue is shutting down");
       return false;
    }
    
+   if (!m_mutex->lock()) {
+      Logger::error("unable to lock mutex in addRequest");
+      exit(1);
+   }
+   
    Logger::log(Logger::LogLevel::Debug, "ThreadPoolQueue::addRequest accepting request");
+   
+   const bool wasEmpty = m_queue.empty();
    
    // add new request to the queue
    m_queue.push_back(runnableRequest);
    
    // did we just transition from QUEUE_EMPTY to QUEUE_NOT_EMPTY?
-   if (!m_queue.empty()) {
+   if (wasEmpty && !m_queue.empty()) {
       // signal QUEUE_NOT_EMPTY (wake up a worker thread)
       Logger::log(Logger::LogLevel::Debug, "signalling queue_not_empty");
       m_condQueueNotEmpty->notifyAll();
+   }
+   
+   if (!m_mutex->unlock()) {
+      Logger::error("unable to unlock mutex in addRequest");
    }
    
    return true;
@@ -106,14 +117,22 @@ std::shared_ptr<Runnable> ThreadPoolQueue::takeRequest() noexcept
       return nullptr;
    }
    
+   if (!m_mutex->haveValidMutex()) {
+      Logger::error("don't have valid mutex in takeRequest");
+      exit(1);
+   }
+   
    std::shared_ptr<Runnable> request = nullptr;
    
-   while (!request) {
+   while (!request && m_isRunning) {
       
-      m_mutex->lock();
+      if (!m_mutex->lock()) {
+         Logger::error("unable to lock mutex in takeRequest");
+         exit(1);
+      }
       
       // is the queue empty?
-      while (m_queue.empty() && m_isRunning) {
+      if (m_queue.empty()) {
          Logger::log(Logger::LogLevel::Debug, "queue is empty, waiting for QUEUE_NOT_EMPTY event");
       
          // empty queue -- wait for QUEUE_NOT_EMPTY event
@@ -133,7 +152,10 @@ std::shared_ptr<Runnable> ThreadPoolQueue::takeRequest() noexcept
          }
       }
 
-      m_mutex->unlock();
+      if (!m_mutex->unlock()) {
+         Logger::error("unable to unlock mutex in takeRequest");
+         exit(1);
+      }
    }
    
    return request;
