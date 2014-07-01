@@ -1,6 +1,8 @@
 // Copyright Paul Dardeau, SwampBits LLC 2014
 // BSD License
 
+#include <errno.h>
+
 #include "PthreadsMutex.h"
 #include "BasicException.h"
 #include "Logger.h"
@@ -13,11 +15,27 @@ PthreadsMutex::PthreadsMutex() :
 {
    Logger::logInstanceCreate("PthreadsMutex");
 
-   if (0 == ::pthread_mutex_init(&m_mutex, nullptr)) {
-      m_haveValidMutex = true;
-      //printf("have valid mutex\n");
+   char buffer[128];
+   
+   pthread_mutexattr_t attr;
+   pthread_mutexattr_init(&attr);
+   int rc = pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_ERRORCHECK);
+   
+   if (0 == rc) {
+      rc = ::pthread_mutex_init(&m_mutex, &attr);
+      
+      if (0 == rc) {
+         m_haveValidMutex = true;
+         //printf("have valid mutex\n");
+      } else {
+         snprintf(buffer, 128, "unable to create pthreads mutex, rc=%d", rc);
+         Logger::error(buffer);
+         throw BasicException(buffer);
+      }
    } else {
-      throw BasicException("unable to create pthreads mutex");
+      snprintf(buffer, 128, "unable to set pthreads mutex type, rc=%d", rc);
+      Logger::error(buffer);
+      throw BasicException(buffer);
    }
 }
 
@@ -29,12 +47,27 @@ PthreadsMutex::PthreadsMutex(const std::string& mutexName) :
    m_isLocked(false)
 {
    Logger::logInstanceCreate("PthreadsMutex");
+   char buffer[128];
+   
+   pthread_mutexattr_t attr;
+   pthread_mutexattr_init(&attr);
+   int rc = pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_ERRORCHECK);
 
-   if (0 == ::pthread_mutex_init(&m_mutex, nullptr)) {
-      m_haveValidMutex = true;
-      //printf("have valid mutex\n");
+   if (0 == rc) {
+      rc = ::pthread_mutex_init(&m_mutex, &attr);
+      
+      if (0 == rc) {
+         m_haveValidMutex = true;
+         //printf("have valid mutex\n");
+      } else {
+         snprintf(buffer, 128, "unable to create pthreads mutex, rc=%d", rc);
+         Logger::error(buffer);
+         throw BasicException(buffer);
+      }
    } else {
-      throw BasicException("unable to create pthreads mutex");
+      snprintf(buffer, 128, "unable to set pthreads mutex type, rc=%d", rc);
+      Logger::error(buffer);
+      throw BasicException(buffer);
    }
 }
 
