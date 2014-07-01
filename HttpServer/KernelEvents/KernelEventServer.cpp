@@ -156,8 +156,8 @@ void KernelEventServer::run() noexcept
             Logger::debug(msg);
          }
          
-         m_fdMutex.lock();
-         m_hwmConnectionsMutex.lock();
+         //m_fdMutex.lock();
+         //m_hwmConnectionsMutex.lock();
          
          if (isLoggingDebug) {
             Logger::debug("KernelEventServer::run have locks");
@@ -256,8 +256,8 @@ void KernelEventServer::run() noexcept
                      Logger::debug(msg);
                   }
                   
-                  m_fdMutex.unlock();
-                  m_hwmConnectionsMutex.unlock();
+                  //m_fdMutex.unlock();
+                  //m_hwmConnectionsMutex.unlock();
 
                   std::shared_ptr<Socket> clientSocket(new Socket(this, client_fd));
                   clientSocket->setUserIndex(index);
@@ -292,8 +292,8 @@ void KernelEventServer::run() noexcept
             }
          }
          
-         m_fdMutex.unlock();
-         m_hwmConnectionsMutex.unlock();
+         //m_fdMutex.unlock();
+         //m_hwmConnectionsMutex.unlock();
          
          if (isLoggingDebug) {
             Logger::debug("KernelEventServer::run finished iteration of innner loop");
@@ -323,8 +323,8 @@ void KernelEventServer::notifySocketComplete(std::shared_ptr<Socket> socket) noe
       Logger::debug("notifySocketComplete: waiting for locks");
    }
    
-   MutexLock lock(m_fdMutex);
-   MutexLock lockConnections(m_hwmConnectionsMutex);
+   //MutexLock lock(m_fdMutex);
+   //MutexLock lockConnections(m_hwmConnectionsMutex);
    
    if (isLoggingDebug) {
       Logger::debug("notifySocketComplete: have locks");

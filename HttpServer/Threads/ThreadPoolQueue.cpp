@@ -77,6 +77,11 @@ bool ThreadPoolQueue::addRequest(std::shared_ptr<Runnable> runnableRequest) noex
       return false;
    }
    
+   if (!m_mutex->haveValidMutex()) {
+      Logger::error("don't have valid mutex in addRequest");
+      exit(1);
+   }
+
    if (!m_mutex->lock()) {
       Logger::error("unable to lock mutex in addRequest");
       exit(1);
@@ -93,11 +98,12 @@ bool ThreadPoolQueue::addRequest(std::shared_ptr<Runnable> runnableRequest) noex
    if (wasEmpty && !m_queue.empty()) {
       // signal QUEUE_NOT_EMPTY (wake up a worker thread)
       Logger::log(Logger::LogLevel::Debug, "signalling queue_not_empty");
-      m_condQueueNotEmpty->notifyAll();
+      m_condQueueNotEmpty->notifyOne();
    }
    
    if (!m_mutex->unlock()) {
       Logger::error("unable to unlock mutex in addRequest");
+      exit(1);
    }
    
    return true;

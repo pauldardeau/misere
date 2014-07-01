@@ -14,6 +14,7 @@ PthreadsConditionVariable::PthreadsConditionVariable() :
    Logger::logInstanceCreate("PthreadsConditionVariable");
 
    if (0 != ::pthread_cond_init(&m_cond, nullptr)) {
+      Logger::error("unable to create condition variable (pthreads)");
       throw BasicException("unable to create condition variable (pthreads)");
    } else {
       m_initialized = true;
@@ -59,6 +60,8 @@ void PthreadsConditionVariable::notifyOne() noexcept
       if (0 != ::pthread_cond_signal(&m_cond)) {
          Logger::error("unable to signal on condition variable");
       }
+   } else {
+      Logger::error("unable to notify because condition variable not initialized");
    }
 }
 
@@ -70,6 +73,8 @@ void PthreadsConditionVariable::notifyAll() noexcept
       if (0 != ::pthread_cond_broadcast(&m_cond)) {
          Logger::error("unable to broadcast on condition variable");
       }
+   } else {
+      Logger::error("unable to notify because condition variable not initialized");
    }
 }
 

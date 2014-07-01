@@ -70,14 +70,14 @@ bool EpollServer::init(std::shared_ptr<SocketServiceHandler> socketServiceHandle
 
 #ifdef EPOLL_SUPPORT
    if (KernelEventServer::init(socketServiceHandler, serverPort, maxConnections)) {
-      m_epfd = ::epoll_create(m_maxConnections);
+      m_epfd = ::epoll_create(maxConnections);
       
       if (m_epfd == -1) {
          Logger::critical("epoll create failed");
          return false;
       }
       
-      m_events = (struct epoll_event*) ::calloc(m_maxConnections,
+      m_events = (struct epoll_event*) ::calloc(maxConnections,
                                                 sizeof(struct epoll_event));
       
       // add our listener socket (server socket) as one of the fd's that
