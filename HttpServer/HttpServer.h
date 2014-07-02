@@ -60,7 +60,7 @@ class HttpServer
                       const std::string& responseCode,
                       const std::string& threadWorkerId) noexcept;
                        
-      std::unique_ptr<SectionedConfigDataSource> getConfigDataSource() noexcept;
+      std::unique_ptr<SectionedConfigDataSource> getConfigDataSource();
    
       int getSocketSendBufferSize() const noexcept;
       int getSocketReceiveBufferSize() const noexcept;

@@ -199,7 +199,7 @@ HttpServer::HttpServer(const std::string& configFilePath) :
 
 //******************************************************************************
 
-std::unique_ptr<SectionedConfigDataSource> HttpServer::getConfigDataSource() noexcept
+std::unique_ptr<SectionedConfigDataSource> HttpServer::getConfigDataSource()
 {
    if (m_configFilePath.empty()) {
       const char* configFilePath = std::getenv(ENV_VAR_CFG_PATH.c_str());
@@ -305,11 +305,29 @@ bool HttpServer::init(int port)
    
 	m_serverPort = port;
 	
-   std::unique_ptr<SectionedConfigDataSource> configDataSource =
-      getConfigDataSource();
+   std::unique_ptr<SectionedConfigDataSource> configDataSource;
+   
+   try {
+      configDataSource = std::move(getConfigDataSource());
+   }
+   catch (const BasicException& be)
+   {
+      Logger::error("exception retrieving config data" + be.whatString());
+      return false;
+   }
+   catch (const std::exception& e)
+   {
+      Logger::error("exception retrieving config data" + std::string(e.what()));
+      return false;
+   }
+   catch (...)
+   {
+      Logger::error("exception retrieving config data");
+      return false;
+   }
    
    if (!configDataSource) {
-      // throw exception??
+      Logger::error("unable to retrieve config data");
       return false;
    }
 
