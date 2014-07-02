@@ -17,7 +17,7 @@ class ConditionVariable
 public:
    virtual ~ConditionVariable() {}
    
-   virtual void wait(std::shared_ptr<Mutex> mutex) noexcept = 0;
+   virtual bool wait(std::shared_ptr<Mutex> mutex) noexcept = 0;
    virtual void notifyOne() noexcept = 0;
    virtual void notifyAll() noexcept = 0;
    

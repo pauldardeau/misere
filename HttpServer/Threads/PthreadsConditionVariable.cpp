@@ -30,7 +30,7 @@ PthreadsConditionVariable::~PthreadsConditionVariable()
 
 //******************************************************************************
 
-void PthreadsConditionVariable::wait(std::shared_ptr<Mutex> mutex) noexcept
+bool PthreadsConditionVariable::wait(std::shared_ptr<Mutex> mutex) noexcept
 {
    if (m_initialized) {
       if (mutex) {
@@ -41,6 +41,8 @@ void PthreadsConditionVariable::wait(std::shared_ptr<Mutex> mutex) noexcept
             if (pthreadsMutex->isLocked()) {
                if (0 != ::pthread_cond_wait(&m_cond, &pthreadsMutex->getPlatformPrimitive())) {
                   Logger::error("unable to wait on condition variable");
+               } else {
+                  return true;
                }
             } else {
                Logger::error("mutex must be locked before calling wait");
@@ -55,6 +57,8 @@ void PthreadsConditionVariable::wait(std::shared_ptr<Mutex> mutex) noexcept
    } else {
       Logger::error("unable to wait on condition variable that hasn't been initialized");
    }
+   
+   return false;
 }
 
 //******************************************************************************

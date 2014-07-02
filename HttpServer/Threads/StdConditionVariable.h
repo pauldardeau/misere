@@ -18,7 +18,7 @@ public:
    StdConditionVariable();
    ~StdConditionVariable();
    
-   virtual void wait(std::shared_ptr<Mutex> mutex) noexcept override;
+   virtual bool wait(std::shared_ptr<Mutex> mutex) noexcept override;
    virtual void notifyOne() noexcept override;
    virtual void notifyAll() noexcept override;
    
