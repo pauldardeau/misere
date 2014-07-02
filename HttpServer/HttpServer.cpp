@@ -312,12 +312,12 @@ bool HttpServer::init(int port)
    }
    catch (const BasicException& be)
    {
-      Logger::error("exception retrieving config data" + be.whatString());
+      Logger::error("exception retrieving config data: " + be.whatString());
       return false;
    }
    catch (const std::exception& e)
    {
-      Logger::error("exception retrieving config data" + std::string(e.what()));
+      Logger::error("exception retrieving config data: " + std::string(e.what()));
       return false;
    }
    catch (...)
