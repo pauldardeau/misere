@@ -12,7 +12,6 @@
 #include <netdb.h>
 #include <cerrno>
 
-
 #include "Socket.h"
 #include "SocketCompletionObserver.h"
 #include "BasicException.h"
@@ -624,10 +623,13 @@ bool Socket::getPeerIPAddress(std::string& ipAddress) noexcept
    socklen_t x = sizeof(addr);
     
    if (!::getpeername(m_socketFD, (struct sockaddr*) &addr, &x)) {
-      char ipAddressBuffer[128];
-      std::snprintf(ipAddressBuffer, 128, "%s", ::inet_ntoa(addr.sin_addr));
+      char ipAddressBuffer[64];
+      memset(ipAddressBuffer, 0, sizeof(ipAddressBuffer));
+      ::inet_ntop(AF_INET,
+                  &addr.sin_addr,
+                  ipAddressBuffer,
+                  sizeof(ipAddressBuffer));
       ipAddress = ipAddressBuffer;
-        
       return true;
    } else {
       return false;
