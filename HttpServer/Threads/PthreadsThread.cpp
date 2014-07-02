@@ -13,11 +13,8 @@
 //******************************************************************************
 
 PthreadsThread::PthreadsThread() noexcept :
-   Thread(m_mutexAlive),
-   m_threadHandle(0),
-   m_exitCode(1L)
+   PthreadsThread(nullptr)
 {
-   Logger::logInstanceCreate("PthreadsThread");
 }
 
 //******************************************************************************

@@ -39,6 +39,7 @@ int Socket::createSocket() noexcept
 //******************************************************************************
 
 Socket::Socket(const std::string& address, int port) :
+   m_completionObserver(nullptr),
    m_serverAddress(address),
    m_socketFD(-1),
    m_userIndex(-1),
@@ -58,18 +59,8 @@ Socket::Socket(const std::string& address, int port) :
 //******************************************************************************
 
 Socket::Socket(int socketFD) noexcept :
-   m_socketFD(socketFD),
-   m_userIndex(-1),
-   m_isConnected(true),
-   m_includeMessageSize(false),
-   m_inputBuffer(new char[DEFAULT_BUFFER_SIZE]),
-   m_inBufferSize(DEFAULT_BUFFER_SIZE)
+   Socket(nullptr, socketFD)
 {
-   Logger::logInstanceCreate("Socket");
-
-   if (socketFD < 0) {
-      m_isConnected = false;
-   }
 }
 
 //******************************************************************************

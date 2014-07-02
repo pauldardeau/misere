@@ -14,20 +14,8 @@ static const std::string SPACE = " ";
 //******************************************************************************
 
 StringTokenizer::StringTokenizer(const std::string& withTokens) noexcept :
-   m_withTokens(withTokens),
-   m_delimiter(SPACE),
-   m_posTokens(m_withTokens.c_str()),
-   m_posDelimiter(m_delimiter.c_str()),
-   m_posCurrent(0),
-   m_stringLength(m_withTokens.length()),
-   m_isDelimitersWithToken(false),
-   m_isConstructing(true),
-   m_numberTokens(0),
-   m_indexToken(0)
+   StringTokenizer(withTokens, SPACE, false)
 {
-   Logger::logInstanceCreate("StringTokenizer");
-
-   init();
 }
 
 //******************************************************************************
@@ -48,7 +36,19 @@ StringTokenizer::StringTokenizer(const std::string& withTokens,
 {
    Logger::logInstanceCreate("StringTokenizer");
 
-   init();
+   if (m_withTokens.empty()) {
+      m_posCurrent = std::string::npos;
+   } else {
+      m_posCurrent = ::strspn(m_posTokens, m_posDelimiter);
+         
+      while (m_posCurrent != std::string::npos) { // while (hasMoreTokens()) {
+         m_tokens.push_back(extractNextToken());
+      }
+         
+      m_numberTokens = m_tokens.size();
+   }
+      
+   m_isConstructing = false;
 }
 
 //******************************************************************************
@@ -56,27 +56,6 @@ StringTokenizer::StringTokenizer(const std::string& withTokens,
 StringTokenizer::~StringTokenizer() noexcept
 {
    Logger::logInstanceDestroy("StringTokenizer");
-}
-
-//******************************************************************************
-
-void StringTokenizer::init() noexcept
-{
-   if (m_isConstructing) {
-      if (m_withTokens.empty()) {
-         m_posCurrent = std::string::npos;
-      } else {
-         m_posCurrent = ::strspn(m_posTokens, m_posDelimiter);
-      
-         while (m_posCurrent != std::string::npos) { // while (hasMoreTokens()) {
-            m_tokens.push_back(extractNextToken());
-         }
-      
-         m_numberTokens = m_tokens.size();
-      }
-   
-      m_isConstructing = false;
-   }
 }
 
 //******************************************************************************

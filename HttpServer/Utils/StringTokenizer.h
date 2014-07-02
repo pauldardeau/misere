@@ -33,7 +33,6 @@ class StringTokenizer
 
    
    protected:
-      void init() noexcept;
       std::string extractNextToken();
 
    

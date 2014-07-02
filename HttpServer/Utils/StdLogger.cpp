@@ -17,13 +17,8 @@ const std::string StdLogger::prefixVerbose  = "Verbose:";
 //******************************************************************************
 
 StdLogger::StdLogger() noexcept :
-   m_logLevel(Logger::LogLevel::Debug),
-   m_isLoggingInstanceLifecycles(false)
+   StdLogger(Logger::LogLevel::Debug)
 {
-   m_lockLifecycleStats =
-      std::unique_ptr<Mutex>(new PthreadsMutex("lockLifecycleStats"));
-   m_lockOccurrences =
-      std::unique_ptr<Mutex>(new PthreadsMutex("lockOccurrences"));
 }
 
 //******************************************************************************

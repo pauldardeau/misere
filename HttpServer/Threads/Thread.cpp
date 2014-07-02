@@ -18,14 +18,8 @@ static const std::string ATTR_WORKER_ID     = "worker_id";
 //******************************************************************************
 
 Thread::Thread(Mutex& mutexAlive) noexcept :
-   m_runnable(nullptr),
-   m_isAlive(false),
-   m_isPoolWorker(false),
-   m_mutexAlive(mutexAlive)
+   Thread(mutexAlive, nullptr)
 {
-   if (Logger::isLogging(Logger::LogLevel::Debug)) {
-      Logger::debug("new thread created");
-   }
 }
 
 //******************************************************************************

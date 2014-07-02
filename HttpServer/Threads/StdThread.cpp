@@ -51,9 +51,8 @@ void StdThread::runThread(StdThread* thread) noexcept
 //******************************************************************************
 
 StdThread::StdThread() noexcept :
-   Thread(m_mutexAlive)
+   StdThread(nullptr)
 {
-   Logger::logInstanceCreate("StdThread");
 }
 
 //******************************************************************************

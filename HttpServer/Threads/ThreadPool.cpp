@@ -10,13 +10,8 @@
 //******************************************************************************
 
 ThreadPool::ThreadPool(int numberWorkers) noexcept :
-   m_threadingFactory(ThreadingFactory::getThreadingFactory()),
-   m_queue(m_threadingFactory),
-   m_workerCount(numberWorkers),
-   m_workersCreated(0),
-   m_isRunning(false)
+   ThreadPool(ThreadingFactory::getThreadingFactory(), numberWorkers)
 {
-   Logger::logInstanceCreate("ThreadPool");
 }
 
 //******************************************************************************

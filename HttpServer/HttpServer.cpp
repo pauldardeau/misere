@@ -133,22 +133,8 @@ typedef HttpHandler* (*PFN_CREATE_HANDLER)();
 //******************************************************************************
 
 HttpServer::HttpServer() :
-   m_kernelEventServer(nullptr),
-   m_serverSocket(nullptr),
-   m_threadPool(nullptr),
-   m_threadingFactory(nullptr),
-   m_isDone(false),
-   m_isThreaded(true),
-   m_isUsingKernelEventServer(false),
-   m_isFullyInitialized(false),
-   m_allowBuiltInHandlers(false),
-   m_requireAllHandlersForStartup(false),
-   m_threadPoolSize(CFG_DEFAULT_THREAD_POOL_SIZE),
-   m_serverPort(0)
+   HttpServer(CFG_DEFAULT_PORT_NUMBER)
 {
-   Logger::logInstanceCreate("HttpServer");
-
-   init(CFG_DEFAULT_PORT_NUMBER);
 }
 
 //******************************************************************************

@@ -7,42 +7,14 @@
 #include "BasicException.h"
 #include "Logger.h"
 
+static const std::string EMPTY_STRING = "";
+
+
 //******************************************************************************
 
 PthreadsMutex::PthreadsMutex() :
-   m_haveValidMutex(false),
-   m_isLocked(false)
+   PthreadsMutex(EMPTY_STRING)
 {
-   Logger::logInstanceCreate("PthreadsMutex");
-   char buffer[128];
-   
-   pthread_mutexattr_t attr;
-   int rc = ::pthread_mutexattr_init(&attr);
-   if (0 == rc) {
-      rc = ::pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_ERRORCHECK);
-      
-      if (0 == rc) {
-         rc = ::pthread_mutex_init(&m_mutex, &attr);
-         
-         ::pthread_mutexattr_destroy(&attr);
-         
-         if (0 == rc) {
-            m_haveValidMutex = true;
-         } else {
-            snprintf(buffer, 128, "unable to create pthreads mutex, rc=%d", rc);
-            Logger::error(buffer);
-            throw BasicException(buffer);
-         }
-      } else {
-         snprintf(buffer, 128, "unable to set pthreads mutex type, rc=%d", rc);
-         Logger::error(buffer);
-         throw BasicException(buffer);
-      }
-   } else {
-      snprintf(buffer, 128, "unable to initialize mutex attributes, rc=%d", rc);
-      Logger::error(buffer);
-      throw BasicException(buffer);
-   }
 }
 
 //******************************************************************************

@@ -4,12 +4,13 @@
 #include "StdMutex.h"
 #include "Logger.h"
 
+static const std::string EMPTY_STRING = "";
+
 //******************************************************************************
 
 StdMutex::StdMutex() :
-   m_isLocked(false)
+   StdMutex(EMPTY_STRING)
 {
-   Logger::logInstanceCreate("StdMutex");
 }
 
 //******************************************************************************
