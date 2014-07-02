@@ -26,7 +26,6 @@ PthreadsMutex::PthreadsMutex() :
       
       if (0 == rc) {
          m_haveValidMutex = true;
-         //printf("have valid mutex\n");
       } else {
          snprintf(buffer, 128, "unable to create pthreads mutex, rc=%d", rc);
          Logger::error(buffer);
@@ -58,7 +57,6 @@ PthreadsMutex::PthreadsMutex(const std::string& mutexName) :
       
       if (0 == rc) {
          m_haveValidMutex = true;
-         //printf("have valid mutex\n");
       } else {
          snprintf(buffer, 128, "unable to create pthreads mutex, rc=%d", rc);
          Logger::error(buffer);
@@ -141,7 +139,7 @@ bool PthreadsMutex::lock() noexcept
 
 bool PthreadsMutex::isLocked() const noexcept
 {
-   return m_isLocked;
+   return m_haveValidMutex && m_isLocked;
 }
 
 //******************************************************************************
