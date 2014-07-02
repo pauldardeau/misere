@@ -53,9 +53,6 @@
 static const std::string SERVER_NAME             = "Misere";
 static const std::string SERVER_VERSION          = "0.1";
 
-static const std::string ENV_VAR_CFG_PATH        = "MISERE_HOME";
-static const std::string CFG_FILE_NAME           = "misere.ini";
-
 static const std::string CFG_TRUE_SETTING_VALUES = "yes|true|1";
 
 static const std::string EMPTY = "";
@@ -201,24 +198,6 @@ HttpServer::HttpServer(const std::string& configFilePath) :
 
 std::unique_ptr<SectionedConfigDataSource> HttpServer::getConfigDataSource()
 {
-   if (m_configFilePath.empty()) {
-      const char* configFilePath = std::getenv(ENV_VAR_CFG_PATH.c_str());
-
-      if (nullptr != configFilePath) {
-         m_configFilePath = configFilePath;
-         
-         if (m_configFilePath[m_configFilePath.length()-1] != '/') {
-            m_configFilePath += "/";
-         }
-
-         m_configFilePath += CFG_FILE_NAME;
-      }
-   }
-
-   if (m_configFilePath.empty()) {
-      m_configFilePath = CFG_FILE_NAME;
-   }
-
    return std::unique_ptr<SectionedConfigDataSource>(new IniReader(m_configFilePath));
 }
 

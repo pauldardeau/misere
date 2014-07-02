@@ -1,6 +1,7 @@
 // Copyright Paul Dardeau, SwampBits LLC 2014
 // BSD License
 
+#include <cstdlib>
 #include <memory>
 
 #include "HttpServer.h"
@@ -9,19 +10,46 @@
 #include "StdLogger.h"
 //#include "Tests.h"
 
+static const std::string ENV_VAR_CFG_PATH        = "MISERE_HOME";
+static const std::string CFG_FILE_NAME           = "misere.ini";
+
 
 int main(int argc, char* argv[])
 {
    //Tests tests;
    //tests.run();
    
+   std::string configFilePath;
+   
+   if (argc > 1) {
+      configFilePath = argv[1];
+   } else {
+      const char* configPath = std::getenv(ENV_VAR_CFG_PATH.c_str());
+      
+      if (nullptr != configPath) {
+         configFilePath = configFilePath;
+         
+         if (configFilePath[configFilePath.length()-1] != '/') {
+            configFilePath += "/";
+         }
+         
+         configFilePath += CFG_FILE_NAME;
+      }
+   }
+
    std::shared_ptr<StdLogger> logger(new StdLogger(Logger::LogLevel::Warning));
    logger->setLogInstanceLifecycles(true);
    Logger::setLogger(logger);
+
+   if (configFilePath.empty()) {
+      Logger::error("no config file provided");
+      return 1;
+   }
+   
    
    try
    {
-      HttpServer server("/Users/paul/cppserver/misere.ini");
+      HttpServer server(configFilePath);
       server.run();
       return 0;
    }
