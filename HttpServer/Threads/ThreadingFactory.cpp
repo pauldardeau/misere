@@ -129,12 +129,13 @@ std::shared_ptr<Thread> ThreadingFactory::createThread(std::shared_ptr<Runnable>
 
 std::shared_ptr<ConditionVariable> ThreadingFactory::createConditionVariable()
 {
-   if (m_threadingPackage == ThreadingPackage::CPP_11) {
+   if (m_packageMutexType == ThreadingPackage::CPP_11) {
       return std::shared_ptr<ConditionVariable>(new StdConditionVariable());
-   } else if (m_threadingPackage == ThreadingPackage::PTHREADS) {
+   } else if (m_packageMutexType == ThreadingPackage::PTHREADS) {
       return std::shared_ptr<ConditionVariable>(new PthreadsConditionVariable());
-   } else if (m_threadingPackage == ThreadingPackage::GCD_LIBDISPATCH) {
+   } else if (m_packageMutexType == ThreadingPackage::GCD_LIBDISPATCH) {
       Logger::error("createConditionVariable should not be called on GCD_LIBDISPATCH");
+      throw BasicException("Invalid threading package for condition variables");
    }
    
    return nullptr;

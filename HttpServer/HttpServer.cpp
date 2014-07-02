@@ -700,6 +700,10 @@ bool HttpServer::init(int port)
          threadingFactory(new ThreadingFactory(threadingPackage));
       ThreadingFactory::setThreadingFactory(threadingFactory);
       m_threadingFactory = std::move(threadingFactory);
+      
+      if (m_isUsingKernelEventServer) {
+         m_threadingFactory->setMutexType(ThreadingFactory::ThreadingPackage::PTHREADS);
+      }
          
       m_threadPool = m_threadingFactory->createThreadPoolDispatcher(m_threadPoolSize);
          
