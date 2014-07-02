@@ -38,8 +38,13 @@ void PthreadsConditionVariable::wait(std::shared_ptr<Mutex> mutex) noexcept
             std::dynamic_pointer_cast<PthreadsMutex>(mutex);
          
          if (pthreadsMutex) {
-            if (0 != ::pthread_cond_wait(&m_cond, &pthreadsMutex->getPlatformPrimitive())) {
-               Logger::error("unable to wait on condition variable");
+            if (pthreadsMutex->isLocked()) {
+               if (0 != ::pthread_cond_wait(&m_cond, &pthreadsMutex->getPlatformPrimitive())) {
+                  Logger::error("unable to wait on condition variable");
+               }
+            } else {
+               Logger::error("mutex must be locked before calling wait");
+               throw BasicException("mutex must be locked before calling wait");
             }
          } else {
             Logger::error("mutex must be an instance of PthreadsMutex");
