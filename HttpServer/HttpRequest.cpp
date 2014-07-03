@@ -9,6 +9,7 @@
 #include "StrUtils.h"
 #include "StringTokenizer.h"
 #include "Logger.h"
+#include "HTTP.h"
 
 static const std::string ENC_DOUBLE_QUOTE  = "%22";   // "
 static const std::string ENC_SINGLE_QUOTE  = "%27";   // '
@@ -294,6 +295,104 @@ void HttpRequest::parseBody() noexcept
          }
       }
    }
+}
+
+//******************************************************************************
+
+bool HttpRequest::hasAccept() const noexcept
+{
+   return hasHeaderValue(HTTP::HTTP_ACCEPT);
+}
+
+//******************************************************************************
+
+bool HttpRequest::hasAcceptEncoding() const noexcept
+{
+   return hasHeaderValue(HTTP::HTTP_ACCEPT_ENCODING);
+}
+
+//******************************************************************************
+
+bool HttpRequest::hasAcceptLanguage() const noexcept
+{
+   return hasHeaderValue(HTTP::HTTP_ACCEPT_LANGUAGE);
+}
+
+//******************************************************************************
+
+bool HttpRequest::hasConnection() const noexcept
+{
+   return hasHeaderValue(HTTP::HTTP_CONNECTION);
+}
+
+//******************************************************************************
+
+bool HttpRequest::hasDNT() const noexcept
+{
+   return hasHeaderValue("dnt");
+}
+
+//******************************************************************************
+
+bool HttpRequest::hasHost() const noexcept
+{
+   return hasHeaderValue(HTTP::HTTP_HOST);
+}
+
+//******************************************************************************
+
+bool HttpRequest::hasUserAgent() const noexcept
+{
+   return hasHeaderValue(HTTP::HTTP_USER_AGENT);
+}
+
+//******************************************************************************
+
+const std::string& HttpRequest::getAccept() const
+{
+   return getHeaderValue(HTTP::HTTP_ACCEPT);
+}
+
+//******************************************************************************
+
+const std::string& HttpRequest::getAcceptEncoding() const
+{
+   return getHeaderValue(HTTP::HTTP_ACCEPT_ENCODING);
+}
+
+//******************************************************************************
+
+const std::string& HttpRequest::getAcceptLanguage() const
+{
+   return getHeaderValue(HTTP::HTTP_ACCEPT_LANGUAGE);
+}
+
+//******************************************************************************
+
+const std::string& HttpRequest::getConnection() const
+{
+   return getHeaderValue(HTTP::HTTP_CONNECTION);
+}
+
+//******************************************************************************
+
+const std::string& HttpRequest::getDNT() const
+{
+   return getHeaderValue("dnt");
+}
+
+//******************************************************************************
+
+const std::string& HttpRequest::getHost() const
+{
+   return getHeaderValue(HTTP::HTTP_HOST);
+}
+
+//******************************************************************************
+
+const std::string& HttpRequest::getUserAgent() const
+{
+   return getHeaderValue(HTTP::HTTP_USER_AGENT);
 }
 
 //******************************************************************************

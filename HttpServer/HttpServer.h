@@ -77,6 +77,8 @@ class HttpServer
                       const std::string& setting) const noexcept;
    
       void replaceVariables(const KeyValuePairs& kvp, std::string& s) const noexcept;
+   
+      bool compressResponse(const std::string& mimeType) const noexcept;
 
    
    protected:

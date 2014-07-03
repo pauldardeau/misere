@@ -14,11 +14,12 @@
 #include "StrUtils.h"
 
 
+static const std::string HTTP_ACCEPT_ENCODING = "accept-encoding";
 static const std::string HTTP_CONNECTION      = "Connection:";
-static const std::string HTTP_CONTENT_LENGTH  = "Content-Length:";
-static const std::string HTTP_CONTENT_TYPE    = "Content-Type:";
-static const std::string HTTP_DATE            = "Date:";
-static const std::string HTTP_SERVER          = "Server:";
+static const std::string HTTP_CONTENT_LENGTH  = "content-length:";
+static const std::string HTTP_CONTENT_TYPE    = "content-type:";
+static const std::string HTTP_DATE            = "date:";
+static const std::string HTTP_SERVER          = "server:";
 static const std::string HTTP_USER_AGENT      = "User-Agent";
 
 static const std::string CONNECTION_CLOSE     = "close";
@@ -32,6 +33,8 @@ static const std::string COUNT_PATH           = "path";
 static const std::string COUNT_USER_AGENT     = "user_agent";
 
 static const std::string QUESTION_MARK        = "?";
+
+static const std::string GZIP                 = "gzip";
 
 
 //******************************************************************************
@@ -149,7 +152,7 @@ void RequestHandler::run()
       }
    
       mapHeaders[HTTP_DATE] = systemDate;
-      mapHeaders[HTTP_CONTENT_TYPE] = CONTENT_TYPE_HTML;
+      //mapHeaders[HTTP_CONTENT_TYPE] = CONTENT_TYPE_HTML;
    
       if ((HTTP::HTTP_PROTOCOL1_0 != protocol) &&
           (HTTP::HTTP_PROTOCOL1_1 != protocol)) {
@@ -190,6 +193,28 @@ void RequestHandler::run()
             responseCode = std::to_string(response.getStatusCode());
             const std::string& responseBody = response.getBody();
             contentLength = responseBody.size();
+
+            if ((contentLength > 0) && !response.hasContentEncoding()) {
+               if (request.hasAcceptEncoding()) {
+                  const std::string& acceptEncoding =
+                     request.getAcceptEncoding();
+                  
+                  if (StrUtils::containsString(acceptEncoding, GZIP) &&
+                      m_server.compressResponse(response.getContentType())) {
+                     
+                     try {
+                        const std::string compressedResponseBody =
+                           StrUtils::gzipCompress(responseBody);
+                        contentLength = compressedResponseBody.size();
+                        response.setBody(compressedResponseBody);
+                        response.setContentEncoding(GZIP);
+                     }
+                     catch (const std::exception& e) {
+                        Logger::error("unable to compress response");
+                     }
+                  }
+               }
+            }
          
             response.populateWithHeaders(mapHeaders);
          }
@@ -242,7 +267,7 @@ void RequestHandler::run()
       if (contentLength > 0) {
          responseAsString += response.getBody();
       }
-   
+
       socket->write(responseAsString);
    
       /*

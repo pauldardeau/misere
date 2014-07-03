@@ -58,6 +58,7 @@ static const std::string CFG_TRUE_SETTING_VALUES = "yes|true|1";
 static const std::string EMPTY = "";
 static const std::string SPACE = " ";
 static const std::string EOL   = "\n";
+static const std::string COLON = ":";
 
 
 // default settings
@@ -107,6 +108,12 @@ static const std::string CFG_LOGGING_WARNING                = "warning";
 static const std::string CFG_LOGGING_INFO                   = "info";
 static const std::string CFG_LOGGING_DEBUG                  = "debug";
 static const std::string CFG_LOGGING_VERBOSE                = "verbose";
+
+// mime types
+static const std::string MIME_APPLICATION_JSON  = "application/json";
+static const std::string MIME_APPLICATION_XML   = "application/xml";
+static const std::string MIME_TEXT_HTML         = "text/html";
+static const std::string MIME_TEXT_PLAIN        = "text/plain";
 
 
 // module config values
@@ -791,6 +798,17 @@ std::string HttpServer::getLocalDateTime() const noexcept
 
 //******************************************************************************
 
+bool HttpServer::compressResponse(const std::string& mimeType) const noexcept
+{
+   //TODO: make this configurable through config file
+   return (mimeType == MIME_TEXT_HTML) ||
+          (mimeType == MIME_TEXT_PLAIN) ||
+          (mimeType == MIME_APPLICATION_JSON) ||
+          (mimeType == MIME_APPLICATION_XML);
+}
+
+//******************************************************************************
+
 bool HttpServer::addPathHandler(const std::string& path,
                                 HttpHandler* pHandler) noexcept
 {
@@ -845,14 +863,20 @@ std::string HttpServer::buildHeader(const std::string& responseCode,
    std::string sb;
 
    if (!responseCode.empty()) {
-      sb += HTTP::HTTP_PROTOCOL1_0;
+      sb += HTTP::HTTP_PROTOCOL1_1;
       sb += SPACE;
       sb += responseCode;
       sb += EOL;
    }
 
    for ( ; it != itEnd; ++it) {
-      sb += (*it).first;  // header key
+      const std::string& headerKey = (*it).first;
+      sb += headerKey;  // header key
+      
+      if (!StrUtils::endsWith(headerKey, COLON)) {
+         sb += COLON;
+      }
+      
       sb += SPACE;
 
       sb += (*it).second;  // header value

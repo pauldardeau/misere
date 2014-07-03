@@ -11,12 +11,16 @@
 #include "HttpException.h"
 #include "Logger.h"
 
+static const std::string TEXT_HTML = "text/html";
+
 //******************************************************************************
 
 HttpResponse::HttpResponse() noexcept :
    m_statusCodeAsInteger(200)
 {
    Logger::logInstanceCreate("HttpResponse");
+   
+   setContentType(TEXT_HTML);
 }
 
 //******************************************************************************
@@ -264,4 +268,45 @@ const std::string& HttpResponse::getReasonPhrase() const noexcept
 
 //******************************************************************************
 
+bool HttpResponse::hasContentEncoding() const noexcept
+{
+   return hasHeaderValue(HTTP::HTTP_CONTENT_ENCODING);
+}
+
+//******************************************************************************
+
+bool HttpResponse::hasContentType() const noexcept
+{
+   return hasHeaderValue(HTTP::HTTP_CONTENT_TYPE);
+}
+
+//******************************************************************************
+
+const std::string& HttpResponse::getContentEncoding() const noexcept
+{
+   return getHeaderValue(HTTP::HTTP_CONTENT_ENCODING);
+}
+
+//******************************************************************************
+
+const std::string& HttpResponse::getContentType() const noexcept
+{
+   return getHeaderValue(HTTP::HTTP_CONTENT_TYPE);
+}
+
+//******************************************************************************
+
+void HttpResponse::setContentEncoding(const std::string& contentEncoding) noexcept
+{
+   setHeaderValue(HTTP::HTTP_CONTENT_ENCODING, contentEncoding);
+}
+
+//******************************************************************************
+
+void HttpResponse::setContentType(const std::string& contentType) noexcept
+{
+   setHeaderValue(HTTP::HTTP_CONTENT_TYPE, contentType);
+}
+
+//******************************************************************************
 

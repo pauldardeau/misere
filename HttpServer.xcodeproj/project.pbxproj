@@ -19,6 +19,17 @@
 		DA4DEA24195DD20F00DB1F03 /* ServerStatusHandler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DA4DEA22195DD20F00DB1F03 /* ServerStatusHandler.cpp */; };
 		DA4DEA27195DD46F00DB1F03 /* SystemStats.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DA4DEA25195DD46F00DB1F03 /* SystemStats.cpp */; };
 		DA4DEA2A1960C9DF00DB1F03 /* EchoHandler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DA4DEA281960C9DF00DB1F03 /* EchoHandler.cpp */; };
+		DA4DEA321964BAF700DB1F03 /* compress.c in Sources */ = {isa = PBXBuildFile; fileRef = DA4DEA2D1964BAF700DB1F03 /* compress.c */; };
+		DA4DEA331964BAF700DB1F03 /* deflate.c in Sources */ = {isa = PBXBuildFile; fileRef = DA4DEA2E1964BAF700DB1F03 /* deflate.c */; };
+		DA4DEA341964BAF700DB1F03 /* gzwrite.c in Sources */ = {isa = PBXBuildFile; fileRef = DA4DEA2F1964BAF700DB1F03 /* gzwrite.c */; };
+		DA4DEA391964BCD700DB1F03 /* zutil.c in Sources */ = {isa = PBXBuildFile; fileRef = DA4DEA381964BCD700DB1F03 /* zutil.c */; };
+		DA4DEA3C1964BD1900DB1F03 /* crc32.c in Sources */ = {isa = PBXBuildFile; fileRef = DA4DEA3A1964BD1900DB1F03 /* crc32.c */; };
+		DA4DEA3E1964BD5800DB1F03 /* adler32.c in Sources */ = {isa = PBXBuildFile; fileRef = DA4DEA3D1964BD5800DB1F03 /* adler32.c */; };
+		DA4DEA401964BD8C00DB1F03 /* gzlib.c in Sources */ = {isa = PBXBuildFile; fileRef = DA4DEA3F1964BD8C00DB1F03 /* gzlib.c */; };
+		DA4DEA431964BDE400DB1F03 /* trees.c in Sources */ = {isa = PBXBuildFile; fileRef = DA4DEA411964BDE400DB1F03 /* trees.c */; };
+		DA4DEA461964C04A00DB1F03 /* inflate.c in Sources */ = {isa = PBXBuildFile; fileRef = DA4DEA441964C04A00DB1F03 /* inflate.c */; };
+		DA4DEA491964C07100DB1F03 /* inftrees.c in Sources */ = {isa = PBXBuildFile; fileRef = DA4DEA471964C07100DB1F03 /* inftrees.c */; };
+		DA4DEA4C1964C08F00DB1F03 /* inffast.c in Sources */ = {isa = PBXBuildFile; fileRef = DA4DEA4A1964C08F00DB1F03 /* inffast.c */; };
 		DAC40D2619548E530064EFFB /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DAC40D2419548E530064EFFB /* main.cpp */; };
 		DAC40DB619563E5C0064EFFB /* ServerSocket.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DAC40DB219563E5C0064EFFB /* ServerSocket.cpp */; };
 		DAC40DB719563E5C0064EFFB /* Socket.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DAC40DB419563E5C0064EFFB /* Socket.cpp */; };
@@ -122,6 +133,28 @@
 		DA4DEA26195DD46F00DB1F03 /* SystemStats.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SystemStats.h; path = HttpServer/Utils/SystemStats.h; sourceTree = "<group>"; };
 		DA4DEA281960C9DF00DB1F03 /* EchoHandler.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = EchoHandler.cpp; path = HttpServer/Handlers/EchoHandler.cpp; sourceTree = "<group>"; };
 		DA4DEA291960C9DF00DB1F03 /* EchoHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = EchoHandler.h; path = HttpServer/Handlers/EchoHandler.h; sourceTree = "<group>"; };
+		DA4DEA2D1964BAF700DB1F03 /* compress.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = compress.c; path = HttpServer/ThirdParty/zlib/compress.c; sourceTree = "<group>"; };
+		DA4DEA2E1964BAF700DB1F03 /* deflate.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = deflate.c; path = HttpServer/ThirdParty/zlib/deflate.c; sourceTree = "<group>"; };
+		DA4DEA2F1964BAF700DB1F03 /* gzwrite.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = gzwrite.c; path = HttpServer/ThirdParty/zlib/gzwrite.c; sourceTree = "<group>"; };
+		DA4DEA301964BAF700DB1F03 /* zconf.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = zconf.h; path = HttpServer/ThirdParty/zlib/zconf.h; sourceTree = "<group>"; };
+		DA4DEA311964BAF700DB1F03 /* zlib.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = zlib.h; path = HttpServer/ThirdParty/zlib/zlib.h; sourceTree = "<group>"; };
+		DA4DEA351964BB2D00DB1F03 /* gzguts.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = gzguts.h; path = HttpServer/ThirdParty/zlib/gzguts.h; sourceTree = "<group>"; };
+		DA4DEA361964BB3200DB1F03 /* deflate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = deflate.h; path = HttpServer/ThirdParty/zlib/deflate.h; sourceTree = "<group>"; };
+		DA4DEA371964BB6500DB1F03 /* zutil.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = zutil.h; path = HttpServer/ThirdParty/zlib/zutil.h; sourceTree = "<group>"; };
+		DA4DEA381964BCD700DB1F03 /* zutil.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = zutil.c; path = HttpServer/ThirdParty/zlib/zutil.c; sourceTree = "<group>"; };
+		DA4DEA3A1964BD1900DB1F03 /* crc32.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = crc32.c; path = HttpServer/ThirdParty/zlib/crc32.c; sourceTree = "<group>"; };
+		DA4DEA3B1964BD1900DB1F03 /* crc32.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = crc32.h; path = HttpServer/ThirdParty/zlib/crc32.h; sourceTree = "<group>"; };
+		DA4DEA3D1964BD5800DB1F03 /* adler32.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = adler32.c; path = HttpServer/ThirdParty/zlib/adler32.c; sourceTree = "<group>"; };
+		DA4DEA3F1964BD8C00DB1F03 /* gzlib.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = gzlib.c; path = HttpServer/ThirdParty/zlib/gzlib.c; sourceTree = "<group>"; };
+		DA4DEA411964BDE400DB1F03 /* trees.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = trees.c; path = HttpServer/ThirdParty/zlib/trees.c; sourceTree = "<group>"; };
+		DA4DEA421964BDE400DB1F03 /* trees.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = trees.h; path = HttpServer/ThirdParty/zlib/trees.h; sourceTree = "<group>"; };
+		DA4DEA441964C04A00DB1F03 /* inflate.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = inflate.c; path = HttpServer/ThirdParty/zlib/inflate.c; sourceTree = "<group>"; };
+		DA4DEA451964C04A00DB1F03 /* inflate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = inflate.h; path = HttpServer/ThirdParty/zlib/inflate.h; sourceTree = "<group>"; };
+		DA4DEA471964C07100DB1F03 /* inftrees.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = inftrees.c; path = HttpServer/ThirdParty/zlib/inftrees.c; sourceTree = "<group>"; };
+		DA4DEA481964C07100DB1F03 /* inftrees.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = inftrees.h; path = HttpServer/ThirdParty/zlib/inftrees.h; sourceTree = "<group>"; };
+		DA4DEA4A1964C08F00DB1F03 /* inffast.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = inffast.c; path = HttpServer/ThirdParty/zlib/inffast.c; sourceTree = "<group>"; };
+		DA4DEA4B1964C08F00DB1F03 /* inffast.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = inffast.h; path = HttpServer/ThirdParty/zlib/inffast.h; sourceTree = "<group>"; };
+		DA4DEA4D1964C0AA00DB1F03 /* inffixed.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = inffixed.h; path = HttpServer/ThirdParty/zlib/inffixed.h; sourceTree = "<group>"; };
 		DAC40D2419548E530064EFFB /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		DAC40DB219563E5C0064EFFB /* ServerSocket.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ServerSocket.cpp; path = HttpServer/Sockets/ServerSocket.cpp; sourceTree = "<group>"; };
 		DAC40DB319563E5C0064EFFB /* ServerSocket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ServerSocket.h; path = HttpServer/Sockets/ServerSocket.h; sourceTree = "<group>"; };
@@ -271,6 +304,7 @@
 		DA1DCC741912FAD70077AB7A = {
 			isa = PBXGroup;
 			children = (
+				DA4DEA2B1964BAD300DB1F03 /* ThirdParty */,
 				DAC40DF41956485B0064EFFB /* KernelEvents */,
 				DA1DCC7F1912FAD70077AB7A /* HttpServer */,
 				DAC40D75195637420064EFFB /* Handlers */,
@@ -322,6 +356,43 @@
 				DA1DCC821912FAD70077AB7A /* HttpServer.1 */,
 			);
 			path = HttpServer;
+			sourceTree = "<group>";
+		};
+		DA4DEA2B1964BAD300DB1F03 /* ThirdParty */ = {
+			isa = PBXGroup;
+			children = (
+				DA4DEA2C1964BADE00DB1F03 /* zlib */,
+			);
+			name = ThirdParty;
+			sourceTree = "<group>";
+		};
+		DA4DEA2C1964BADE00DB1F03 /* zlib */ = {
+			isa = PBXGroup;
+			children = (
+				DA4DEA4D1964C0AA00DB1F03 /* inffixed.h */,
+				DA4DEA4A1964C08F00DB1F03 /* inffast.c */,
+				DA4DEA4B1964C08F00DB1F03 /* inffast.h */,
+				DA4DEA471964C07100DB1F03 /* inftrees.c */,
+				DA4DEA481964C07100DB1F03 /* inftrees.h */,
+				DA4DEA441964C04A00DB1F03 /* inflate.c */,
+				DA4DEA451964C04A00DB1F03 /* inflate.h */,
+				DA4DEA411964BDE400DB1F03 /* trees.c */,
+				DA4DEA421964BDE400DB1F03 /* trees.h */,
+				DA4DEA3F1964BD8C00DB1F03 /* gzlib.c */,
+				DA4DEA3D1964BD5800DB1F03 /* adler32.c */,
+				DA4DEA3A1964BD1900DB1F03 /* crc32.c */,
+				DA4DEA3B1964BD1900DB1F03 /* crc32.h */,
+				DA4DEA381964BCD700DB1F03 /* zutil.c */,
+				DA4DEA371964BB6500DB1F03 /* zutil.h */,
+				DA4DEA361964BB3200DB1F03 /* deflate.h */,
+				DA4DEA351964BB2D00DB1F03 /* gzguts.h */,
+				DA4DEA2D1964BAF700DB1F03 /* compress.c */,
+				DA4DEA2E1964BAF700DB1F03 /* deflate.c */,
+				DA4DEA2F1964BAF700DB1F03 /* gzwrite.c */,
+				DA4DEA301964BAF700DB1F03 /* zconf.h */,
+				DA4DEA311964BAF700DB1F03 /* zlib.h */,
+			);
+			name = zlib;
 			sourceTree = "<group>";
 		};
 		DA9CED7D19314B6E0036DD13 /* Tests */ = {
@@ -552,11 +623,13 @@
 			files = (
 				DAC40E86195A3A840064EFFB /* TestThreadPoolQueue.cpp in Sources */,
 				DAC40DC519563E6F0064EFFB /* InvalidKeyException.cpp in Sources */,
+				DA4DEA321964BAF700DB1F03 /* compress.c in Sources */,
 				DAC40DB619563E5C0064EFFB /* ServerSocket.cpp in Sources */,
 				DAC40E81195A3A840064EFFB /* TestInvalidKeyException.cpp in Sources */,
 				DA1DCCD119141CDB0077AB7A /* RequestHandler.cpp in Sources */,
 				DAC40E90195A3A840064EFFB /* TestThread.cpp in Sources */,
 				DAC40E8C195A3A840064EFFB /* TestStdMutex.cpp in Sources */,
+				DA4DEA391964BCD700DB1F03 /* zutil.c in Sources */,
 				DAC40E37195A21E70064EFFB /* SystemInfo.cpp in Sources */,
 				DAC40E3C195A3A600064EFFB /* EpollServer.cpp in Sources */,
 				DAC40E95195A3AA80064EFFB /* ThreadPoolDispatch.cpp in Sources */,
@@ -565,6 +638,7 @@
 				DAC40E88195A3A840064EFFB /* Tests.cpp in Sources */,
 				DA4DEA2A1960C9DF00DB1F03 /* EchoHandler.cpp in Sources */,
 				DAC40DF3195640120064EFFB /* Logger.cpp in Sources */,
+				DA4DEA3E1964BD5800DB1F03 /* adler32.c in Sources */,
 				DAC40E80195A3A840064EFFB /* TestIniReader.cpp in Sources */,
 				DAC40DDC19563E800064EFFB /* ThreadPoolWorker.cpp in Sources */,
 				DAC40DF019563FF00064EFFB /* ServerDateTimeHandler.cpp in Sources */,
@@ -572,12 +646,15 @@
 				DAC40DB719563E5C0064EFFB /* Socket.cpp in Sources */,
 				DAC40E85195A3A840064EFFB /* TestThreadPool.cpp in Sources */,
 				DA1DCC981912FB0F0077AB7A /* HttpResponse.cpp in Sources */,
+				DA4DEA4C1964C08F00DB1F03 /* inffast.c in Sources */,
 				DAC40E7B195A3A840064EFFB /* TestHttpException.cpp in Sources */,
+				DA4DEA341964BAF700DB1F03 /* gzwrite.c in Sources */,
 				DAC40E341959F1610064EFFB /* AbstractHandler.cpp in Sources */,
 				DAC40DD819563E800064EFFB /* PthreadsThread.cpp in Sources */,
 				DA1DCC971912FB0F0077AB7A /* HttpRequest.cpp in Sources */,
 				DAC40DEF19563FF00064EFFB /* GMTDateTimeHandler.cpp in Sources */,
 				DAC40DC319563E6F0064EFFB /* DynamicLibrary.cpp in Sources */,
+				DA4DEA331964BAF700DB1F03 /* deflate.c in Sources */,
 				DA1DCCA41912FB300077AB7A /* HttpTransaction.cpp in Sources */,
 				DAC40E3D195A3A600064EFFB /* KernelEventServer.cpp in Sources */,
 				DAC40E78195A3A840064EFFB /* TestCase.cpp in Sources */,
@@ -588,6 +665,7 @@
 				DAC40DF119563FF00064EFFB /* ServerStatsHandler.cpp in Sources */,
 				DAC40DD719563E800064EFFB /* PthreadsMutex.cpp in Sources */,
 				DAC40DC419563E6F0064EFFB /* IniReader.cpp in Sources */,
+				DA4DEA431964BDE400DB1F03 /* trees.c in Sources */,
 				DA1DCC9B1912FB240077AB7A /* HttpServer.cpp in Sources */,
 				DAC40E84195A3A840064EFFB /* TestPthreadsMutex.cpp in Sources */,
 				DAC40E0919576ED20064EFFB /* StdMutex.cpp in Sources */,
@@ -607,12 +685,15 @@
 				DAC40E99195A3ADE0064EFFB /* ThreadingFactory.cpp in Sources */,
 				DAC40E8B195A3A840064EFFB /* TestSocketRequest.cpp in Sources */,
 				DA4DEA27195DD46F00DB1F03 /* SystemStats.cpp in Sources */,
+				DA4DEA3C1964BD1900DB1F03 /* crc32.c in Sources */,
 				DA1DCC961912FB0F0077AB7A /* HttpClient.cpp in Sources */,
 				DAC40E7D195A3A840064EFFB /* TestHttpResponse.cpp in Sources */,
 				DA4DEA24195DD20F00DB1F03 /* ServerStatusHandler.cpp in Sources */,
 				DAC40DE319563F000064EFFB /* StrUtils.cpp in Sources */,
 				DAC40E8F195A3A840064EFFB /* TestSuite.cpp in Sources */,
 				DAC40E311959CA4C0064EFFB /* ServerObjectsDebugging.cpp in Sources */,
+				DA4DEA401964BD8C00DB1F03 /* gzlib.c in Sources */,
+				DA4DEA461964C04A00DB1F03 /* inflate.c in Sources */,
 				DAC40E87195A3A840064EFFB /* TestRequestHandler.cpp in Sources */,
 				DAC40E8A195A3A840064EFFB /* TestSocket.cpp in Sources */,
 				DAC40E7F195A3A840064EFFB /* TestHttpTransaction.cpp in Sources */,
@@ -622,6 +703,7 @@
 				DAC40E79195A3A840064EFFB /* TestHTTP.cpp in Sources */,
 				DAC40E8E195A3A840064EFFB /* TestStrUtils.cpp in Sources */,
 				DAC40DF7195648720064EFFB /* KqueueServer.cpp in Sources */,
+				DA4DEA491964C07100DB1F03 /* inftrees.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

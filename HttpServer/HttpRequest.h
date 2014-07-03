@@ -44,6 +44,22 @@ class HttpRequest : public HttpTransaction
       const std::string& getArgument(const std::string& key) const noexcept;
       void getArgumentKeys(std::vector<std::string>& vecKeys) const noexcept;
 
+      bool hasAccept() const noexcept;
+      bool hasAcceptEncoding() const noexcept;
+      bool hasAcceptLanguage() const noexcept;
+      bool hasConnection() const noexcept;
+      bool hasDNT() const noexcept;
+      bool hasHost() const noexcept;
+      bool hasUserAgent() const noexcept;
+
+      const std::string& getAccept() const;
+      const std::string& getAcceptEncoding() const;
+      const std::string& getAcceptLanguage() const;
+      const std::string& getConnection() const;
+      const std::string& getDNT() const;
+      const std::string& getHost() const;
+      const std::string& getUserAgent() const;
+
    protected:
       void parseBody() noexcept;
 

@@ -33,6 +33,13 @@ class HttpResponse : public HttpTransaction
       int getStatusCode() const noexcept;
       void setStatusCode(int statusCode) noexcept;
       const std::string& getReasonPhrase() const noexcept;
+   
+      bool hasContentEncoding() const noexcept;
+      bool hasContentType() const noexcept;
+      const std::string& getContentEncoding() const noexcept;
+      const std::string& getContentType() const noexcept;
+      void setContentEncoding(const std::string& contentEncoding) noexcept;
+      void setContentType(const std::string& contentType) noexcept;
 
 
    private:
