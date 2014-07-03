@@ -20,6 +20,12 @@ Misere uses an .INI for configuration. See 'What's an INI file'
 if you're not familiar with them. The .INI format was chosen
 because it's very simple and I like simple.
 
+Platforms/Compilers
+===================
+This project is implemented with C++11. It is tested with clang and
+g++ compilers. It is also tested on Mac OS X, FreeBSD 10, PC-BSD 10,
+and Ubuntu 14.04 Server.
+
 Threading Options
 =================
 This project was initially coded to use Posix threads (pthreads).
@@ -27,6 +33,11 @@ Since C++11 has built-in support for threading, that was recently
 added and is still being tweaked. Additionally, Apple's libdispatch
 (foundation of Grand Central Dispatch [GCD]) is available on Mac
 OS X, as well as on some other systems.
+
+Socket Options
+==============
+This project supports the use of kernel events (kqueue on OSX and
+FreeBSD, and epoll on Linux) or a built-in socket server.
 
 Status/Maturity
 ===============
@@ -36,10 +47,8 @@ slowly get there.
 
 C++ Standards
 =============
-The code is somewhat C++11 compliant. The intention is to make it highly
-compliant, although this will take some time. Currently, there is very
-minimal use of C++11 smart pointers. The plan is to start converting
-over to using smart pointers in place of raw pointers.
+The code is somewhat C++11 compliant. The intention is to make it more
+and more C++11 compliant over time.
 
 Coding Style
 ============
