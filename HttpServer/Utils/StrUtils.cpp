@@ -3,6 +3,7 @@
 
 #include <sstream>
 #include <stdexcept>
+#include <string.h>
 
 #include "StrUtils.h"
 #include "zlib.h"
