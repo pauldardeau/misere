@@ -110,8 +110,8 @@ bool ServerSocket::bind(int socketFD, int port) noexcept
 //******************************************************************************
 
 ServerSocket::ServerSocket(int port) :
-   m_port(port),
-   m_serverSocket(-1)
+   m_serverSocket(-1),
+   m_port(port)
 {
    Logger::logInstanceCreate("ServerSocket");
 
