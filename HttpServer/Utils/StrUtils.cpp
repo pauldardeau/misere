@@ -40,7 +40,7 @@ bool StrUtils::startsWith(const std::string& haystack, const std::string& needle
       const std::string::size_type needleLength = needle.length();
         
       if (haystackLength >= needleLength) {
-         for (int i = 0; i < needleLength; ++i) {
+         for (std::string::size_type i = 0; i < needleLength; ++i) {
             if (haystack[i] != needle[i]) {
                return false;
             }
@@ -129,7 +129,7 @@ std::string& StrUtils::stripLeading(std::string& s, char stripChar) noexcept
    }
    
    const std::string::size_type stringLen = s.length();
-   int leadingStripChars = 0;
+   std::string::size_type leadingStripChars = 0;
    
    while ((leadingStripChars < stringLen) && (s[leadingStripChars] == stripChar)) {
       ++leadingStripChars;
@@ -173,9 +173,9 @@ std::string StrUtils::strip(const std::string& s, char strip) noexcept
    
    const std::string::size_type len = s.length();
     
-   int leadingChars = 0;
+   std::string::size_type leadingChars = 0;
     
-   for (int i = 0; i < len; ++i) {
+   for (std::string::size_type i = 0; i < len; ++i) {
       if (s[i] == strip) {
          ++leadingChars;
       } else {

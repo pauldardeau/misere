@@ -7,14 +7,8 @@
 #include <unistd.h>
 #include <string>
 
-#ifdef EPOLL_SUPPORT
-#include <sys/epoll.h>
-#endif
-
 #include "EpollServer.h"
 #include "Logger.h"
-
-using namespace std;
 
 
 //******************************************************************************

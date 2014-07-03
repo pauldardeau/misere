@@ -6,7 +6,7 @@
 
 #include <string>
 
-#import "BasicException.h"
+#include "BasicException.h"
 
 /*!
  * HttpException is an exception that contains an HTTP status code.

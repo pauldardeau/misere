@@ -48,7 +48,7 @@ class StringTokenizer
       bool m_isConstructing;
       std::vector<std::string> m_tokens;
       std::size_t m_numberTokens;
-      int m_indexToken;
+      std::size_t m_indexToken;
 };
 
 #endif

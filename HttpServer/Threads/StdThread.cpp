@@ -19,7 +19,7 @@ void StdThread::runThread(StdThread* thread) noexcept
    
    thread->setThreadId(threadIdString);
    
-   unsigned long rc = 0L;
+   //unsigned long rc = 0L;
    
    try
    {
@@ -38,13 +38,12 @@ void StdThread::runThread(StdThread* thread) noexcept
    }
    catch (...)
    {
-      rc = 1L;
+      //rc = 1L;
       Logger::error("StdThread::runThread exception caught running thread");
    }
    
    thread->setAlive(false);
    thread->notifyOnCompletion();
-   
 }
 
 //******************************************************************************

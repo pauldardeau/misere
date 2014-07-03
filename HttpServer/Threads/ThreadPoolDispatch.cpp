@@ -1,8 +1,10 @@
 // Copyright Paul Dardeau, SwampBits LLC 2014
 // BSD License
 
+#ifndef __linux__
 #include <dispatch/dispatch.h>
 #include <dispatch/queue.h>
+#endif
 
 #include "ThreadPoolDispatch.h"
 #include "Runnable.h"
@@ -48,6 +50,7 @@ bool ThreadPoolDispatch::addRequest(std::shared_ptr<Runnable> runnableRequest) n
       return false;
    }
    
+#ifndef __linux__
    dispatch_queue_t queue =
       dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
    
@@ -73,6 +76,9 @@ bool ThreadPoolDispatch::addRequest(std::shared_ptr<Runnable> runnableRequest) n
    });
    
    return true;
+#else
+   return false;
+#endif
 }
 
 //******************************************************************************

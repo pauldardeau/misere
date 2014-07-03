@@ -11,12 +11,10 @@ class SocketServiceHandler;
 class Mutex;
 
 #ifdef __linux__
+#include <sys/epoll.h>
 #define EPOLL_SUPPORT 1
 #endif
 
-#ifdef EPOLL_SUPPORT
-struct epoll_event;
-#endif
 
 
 /*!

@@ -5,6 +5,7 @@
 #define __HttpServer__HttpSocketServiceHandler__
 
 #include <string>
+#include <memory>
 
 #include "SocketServiceHandler.h"
 

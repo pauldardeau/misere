@@ -9,12 +9,11 @@
 class SocketServiceHandler;
 class Mutex;
 
-#if defined(__APPLE__) || defined(__FreeBSD__)
-#define KQUEUE_SUPPORT 1
-#endif
 
-#ifdef KQUEUE_SUPPORT
-struct kevent;
+//#if defined(__APPLE__) || defined(__FreeBSD__)
+#ifndef __linux__
+#define KQUEUE_SUPPORT 1
+#include <sys/event.h>
 #endif
 
 

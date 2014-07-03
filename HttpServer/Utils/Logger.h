@@ -5,6 +5,7 @@
 #define HttpServer_Logger_h
 
 #include <string>
+#include <memory>
 
 
 /*!
