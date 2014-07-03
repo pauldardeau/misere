@@ -2,6 +2,7 @@
 // BSD License
 
 #include <sstream>
+#include <stdexcept>
 
 #include "StrUtils.h"
 #include "zlib.h"
