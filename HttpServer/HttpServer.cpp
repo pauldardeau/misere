@@ -157,8 +157,10 @@ HttpServer::HttpServer(int port) :
    m_isFullyInitialized(false),
    m_allowBuiltInHandlers(false),
    m_requireAllHandlersForStartup(false),
+   m_compressionEnabled(true),
    m_threadPoolSize(CFG_DEFAULT_THREAD_POOL_SIZE),
-   m_serverPort(0)
+   m_serverPort(0),
+   m_minimumCompressionSize(1000)
 {
    Logger::logInstanceCreate("HttpServer");
 
@@ -179,8 +181,10 @@ HttpServer::HttpServer(const std::string& configFilePath) :
    m_isFullyInitialized(false),
    m_allowBuiltInHandlers(false),
    m_requireAllHandlersForStartup(false),
+   m_compressionEnabled(true),
    m_threadPoolSize(CFG_DEFAULT_THREAD_POOL_SIZE),
-   m_serverPort(0)
+   m_serverPort(0),
+   m_minimumCompressionSize(1000)
 {
    Logger::logInstanceCreate("HttpServer");
 
@@ -805,6 +809,20 @@ bool HttpServer::compressResponse(const std::string& mimeType) const noexcept
           (mimeType == MIME_TEXT_PLAIN) ||
           (mimeType == MIME_APPLICATION_JSON) ||
           (mimeType == MIME_APPLICATION_XML);
+}
+
+//******************************************************************************
+
+bool HttpServer::compressionEnabled() const noexcept
+{
+   return m_compressionEnabled;
+}
+
+//******************************************************************************
+
+int HttpServer::minimumCompressionSize() const noexcept
+{
+   return m_minimumCompressionSize;
 }
 
 //******************************************************************************

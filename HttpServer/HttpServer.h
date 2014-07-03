@@ -79,6 +79,8 @@ class HttpServer
       void replaceVariables(const KeyValuePairs& kvp, std::string& s) const noexcept;
    
       bool compressResponse(const std::string& mimeType) const noexcept;
+      bool compressionEnabled() const noexcept;
+      int minimumCompressionSize() const noexcept;
 
    
    protected:
@@ -110,10 +112,12 @@ class HttpServer
       bool m_isFullyInitialized;
       bool m_allowBuiltInHandlers;
       bool m_requireAllHandlersForStartup;
+      bool m_compressionEnabled;
       int m_threadPoolSize;
 		int m_serverPort;
       int m_socketSendBufferSize;
       int m_socketReceiveBufferSize;
+      int m_minimumCompressionSize;
 
 };
 

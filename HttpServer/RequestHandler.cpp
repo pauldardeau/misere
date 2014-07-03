@@ -200,7 +200,9 @@ void RequestHandler::run()
                      request.getAcceptEncoding();
                   
                   if (StrUtils::containsString(acceptEncoding, GZIP) &&
-                      m_server.compressResponse(response.getContentType())) {
+                      m_server.compressionEnabled() &&
+                      m_server.compressResponse(response.getContentType()) &&
+                      contentLength >= m_server.minimumCompressionSize()) {
                      
                      try {
                         const std::string compressedResponseBody =
