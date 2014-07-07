@@ -240,13 +240,6 @@ bool HttpResponse::streamFromSocket(Socket& socket)
 
 //******************************************************************************
 
-const std::string& HttpResponse::getStatusLine() const noexcept
-{
-   return getRequestLine();
-}
-
-//******************************************************************************
-
 int HttpResponse::getStatusCode() const noexcept
 {
    return m_statusCodeAsInteger;

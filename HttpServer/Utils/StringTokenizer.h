@@ -13,16 +13,42 @@
 class StringTokenizer
 {
    public:
+      /**
+       * Constructs a StringTokenizer and tokenizes the specified string
+       * @param s the string to tokenize
+       */
       StringTokenizer(const std::string& s) noexcept;
-      StringTokenizer(const std::string& s,
-                      const std::string& delimiter,
-                      bool isDelimitersWithToken=false) noexcept;
-      ~StringTokenizer() noexcept;
    
+      /**
+       * Constructs a StringTokenizer with the string to tokenize and the delimiter
+       * @param s the string to tokenize
+       * @param delimiter the delimiter of the tokens
+       */
+      StringTokenizer(const std::string& s,
+                      const std::string& delimiter) noexcept;
+   
+      /**
+       * Destructor
+       */
+      ~StringTokenizer() noexcept;
+
+      /**
+       * Determines whether more tokens are present
+       * @return boolean indicating if there are more tokens available
+       */
       bool hasMoreTokens() const noexcept;
    
-      // throws std::out_of_range
+      /**
+       * Retrieves the next available token
+       * @throw std::out_of_range
+       * @return the next token
+       */
       const std::string& nextToken();
+   
+      /**
+       * Retrieves the number of tokens found
+       * @return the number of tokens
+       */
       std::size_t countTokens() const noexcept;
    
       //disallow copies
@@ -33,6 +59,11 @@ class StringTokenizer
 
    
    protected:
+      /**
+       * Extracts the next available token as part of the construction (tokenizing)
+       * @throw std::out_of_range
+       * @return the next available token
+       */
       std::string extractNextToken();
 
    
@@ -44,7 +75,6 @@ class StringTokenizer
       const char* m_posDelimiter;
       std::string::size_type m_posCurrent;
       std::string::size_type m_stringLength;
-      bool m_isDelimitersWithToken;
       bool m_isConstructing;
       std::vector<std::string> m_tokens;
       std::size_t m_numberTokens;

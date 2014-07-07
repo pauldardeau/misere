@@ -14,22 +14,20 @@ static const std::string SPACE = " ";
 //******************************************************************************
 
 StringTokenizer::StringTokenizer(const std::string& withTokens) noexcept :
-   StringTokenizer(withTokens, SPACE, false)
+   StringTokenizer(withTokens, SPACE)
 {
 }
 
 //******************************************************************************
 
 StringTokenizer::StringTokenizer(const std::string& withTokens,
-                                 const std::string& delimiter,
-                                 bool isDelimitersWithToken) noexcept :
+                                 const std::string& delimiter) noexcept :
    m_withTokens(withTokens),
    m_delimiter(delimiter),
    m_posTokens(m_withTokens.c_str()),
    m_posDelimiter(m_delimiter.c_str()),
    m_posCurrent(0),
    m_stringLength(m_withTokens.length()),
-   m_isDelimitersWithToken(isDelimitersWithToken),
    m_isConstructing(true),
    m_numberTokens(0),
    m_indexToken(0)
