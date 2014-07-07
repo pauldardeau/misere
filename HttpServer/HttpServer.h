@@ -17,7 +17,7 @@ class SectionedConfigDataSource;
 class ThreadingFactory;
 
 
-/*!
+/**
  * HttpServer is an HTTP server meant to be used for servicing application
  * HTTP requests. It is not meant to be a general purpose web server (no
  * provisions for serving files).
@@ -25,9 +25,15 @@ class ThreadingFactory;
 class HttpServer
 {
    public:
-      HttpServer();
-      HttpServer(int port);
+      /**
+       * Constructs an HttpServer with the file name/path for a configuration file
+       * @param configFilePath the file name/path for configuration settings
+       */
       HttpServer(const std::string& configFilePath);
+   
+      /**
+       * Destructor
+       */
       ~HttpServer() noexcept;
    
       // copies not allowed
@@ -36,57 +42,189 @@ class HttpServer
       HttpServer& operator=(const HttpServer&) = delete;
       HttpServer& operator=(HttpServer&&) = delete;
 
-
+      /**
+       * Retrieves the current time in Greenwich Mean Time (GMT)
+       * @return current time in GMT
+       */
       std::string getSystemDateGMT() const noexcept;
+   
+      /**
+       * Retrieves the current time for server in local time
+       * @return current time as local server time
+       */
       std::string getLocalDateTime() const noexcept;
 
+      /**
+       * Constructs HTTP response headers using the specified response code and
+       * collection of header key/value pairs
+       * @param responseCode the HTTP response code
+       * @param mapHeaders collection of HTTP header key/value pairs
+       * @return HTTP headers formatted as a string
+       */
       std::string buildHeader(const std::string& responseCode,
                               const std::unordered_map<std::string, std::string>& mapHeaders) const noexcept;
 
-      bool addPathHandler(const std::string& path, HttpHandler* pHandler) noexcept;
+      /**
+       * Registers an HttpHandler for the specified path
+       * @param path the path to associate with the specified handler
+       * @param handler the handler to invoke when a request arrives for the specified path
+       * @see HttpHandler()
+       * @return boolean indicating if the handler was successfully registered
+       */
+      bool addPathHandler(const std::string& path, HttpHandler* handler) noexcept;
+   
+      /**
+       * Removes the handler for the specified path
+       * @param path the path whose associated handler should be removed (deregistered)
+       * @return boolean indicating if a path was deregistered for the path
+       */
       bool removePathHandler(const std::string& path) noexcept;
+   
+      /**
+       * Retrieves the handler associated with the specified path
+       * @param path the path whose handler is desired
+       * @return the handler associated with the path, or null if there is none
+       */
       HttpHandler* getPathHandler(const std::string& path) noexcept;
 
+      /**
+       * Runs the built-in socket server
+       * @return exit code for the HTTP server process
+       */
       int runSocketServer() noexcept;
+   
+      /**
+       * Runs a kernel event server (e.g., kqueue or epoll)
+       * @return exit code for the HTTP server process
+       */
       int runKernelEventServer() noexcept;
+   
+      /**
+       * Runs the HTTP server using either the built-in socket server or a kernel event server
+       * @return exit code for the HTTP server process
+       */
       int run() noexcept;
 
+      /**
+       * Logs a HTTP request
+       * @param clientIPAddress the IP address of the system that generated the HTTP request
+       * @param requestLine the first line of the HTTP request
+       * @param responseCode the HTTP response code
+       */
       void logRequest(const std::string& clientIPAddress,
                       const std::string& requestLine,
                       const std::string& responseCode) noexcept;
 
+      /**
+       * Logs a HTTP request that was processed by a thread pool worker
+       * @param clientIPAddress the IP address of the system that generated the HTTP request
+       * @param requestLine the first line of the HTTP request
+       * @param responseCode the HTTP response code
+       * @param threadWorkerId the identifier of the thread pool worker that processed the request
+       */
       void logRequest(const std::string& clientIPAddress,
                       const std::string& requestLine,
                       const std::string& responseCode,
                       const std::string& threadWorkerId) noexcept;
-                       
+   
+      /**
+       * Retrieves the configuration data source of configuration settings
+       * @see SectionedConfigDataSource()
+       * @return the configuration data source
+       */
       std::unique_ptr<SectionedConfigDataSource> getConfigDataSource();
    
+      /**
+       * Retrieves the size of the socket send buffer
+       * @return size of the socket send buffers
+       */
       int getSocketSendBufferSize() const noexcept;
+   
+      /**
+       * Retrieves the size of the socket receive buffer
+       * @return size of the socket receive buffers
+       */
       int getSocketReceiveBufferSize() const noexcept;
    
+      /**
+       * Retrieves the identifier for the server
+       * @return server identifier
+       */
       const std::string& getServerId() const noexcept;
    
+      /**
+       * Retrieves the size in bytes of a generic (void*) pointer
+       * @return platform pointer size
+       */
       int platformPointerSizeBits() const noexcept;
 
+      /**
+       * Service a request for a socket when using a kernel event server
+       * @param socketRequest the SocketRequest to process
+       * @see SocketRequest()
+       */
       void serviceSocket(std::shared_ptr<SocketRequest> socketRequest);
 
+      /**
+       * Convenience method to retrieve a setting and convert it to a boolean
+       * @param kvp the collection of key/value pair settings
+       * @param setting the name of the setting whose value is to be retrieved and converted
+       * @see KeyValuePairs()
+       * @return boolean value (or false if value cannot be retrieved or converted)
+       */
       bool hasTrueValue(const KeyValuePairs& kvp,
                         const std::string& setting) const noexcept;
+   
+      /**
+       * Convenience method to retrieve a setting and convert it to an integer
+       * @param kvp the collection of key/value pair settings
+       * @param setting the name of the setting whose value is to be retrieved and converted
+       * @see KeyValuePairs()
+       * @return integer value (or -1 if value cannot be retrieved or converted)
+       */
       int getIntValue(const KeyValuePairs& kvp,
                       const std::string& setting) const noexcept;
    
+      /**
+       * Convenience method to replace all occurrences of keys in collection with their values
+       * @param kvp the collection of key/value pairs for replacement
+       * @param s the string to search and replace all variables in
+       */
       void replaceVariables(const KeyValuePairs& kvp, std::string& s) const noexcept;
    
+      /**
+       * Determines if compression is turned on for the specified mime type
+       * @param mimeType the mime type to check whether to compress
+       * @return boolean indicating whether the specified mime type is to be compressed
+       */
       bool compressResponse(const std::string& mimeType) const noexcept;
+   
+      /**
+       * Determines if gzip compression is enabled for the server
+       * @return boolean indicating if gzip compression is enabled
+       */
       bool compressionEnabled() const noexcept;
+   
+      /**
+       * Retrieves the minimum size of the response payload to be compressed
+       * @return minimum size of response payload (in bytes) to be compressed
+       */
       int minimumCompressionSize() const noexcept;
 
    
    protected:
-      // throws BasicException
+      /**
+       * Initializes the HTTP server on the specified port by default by reading and
+       * applying configuration values read from configuration data source
+       * @param port the default port (may be overridden by configuration values)
+       * @return boolean indicating whether initialiation was successful
+       */
       virtual bool init(int port);
    
+      /**
+       * Adds built-in handlers
+       * @return boolean indicating whether the built-in handlers were successfully added
+       */
       virtual bool addBuiltInHandlers() noexcept;
 
 

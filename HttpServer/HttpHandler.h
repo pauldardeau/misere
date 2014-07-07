@@ -16,6 +16,9 @@ class KeyValuePairs;
 class HttpHandler
 {
    public:
+      /**
+       * Destructor
+       */
       virtual ~HttpHandler() {}
 
       /**

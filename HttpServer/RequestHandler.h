@@ -11,7 +11,7 @@ class HttpServer;
 class Socket;
 class SocketRequest;
 
-/*!
+/**
  * RequestHandler is the interface that must be implemented by all 'modules'
  * that are used by HttpServer.
  */
@@ -24,11 +24,38 @@ private:
    bool m_isThreadPooling;
    
 public:
+   /**
+    * Constructs a RequestHandler using a SocketRequest for use by a KernelEventServer
+    * @param server the HttpServer that is being run
+    * @param socketRequest the SocketRequest for processing using KernelEventServer
+    * @see HttpServer()
+    * @see SocketRequest()
+    */
    RequestHandler(HttpServer& server, std::shared_ptr<SocketRequest> socketRequest) noexcept;
+   
+   /**
+    * Constructs a RequestHandler using a Socket
+    * @param server the HttpServer that is being run
+    * @param socket the Socket for handling the request
+    * @param HttpServer()
+    * @param Socket()
+    */
    RequestHandler(HttpServer& server, std::shared_ptr<Socket> socket) noexcept;
+   
+   /**
+    * Destructor
+    */
    ~RequestHandler() noexcept;
    
+   /**
+    * Process the HTTP request from beginning to end
+    */
    void run() override;
+   
+   /**
+    * Sets boolean indicating whether request is being run on thread pool
+    * @param isThreadPooling boolean indicating if request is being run on thread pool
+    */
    void setThreadPooling(bool isThreadPooling) noexcept;
    
    

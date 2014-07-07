@@ -139,36 +139,6 @@ typedef HttpHandler* (*PFN_CREATE_HANDLER)();
 //******************************************************************************
 //******************************************************************************
 
-HttpServer::HttpServer() :
-   HttpServer(CFG_DEFAULT_PORT_NUMBER)
-{
-}
-
-//******************************************************************************
-
-HttpServer::HttpServer(int port) :
-   m_kernelEventServer(nullptr),
-   m_serverSocket(nullptr),
-   m_threadPool(nullptr),
-   m_threadingFactory(nullptr),
-   m_isDone(false),
-   m_isThreaded(true),
-   m_isUsingKernelEventServer(false),
-   m_isFullyInitialized(false),
-   m_allowBuiltInHandlers(false),
-   m_requireAllHandlersForStartup(false),
-   m_compressionEnabled(true),
-   m_threadPoolSize(CFG_DEFAULT_THREAD_POOL_SIZE),
-   m_serverPort(0),
-   m_minimumCompressionSize(1000)
-{
-   Logger::logInstanceCreate("HttpServer");
-
-   init(port);
-}
-
-//******************************************************************************
-
 HttpServer::HttpServer(const std::string& configFilePath) :
    m_kernelEventServer(nullptr),
    m_serverSocket(nullptr),
@@ -183,7 +153,7 @@ HttpServer::HttpServer(const std::string& configFilePath) :
    m_requireAllHandlersForStartup(false),
    m_compressionEnabled(true),
    m_threadPoolSize(CFG_DEFAULT_THREAD_POOL_SIZE),
-   m_serverPort(0),
+   m_serverPort(CFG_DEFAULT_PORT_NUMBER),
    m_minimumCompressionSize(1000)
 {
    Logger::logInstanceCreate("HttpServer");
@@ -668,7 +638,8 @@ bool HttpServer::init(int port)
          std::string exception = "unable to open server socket port '";
          exception += std::to_string(port);
          exception += "'";
-         throw BasicException(exception);
+         Logger::critical(exception);
+         return false;
       }
    }
 
