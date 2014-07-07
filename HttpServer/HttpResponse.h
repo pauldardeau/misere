@@ -27,6 +27,8 @@ class HttpResponse : public HttpTransaction
        * Constructs and HttpResponse by reading from socket
        * @param socket the socket to read from
        * @see Socket()
+       * @throw BasicException
+       * @throw HttpException
        */
       HttpResponse(Socket& socket);
    

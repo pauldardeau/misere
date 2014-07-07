@@ -47,13 +47,13 @@ HttpClient::~HttpClient() noexcept
 //******************************************************************************
 
 void HttpClient::buildHeader(std::string& header,
-                           const std::string& address,
-                           int port,
-                           const std::string& url,
-                           const std::string& method,
-                           const std::string& contentType,
-                           unsigned long contentLength,
-                           const KeyValuePairs& kvpAddlHeaders) noexcept
+                             const std::string& address,
+                             int port,
+                             const std::string& url,
+                             const std::string& method,
+                             const std::string& contentType,
+                             unsigned long contentLength,
+                             const KeyValuePairs& kvpAddlHeaders) noexcept
 {
    bool haveContent = false;  // assume we don't
 
@@ -119,14 +119,13 @@ void HttpClient::buildHeader(std::string& header,
 //******************************************************************************
 
 std::string HttpClient::post(const std::string& address,
-                         int port,
-                         const std::string& host,
-                         const std::string& url,
-                         const std::string& postData,
-                         const std::string& contentType,
-                         const KeyValuePairs& kvpAddlHeaders)
+                             int port,
+                             const std::string& url,
+                             const std::string& postData,
+                             const std::string& contentType,
+                             const KeyValuePairs& kvpAddlHeaders)
 {
-   auto postDataLength = postData.length();
+   const auto postDataLength = postData.length();
 
    std::string requestPayload;
 
@@ -149,8 +148,8 @@ std::string HttpClient::post(const std::string& address,
 //******************************************************************************
 
 std::string HttpClient::sendReceive(const std::string& address,
-                                int port,
-                                const std::string& sendBuffer)
+                                    int port,
+                                    const std::string& sendBuffer)
 {
    Socket socket(address.c_str(), port);
    socket.setTcpNoDelay(true);

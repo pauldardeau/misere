@@ -51,7 +51,9 @@ HttpResponse::HttpResponse(Socket& socket)
 {
    Logger::logInstanceCreate("HttpResponse");
 
-   streamFromSocket(socket);
+   if (!streamFromSocket(socket)) {
+      throw BasicException("unable to construct HttpResponse from Socket");
+   }
 }
 
 //******************************************************************************
@@ -115,7 +117,8 @@ bool HttpResponse::streamFromSocket(Socket& socket)
          m_statusCodeAsInteger = std::stoi(m_statusCode);
 
          if (0 == m_statusCodeAsInteger) {
-            throw BasicException("unable to parse status code");
+            Logger::error("unable to parse status code");
+            return false;
          } else if (m_statusCodeAsInteger >= 500) {
             std::string reasonPhrase;
 
@@ -232,7 +235,7 @@ bool HttpResponse::streamFromSocket(Socket& socket)
       
       streamSuccess = true;
    } else {
-      throw BasicException("unable to parse headers");
+      Logger::error("unable to parse headers");
    }
    
    return streamSuccess;
