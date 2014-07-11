@@ -76,7 +76,7 @@ public:
    
 protected:
    bool readMsg(int length) noexcept;
-   bool readSocket(char* buffer, int nBytesToRead) noexcept;
+   bool readSocket(char* buffer, int bytesToRead) noexcept;
    bool open() noexcept;
    void init() noexcept;
    

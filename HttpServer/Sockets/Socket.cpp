@@ -554,16 +554,16 @@ bool Socket::readMsg(int length) noexcept
 
 //******************************************************************************
 
-bool Socket::readSocket(char* buffer, int nBytesToRead) noexcept
+bool Socket::readSocket(char* buffer, int bytesToRead) noexcept
 {
    int total_bytes_rcvd = 0;
    ssize_t bytes = 0;
-   char* pBuffer = buffer;
+   char* currentBufferDest = buffer;
     
    do {
       bytes = ::recv(m_socketFD,
-                     pBuffer,
-                     nBytesToRead - total_bytes_rcvd,
+                     currentBufferDest,
+                     bytesToRead - total_bytes_rcvd,
                      0);
       
       if (Logger::isLogging(Logger::LogLevel::Debug)) {
@@ -592,9 +592,9 @@ bool Socket::readSocket(char* buffer, int nBytesToRead) noexcept
       }
         
       total_bytes_rcvd += bytes;
-      pBuffer += bytes;
+      currentBufferDest += bytes;
         
-   } while (total_bytes_rcvd < nBytesToRead);
+   } while (total_bytes_rcvd < bytesToRead);
     
    return true;
 }
