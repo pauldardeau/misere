@@ -21,7 +21,7 @@ class PthreadsThread : public Thread
 
 
       PthreadsThread() noexcept;
-      PthreadsThread(std::shared_ptr<Runnable> runnable) noexcept;
+      explicit PthreadsThread(std::shared_ptr<Runnable> runnable) noexcept;
       virtual ~PthreadsThread() noexcept;
 
       virtual bool start() noexcept override;

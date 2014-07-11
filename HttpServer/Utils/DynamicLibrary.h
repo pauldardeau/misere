@@ -22,7 +22,7 @@ class DynamicLibrary
        * @param libraryName the name of the dynamic library file to open
        * @throw BasicException
        */
-      DynamicLibrary(const std::string& libraryName);
+      explicit DynamicLibrary(const std::string& libraryName);
    
       /**
        * Destructor (closes the library if open)

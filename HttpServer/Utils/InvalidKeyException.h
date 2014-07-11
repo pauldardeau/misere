@@ -17,7 +17,7 @@ public:
     * Constructs an InvalidKeyException with the specified key
     * @param key the name of the invalid key
     */
-   InvalidKeyException(const std::string& key) noexcept;
+   explicit InvalidKeyException(const std::string& key) noexcept;
    
    /**
     * Copy constructor

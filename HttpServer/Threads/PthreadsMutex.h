@@ -16,7 +16,7 @@ class PthreadsMutex : public Mutex
 {
 public:
    PthreadsMutex();
-   PthreadsMutex(const std::string& mutexName);
+   explicit PthreadsMutex(const std::string& mutexName);
    ~PthreadsMutex() noexcept;
 
    // Mutex

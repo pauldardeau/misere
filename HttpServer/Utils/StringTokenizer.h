@@ -17,7 +17,7 @@ class StringTokenizer
        * Constructs a StringTokenizer and tokenizes the specified string
        * @param s the string to tokenize
        */
-      StringTokenizer(const std::string& s) noexcept;
+      explicit StringTokenizer(const std::string& s) noexcept;
    
       /**
        * Constructs a StringTokenizer with the string to tokenize and the delimiter

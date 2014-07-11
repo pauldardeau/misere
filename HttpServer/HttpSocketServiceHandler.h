@@ -25,7 +25,7 @@ public:
     * @param httpServer the HttpServer being run
     * @see HttpServer()
     */
-   HttpSocketServiceHandler(HttpServer& httpServer);
+   explicit HttpSocketServiceHandler(HttpServer& httpServer);
    
    /**
     * Destructor

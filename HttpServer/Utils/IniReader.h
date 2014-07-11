@@ -23,7 +23,7 @@ public:
     * @param iniFile the file name/path of the INI file to read
     * @throw BasicException
     */
-   IniReader(const std::string& iniFile);
+   explicit IniReader(const std::string& iniFile);
    
    /**
     * Destructor

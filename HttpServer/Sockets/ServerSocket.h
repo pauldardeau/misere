@@ -48,7 +48,7 @@ class ServerSocket
        * @param port the port number to listen on
        * @throw BasicException
        */
-      ServerSocket(int port);
+      explicit ServerSocket(int port);
    
       /**
        * Destructor

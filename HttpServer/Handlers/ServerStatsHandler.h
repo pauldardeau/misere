@@ -19,7 +19,7 @@ private:
    const HttpServer& m_server;
    
 public:
-   ServerStatsHandler(const HttpServer& server) noexcept;
+   explicit ServerStatsHandler(const HttpServer& server) noexcept;
    virtual ~ServerStatsHandler() noexcept;
    
    virtual void serviceRequest(const HttpRequest& request,

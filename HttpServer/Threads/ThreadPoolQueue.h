@@ -20,7 +20,7 @@ class ThreadingFactory;
 class ThreadPoolQueue
 {
 public:
-   ThreadPoolQueue(std::shared_ptr<ThreadingFactory> threadingFactory) noexcept;
+   explicit ThreadPoolQueue(std::shared_ptr<ThreadingFactory> threadingFactory) noexcept;
    virtual ~ThreadPoolQueue() noexcept;
    
    virtual bool addRequest(std::shared_ptr<Runnable> runnableRequest) noexcept;

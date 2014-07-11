@@ -16,7 +16,7 @@ public:
    bool isBusy;
    
    
-   ThreadInfo(const std::string& theThreadId) noexcept :
+   explicit ThreadInfo(const std::string& theThreadId) noexcept :
       threadId(theThreadId),
       isBusy(false)
    {

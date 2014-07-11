@@ -26,7 +26,7 @@ class HttpRequest : public HttpTransaction
        * @param socket the socket to read for initializing the object
        * @see Socket()
        */
-      HttpRequest(Socket& socket);
+      explicit HttpRequest(Socket& socket);
    
       /**
        * Copy constructor

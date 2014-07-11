@@ -24,7 +24,7 @@ public:
    
    // throws BasicException
    Socket(const std::string& address, int port);
-   Socket(int socketFD) noexcept;
+   explicit Socket(int socketFD) noexcept;
    Socket(SocketCompletionObserver* completionObserver, int socketFD) noexcept;
    ~Socket() noexcept;
     

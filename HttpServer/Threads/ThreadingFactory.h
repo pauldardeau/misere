@@ -30,7 +30,7 @@ public:
    static std::shared_ptr<ThreadingFactory> getThreadingFactory() noexcept;
    static void setThreadingFactory(std::shared_ptr<ThreadingFactory> threadingFactory) noexcept;
 
-   ThreadingFactory(ThreadingPackage threadingPackage) noexcept;
+   explicit ThreadingFactory(ThreadingPackage threadingPackage) noexcept;
    ~ThreadingFactory() noexcept;
    
    // throws BasicException

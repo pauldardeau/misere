@@ -22,7 +22,7 @@ class Runnable;
 class ThreadPool : public ThreadPoolDispatcher
 {
 public:
-   ThreadPool(int numberWorkers) noexcept;
+   explicit ThreadPool(int numberWorkers) noexcept;
    ThreadPool(std::shared_ptr<ThreadingFactory> threadingFactory, int numberWorkers) noexcept;
 
    ~ThreadPool() noexcept;

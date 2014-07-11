@@ -19,7 +19,7 @@ public:
     * Constructs a BasicException
     * @param what the reason for the exception
     */
-   BasicException( const char* what ) noexcept :
+   explicit BasicException(const char* what) noexcept :
       m_what( what )
    {
    }
@@ -28,7 +28,7 @@ public:
     * Constructs a BasicException
     * @param what the reason for the exception
     */
-   BasicException( const std::string& what ) noexcept :
+   explicit BasicException(const std::string& what) noexcept :
       m_what( what )
    {
    }
@@ -37,7 +37,7 @@ public:
     * Copy constructor
     * @param copy the source of the copy
     */
-   BasicException( const BasicException& copy ) noexcept :
+   BasicException(const BasicException& copy) noexcept :
       m_what( copy.m_what )
    {
    }
@@ -46,8 +46,8 @@ public:
     * Move constructor
     * @param move the source of the move
     */
-   BasicException( BasicException&& move ) noexcept :
-      m_what( std::move(move.m_what) )
+   BasicException(BasicException&& move) noexcept :
+      m_what(std::move(move.m_what))
    {
    }
 
@@ -61,7 +61,7 @@ public:
     * @param copy the source of the copy
     * @return reference to the updated instance
     */
-   BasicException& operator=( const BasicException& copy ) noexcept
+   BasicException& operator=(const BasicException& copy) noexcept
    {
       if (this == &copy) {
          return *this;
@@ -77,7 +77,7 @@ public:
     * @param move the source of the move
     * @return reference to the target of the move
     */
-   BasicException& operator=( BasicException&& move ) noexcept
+   BasicException& operator=(BasicException&& move) noexcept
    {
       if (this == &move) {
          return *this;

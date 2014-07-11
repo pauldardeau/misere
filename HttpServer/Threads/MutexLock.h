@@ -15,7 +15,7 @@
 class MutexLock
 {
 public:
-   MutexLock(Mutex& mutex) noexcept :
+   explicit MutexLock(Mutex& mutex) noexcept :
       m_mutex(mutex),
       m_isLocked(false)
    {

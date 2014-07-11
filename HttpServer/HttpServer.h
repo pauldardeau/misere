@@ -29,7 +29,7 @@ class HttpServer
        * Constructs an HttpServer with the file name/path for a configuration file
        * @param configFilePath the file name/path for configuration settings
        */
-      HttpServer(const std::string& configFilePath);
+      explicit HttpServer(const std::string& configFilePath);
    
       /**
        * Destructor

@@ -30,7 +30,7 @@ class HttpResponse : public HttpTransaction
        * @throw BasicException
        * @throw HttpException
        */
-      HttpResponse(Socket& socket);
+      explicit HttpResponse(Socket& socket);
    
       /**
        * Copy constructor

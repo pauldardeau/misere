@@ -18,7 +18,7 @@ class ThreadCompletionObserver;
 class Thread : public Runnable
 {
 public:
-   Thread(Mutex& mutexAlive) noexcept;
+   explicit Thread(Mutex& mutexAlive) noexcept;
    Thread(Mutex& mutexAlive, std::shared_ptr<Runnable> runnable) noexcept;
    
    virtual ~Thread() noexcept;

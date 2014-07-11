@@ -17,7 +17,7 @@ class StdMutex : public Mutex
 {
 public:
    StdMutex();
-   StdMutex(const std::string& mutexName);
+   explicit StdMutex(const std::string& mutexName);
    ~StdMutex() noexcept;
    
    // Mutex
