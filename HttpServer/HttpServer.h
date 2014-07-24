@@ -235,12 +235,12 @@ class HttpServer
       std::shared_ptr<ThreadingFactory> m_threadingFactory;
       std::unordered_map<std::string, std::string> m_mapProperties;
       std::unordered_map<std::string, std::unique_ptr<HttpHandler>> m_mapPathHandlers;
-		std::string m_accessLogFile;
-		std::string m_errorLogFile;
-		std::string m_logLevel;
-		std::string m_concurrencyModel;
-		std::string m_configFilePath;
-		std::string m_startupTime;
+      std::string m_accessLogFile;
+      std::string m_errorLogFile;
+      std::string m_logLevel;
+      std::string m_concurrencyModel;
+      std::string m_configFilePath;
+      std::string m_startupTime;
       std::string m_serverString;
       std::string m_threading;
       std::string m_sockets;
@@ -252,7 +252,7 @@ class HttpServer
       bool m_requireAllHandlersForStartup;
       bool m_compressionEnabled;
       int m_threadPoolSize;
-		int m_serverPort;
+      int m_serverPort;
       int m_socketSendBufferSize;
       int m_socketReceiveBufferSize;
       int m_minimumCompressionSize;
