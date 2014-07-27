@@ -1,7 +1,7 @@
 // Copyright Paul Dardeau, SwampBits LLC 2014
 // BSD License
 
-#include "RequestHandler.h"
+#include "HttpRequestHandler.h"
 #include "Socket.h"
 #include "SocketRequest.h"
 #include "HttpServer.h"
@@ -39,49 +39,35 @@ static const std::string GZIP                 = "gzip";
 
 //******************************************************************************
 
-RequestHandler::RequestHandler(HttpServer& server,
+HttpRequestHandler::HttpRequestHandler(HttpServer& server,
                                std::shared_ptr<SocketRequest> socketRequest) noexcept :
-   m_server(server),
-   m_socket(nullptr),
-   m_socketRequest(socketRequest),
-   m_isThreadPooling(false)
+   RequestHandler(socketRequest),
+   m_server(server)
 {
-   Logger::logInstanceCreate("RequestHandler");
+   Logger::logInstanceCreate("HttpRequestHandler");
 }
 
 //******************************************************************************
 
-RequestHandler::RequestHandler(HttpServer& server, std::shared_ptr<Socket> socket) noexcept :
-   m_server(server),
-   m_socket(socket),
-   m_socketRequest(nullptr),
-   m_isThreadPooling(false)
+HttpRequestHandler::HttpRequestHandler(HttpServer& server, std::shared_ptr<Socket> socket) noexcept :
+   RequestHandler(socket),
+   m_server(server)
 {
-   Logger::logInstanceCreate("RequestHandler");
+   Logger::logInstanceCreate("HttpRequestHandler");
 }
 
 //******************************************************************************
 
-RequestHandler::~RequestHandler() noexcept
+HttpRequestHandler::~HttpRequestHandler() noexcept
 {
-   Logger::logInstanceDestroy("RequestHandler");
-
-   if (m_socket) {
-      m_socket->close();
-   }
+   Logger::logInstanceDestroy("HttpRequestHandler");
 }
 
 //******************************************************************************
 
-void RequestHandler::run()
+void HttpRequestHandler::run()
 {
-   std::shared_ptr<Socket> socket = nullptr;
-   
-   if (m_socket) {
-      socket = m_socket;
-   } else if (m_socketRequest) {
-      socket = m_socketRequest->getSocket();
-   }
+   std::shared_ptr<Socket> socket(getSocket());
    
    if (!socket) {
       Logger::error("no socket or socket request present in RequestHandler");
@@ -245,7 +231,7 @@ void RequestHandler::run()
 
    
       // log the request
-      if (m_isThreadPooling) {
+      if (isThreadPooling()) {
          const std::string& runByWorkerThreadId = getRunByThreadWorkerId();
       
          if (!runByWorkerThreadId.empty()) {
@@ -291,15 +277,6 @@ void RequestHandler::run()
    } else {
       printf("error: unable to initialize HttpRequest\n");
    }
-   
-   socket->close();
-}
-
-//******************************************************************************
-
-void RequestHandler::setThreadPooling(bool isThreadPooling) noexcept
-{
-   m_isThreadPooling = isThreadPooling;
 }
 
 //******************************************************************************

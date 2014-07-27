@@ -14,7 +14,7 @@
 #include "HTTP.h"
 #include "HttpRequest.h"
 #include "HttpHandler.h"
-#include "RequestHandler.h"
+#include "HttpRequestHandler.h"
 #include "HttpSocketServiceHandler.h"
 
 // sockets
@@ -902,12 +902,12 @@ void HttpServer::serviceSocket(std::shared_ptr<SocketRequest> socketRequest)
 {
    if (nullptr != m_threadPool) {
       // Hand off the request to the thread pool for asynchronous processing
-      std::shared_ptr<RequestHandler> requestHandler(new RequestHandler(*this, socketRequest));
+      std::shared_ptr<HttpRequestHandler> requestHandler(new HttpRequestHandler(*this, socketRequest));
       requestHandler->setThreadPooling(true);
       m_threadPool->addRequest(requestHandler);
    } else {
       // no thread pool available -- process it synchronously
-      RequestHandler requestHandler(*this,socketRequest);
+      HttpRequestHandler requestHandler(*this,socketRequest);
       requestHandler.run();
    }
 }
@@ -939,14 +939,14 @@ int HttpServer::runSocketServer() noexcept
       try {
          
          if (m_isThreaded && (nullptr != m_threadPool)) {
-            std::shared_ptr<RequestHandler> handler(new RequestHandler(*this, socket));
+            std::shared_ptr<HttpRequestHandler> handler(new HttpRequestHandler(*this, socket));
 
             handler->setThreadPooling(true);
 
             // give it to the thread pool
             m_threadPool->addRequest(handler);
          } else {
-            RequestHandler handler(*this, socket);
+            HttpRequestHandler handler(*this, socket);
             handler.run();
          }
       }
