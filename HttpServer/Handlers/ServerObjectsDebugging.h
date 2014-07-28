@@ -1,18 +1,19 @@
 // Copyright Paul Dardeau, SwampBits LLC 2014
 // BSD License
 
-#ifndef __HttpServer__ServerObjectsDebugging__
-#define __HttpServer__ServerObjectsDebugging__
+#ifndef MISERE_SERVEROBJECTSDEBUGGING_H
+#define MISERE_SERVEROBJECTSDEBUGGING_H
 
 #include <string>
 
 #include "AbstractHandler.h"
 
-class HttpRequest;
-class HttpResponse;
+namespace misere
+{
+   class HttpRequest;
+   class HttpResponse;
 
-
-/*!
+/**
  *
  */
 class ServerObjectsDebugging : public AbstractHandler
@@ -31,5 +32,6 @@ public:
    
 };
 
+}
 
-#endif /* defined(__HttpServer__ServerObjectsDebugging__) */
+#endif

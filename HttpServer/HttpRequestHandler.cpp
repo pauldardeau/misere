@@ -36,6 +36,8 @@ static const std::string QUESTION_MARK        = "?";
 
 static const std::string GZIP                 = "gzip";
 
+using namespace misere;
+using namespace chaudiere;
 
 //******************************************************************************
 

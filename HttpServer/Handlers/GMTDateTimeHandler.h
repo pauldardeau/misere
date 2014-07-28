@@ -1,15 +1,17 @@
 // Copyright Paul Dardeau, SwampBits LLC 2014
 // BSD License
 
-#ifndef __HttpServer__GMTDateTimeHandler__
-#define __HttpServer__GMTDateTimeHandler__
+#ifndef MISERE_GMTDATETIMEHANDLER_H
+#define MISERE_GMTDATETIMEHANDLER_H
 
 #include "AbstractHandler.h"
 
-class HttpRequest;
-class HttpResponse;
+namespace misere
+{
+   class HttpRequest;
+   class HttpResponse;
 
-/*!
+/**
  *
  */
 class GMTDateTimeHandler : public AbstractHandler
@@ -23,5 +25,6 @@ public:
    
 };
 
+}
 
 #endif

@@ -1,14 +1,16 @@
 // Copyright Paul Dardeau, SwampBits LLC 2014
 // BSD License
 
-#ifndef HTTP_H
-#define HTTP_H
+#ifndef MISERE_HTTP_H
+#define MISERE_HTTP_H
 
 #include <string>
 
-//****************************************************************************
 
-/*!
+namespace misere
+{
+
+/**
  * HTTP provides constants for working with HTTP protocol.
  */
 class HTTP
@@ -140,6 +142,7 @@ class HTTP
 
 };
 
+}
 
 #endif
 

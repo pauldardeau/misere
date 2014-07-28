@@ -1,16 +1,17 @@
 // Copyright Paul Dardeau, SwampBits LLC 2014
 // BSD License
 
-#ifndef HTTPRESPONSE_H
-#define HTTPRESPONSE_H
+#ifndef MISERE_HTTPRESPONSE_H
+#define MISERE_HTTPRESPONSE_H
 
 #include <string>
 
 #include "HttpTransaction.h"
+#include "Socket.h"
 
 
-class Socket;
-
+namespace misere
+{
 
 /**
  * HttpRequest is used by an HTTP client for parsing an HTTP response.
@@ -30,7 +31,7 @@ class HttpResponse : public HttpTransaction
        * @throw BasicException
        * @throw HttpException
        */
-      explicit HttpResponse(Socket& socket);
+      explicit HttpResponse(chaudiere::Socket& socket);
    
       /**
        * Copy constructor
@@ -68,7 +69,7 @@ class HttpResponse : public HttpTransaction
        * @param socket the socket to read from for initialization
        * @return boolean indicating whether initialization succeeded
        */
-      virtual bool streamFromSocket(Socket& socket) override;
+      virtual bool streamFromSocket(chaudiere::Socket& socket) override;
 
       /**
        * Retrieves the HTTP status code
@@ -131,6 +132,8 @@ class HttpResponse : public HttpTransaction
       int m_statusCodeAsInteger;
 
 };
+
+}
 
 #endif
 

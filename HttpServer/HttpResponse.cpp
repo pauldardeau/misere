@@ -13,6 +13,9 @@
 
 static const std::string TEXT_HTML = "text/html";
 
+using namespace misere;
+using namespace chaudiere;
+
 //******************************************************************************
 
 HttpResponse::HttpResponse() noexcept :

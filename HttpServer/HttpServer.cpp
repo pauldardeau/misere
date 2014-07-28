@@ -133,6 +133,9 @@ static const char* LOG_MONTH_NAME[12] =
    "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
 };
 
+using namespace misere;
+using namespace chaudiere;
+
 typedef HttpHandler* (*PFN_CREATE_HANDLER)();
 
 

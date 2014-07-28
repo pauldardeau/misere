@@ -3,6 +3,8 @@
 
 #include "TestHTTP.h"
 
+using namespace misere;
+
 //******************************************************************************
 
 TestHTTP::TestHTTP() :

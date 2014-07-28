@@ -5,6 +5,8 @@
 #include "HttpResponse.h"
 #include "Socket.h"
 
+using namespace misere;
+
 //******************************************************************************
 
 TestHttpResponse::TestHttpResponse() :

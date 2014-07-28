@@ -4,6 +4,8 @@
 #include "TestHttpClient.h"
 #include "HttpClient.h"
 
+using namespace misere;
+
 //******************************************************************************
 
 TestHttpClient::TestHttpClient() :

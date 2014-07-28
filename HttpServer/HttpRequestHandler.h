@@ -1,22 +1,25 @@
 // Copyright Paul Dardeau, SwampBits LLC 2014
 // BSD License
 
-#ifndef __HttpServer__RequestHandler__
-#define __HttpServer__RequestHandler__
+#ifndef MISERE_HTTPREQUESTHANDLER_H
+#define MISERE_HTTPREQUESTHANDLER_H
 
 
 #include "Runnable.h"
 #include "RequestHandler.h"
+#include "Socket.h"
+#include "SocketRequest.h"
 
-class HttpServer;
-class Socket;
-class SocketRequest;
+
+namespace misere
+{
+   class HttpServer;
 
 /**
  * HttpRequestHandler is the interface that must be implemented by all
  * HttpServer 'modules'.
  */
-class HttpRequestHandler : public RequestHandler
+class HttpRequestHandler : public chaudiere::RequestHandler
 {
 private:
    HttpServer& m_server;
@@ -30,7 +33,7 @@ public:
     * @see HttpServer()
     * @see SocketRequest()
     */
-   HttpRequestHandler(HttpServer& server, std::shared_ptr<SocketRequest> socketRequest) noexcept;
+   HttpRequestHandler(HttpServer& server, std::shared_ptr<chaudiere::SocketRequest> socketRequest) noexcept;
    
    /**
     * Constructs a HttpRequestHandler using a Socket
@@ -39,7 +42,7 @@ public:
     * @param HttpServer()
     * @param Socket()
     */
-   HttpRequestHandler(HttpServer& server, std::shared_ptr<Socket> socket) noexcept;
+   HttpRequestHandler(HttpServer& server, std::shared_ptr<chaudiere::Socket> socket) noexcept;
    
    /**
     * Destructor
@@ -59,5 +62,7 @@ public:
    HttpRequestHandler& operator=(HttpRequestHandler&&) = delete;
    
 };
+
+}
 
 #endif

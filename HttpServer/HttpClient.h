@@ -1,19 +1,20 @@
 // Copyright Paul Dardeau, SwampBits LLC 2014
 // BSD License
 
-#ifndef HTTPCLIENT_H
-#define HTTPCLIENT_H
+#ifndef MISERE_HTTPCLIENT_H
+#define MISERE_HTTPCLIENT_H
 
 #include <string>
 
 #include "BasicException.h"
+#include "KeyValuePairs.h"
 
 
 #define THROW(exceptionType)
 
 
-class KeyValuePairs;
-
+namespace misere
+{
 
 /**
  * HttpClient is used for constructing and executing HTTP requests.
@@ -49,7 +50,7 @@ class HttpClient
                        const std::string& url,
                        const std::string& postData,
                        const std::string& contentType,
-                       const KeyValuePairs& kvpAddlHeaders);
+                       const chaudiere::KeyValuePairs& kvpAddlHeaders);
 
       /**
        * Opens a socket, sends the sendBuffer and returns the response
@@ -83,9 +84,11 @@ class HttpClient
                        const std::string& method,
                        const std::string& contentType,
                        unsigned long contentLength,
-                       const KeyValuePairs& kvpAddlHeaders) noexcept;
+                       const chaudiere::KeyValuePairs& kvpAddlHeaders) noexcept;
 
 };
+
+}
 
 #endif
 

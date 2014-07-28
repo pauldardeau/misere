@@ -29,6 +29,8 @@ static const std::string CONNECTION       = "Connection: ";
 
 static const std::string CONNECTION_CLOSE = "Connection: close";
 
+using namespace misere;
+using namespace chaudiere;
 
 //******************************************************************************
 

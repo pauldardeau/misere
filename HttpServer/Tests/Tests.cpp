@@ -11,6 +11,7 @@
 #include "TestHttpServer.h"
 #include "TestHttpTransaction.h"
 
+using namespace misere;
 
 void Tests::run()
 {

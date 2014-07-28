@@ -31,6 +31,7 @@ static const std::string GET_WITH_PARAMETERS =
 "Host: a.valid.host\r\n"
 "Connection: close\r\n";
 
+using namespace misere;
 
 //******************************************************************************
 

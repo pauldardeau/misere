@@ -3,6 +3,8 @@
 
 #include "TestHttpServer.h"
 
+using namespace misere;
+
 //******************************************************************************
 
 TestHttpServer::TestHttpServer() :

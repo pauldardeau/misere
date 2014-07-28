@@ -1,14 +1,18 @@
 // Copyright Paul Dardeau, SwampBits LLC 2014
 // BSD License
 
-#ifndef HTTPHANDLER_H
-#define HTTPHANDLER_H
+#ifndef MISERE_HTTPHANDLER_H
+#define MISERE_HTTPHANDLER_H
 
 #include <string>
 
-class HttpRequest;
-class HttpResponse;
-class KeyValuePairs;
+#include "KeyValuePairs.h"
+
+
+namespace misere
+{
+   class HttpRequest;
+   class HttpResponse;
 
 /**
  * HttpHandler is the interface that all handlers for HTTP requests must implement.
@@ -28,7 +32,7 @@ class HttpHandler
        * @see KeyValuePairs()
        * @return boolean indicating if initialization of handler succeeded
        */
-      virtual bool init(const std::string& path, const KeyValuePairs& kvpArguments) noexcept = 0;
+      virtual bool init(const std::string& path, const chaudiere::KeyValuePairs& kvpArguments) noexcept = 0;
    
       /**
        * The destroy method is called as part of cleanup operations when the server
@@ -54,6 +58,7 @@ class HttpHandler
       virtual bool isAvailable() const noexcept = 0;
 };
 
+}
 
 #endif
 

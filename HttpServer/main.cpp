@@ -13,6 +13,8 @@
 static const std::string ENV_VAR_CFG_PATH        = "MISERE_HOME";
 static const std::string CFG_FILE_NAME           = "misere.ini";
 
+using namespace misere;
+using namespace chaudiere;
 
 int main(int argc, char* argv[])
 {

@@ -8,6 +8,9 @@
 
 static const std::string HANDLER_NAME = "HttpSocketServiceHandler";
 
+using namespace misere;
+using namespace chaudiere;
+
 //******************************************************************************
 
 HttpSocketServiceHandler::HttpSocketServiceHandler(HttpServer& httpServer) :

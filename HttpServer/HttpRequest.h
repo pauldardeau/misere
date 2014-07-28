@@ -1,8 +1,8 @@
 // Copyright Paul Dardeau, SwampBits LLC 2014
 // BSD License
 
-#ifndef HTTPREQUEST_H
-#define HTTPREQUEST_H
+#ifndef MISERE_HTTPREQUEST_H
+#define MISERE_HTTPREQUEST_H
 
 #include <string>
 #include <vector>
@@ -10,10 +10,11 @@
 
 #include "HttpTransaction.h"
 #include "KeyValuePairs.h"
+#include "Socket.h"
 
 
-class Socket;
-
+namespace misere
+{
 
 /**
  * HttpRequest is used by an HTTP server for parsing an HTTP request.
@@ -26,7 +27,7 @@ class HttpRequest : public HttpTransaction
        * @param socket the socket to read for initializing the object
        * @see Socket()
        */
-      explicit HttpRequest(Socket& socket);
+      explicit HttpRequest(chaudiere::Socket& socket);
    
       /**
        * Copy constructor
@@ -65,7 +66,7 @@ class HttpRequest : public HttpTransaction
        * @see Socket()
        * @return boolean indicating whether reading from the socket succeeded
        */
-      virtual bool streamFromSocket(Socket& socket) override;
+      virtual bool streamFromSocket(chaudiere::Socket& socket) override;
    
       /**
        * Determines if the request object has been successfully initialized
@@ -208,10 +209,12 @@ class HttpRequest : public HttpTransaction
    private:
       std::string m_method;
       std::string m_path;
-      KeyValuePairs m_arguments;
+      chaudiere::KeyValuePairs m_arguments;
       bool m_initialized;
 
 };
+
+}
 
 #endif
 

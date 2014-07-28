@@ -1,15 +1,19 @@
 // Copyright Paul Dardeau, SwampBits LLC 2014
 // BSD License
 
-#ifndef HTTPTRANSACTION_H
-#define HTTPTRANSACTION_H
+#ifndef MISERE_HTTPTRANSACTION_H
+#define MISERE_HTTPTRANSACTION_H
 
 
 #include <string>
 #include <vector>
 #include <unordered_map>
 
-class Socket;
+#include "Socket.h"
+
+
+namespace misere
+{
 
 /**
  * HttpTransaction is an abstract base class that provides common logic
@@ -60,7 +64,7 @@ class HttpTransaction
        * @see Socket()
        * @return boolean indicating whether the initialization from socket succeeded
        */
-      virtual bool streamFromSocket(Socket& socket);
+      virtual bool streamFromSocket(chaudiere::Socket& socket);
 
       /**
        * Retrieves the full set of HTTP headers as a single string
@@ -99,7 +103,7 @@ class HttpTransaction
        * Retrieves the keys of all the HTTP header key/value pairs
        * @param headerKeys list that will be populated with HTTP header keys
        */
-      void getHeaderKeys(std::vector< std::string >& headerKeys) const noexcept;
+      void getHeaderKeys(std::vector<std::string>& headerKeys) const noexcept;
    
       /**
        * Sets HTTP header key/value pair
@@ -171,6 +175,8 @@ class HttpTransaction
       int m_contentLength;
 
 };
+
+}
 
 #endif
 

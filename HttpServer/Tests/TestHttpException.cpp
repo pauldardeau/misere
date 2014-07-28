@@ -4,6 +4,9 @@
 #include "TestHttpException.h"
 #include "HttpException.h"
 
+using namespace misere;
+using namespace chaudiere;
+
 //******************************************************************************
 
 TestHttpException::TestHttpException() :

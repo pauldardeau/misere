@@ -1,11 +1,14 @@
 // Copyright Paul Dardeau, SwampBits LLC 2014
 // BSD License
 
-#ifndef __HttpServer__TestHttpResponse__
-#define __HttpServer__TestHttpResponse__
+#ifndef MISERE_TESTHTTPRESPONSE_H
+#define MISERE_TESTHTTPRESPONSE_H
 
 #include "TestSuite.h"
 
+
+namespace misere
+{
 
 class TestHttpResponse : public TestSuite
 {
@@ -29,4 +32,6 @@ public:
    
 };
 
-#endif /* defined(__HttpServer__TestHttpResponse__) */
+}
+
+#endif

@@ -70,6 +70,8 @@ static const std::string COMMA         = ",";   // ,
 static const std::string SLASH         = "/";   // /
 static const std::string SPACE         = " ";
 
+using namespace misere;
+using namespace chaudiere;
 
 //******************************************************************************
 

@@ -5,6 +5,9 @@
 
 #include "HTTP.h"
 
+using namespace misere;
+
+
 // protocol
 const std::string HTTP::HTTP_PROTOCOL1_0    = "HTTP/1.0";
 const std::string HTTP::HTTP_PROTOCOL1_1    = "HTTP/1.1";

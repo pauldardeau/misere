@@ -1,11 +1,14 @@
 // Copyright Paul Dardeau, SwampBits LLC 2014
 // BSD License
 
-#ifndef __HttpServer__TestHttpClient__
-#define __HttpServer__TestHttpClient__
+#ifndef MISERE_TESTHTTPCLIENT_H
+#define MISERE_TESTHTTPCLIENT_H
 
 #include "TestSuite.h"
 
+
+namespace misere
+{
 
 class TestHttpClient : public TestSuite
 {
@@ -25,4 +28,6 @@ public:
 
 };
 
-#endif /* defined(__HttpServer__TestHttpClient__) */
+}
+
+#endif

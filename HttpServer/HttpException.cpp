@@ -4,6 +4,9 @@
 #include "HttpException.h"
 #include "Logger.h"
 
+using namespace misere;
+using namespace chaudiere;
+
 //******************************************************************************
 
 HttpException::HttpException(int statusCode,

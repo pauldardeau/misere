@@ -1,15 +1,17 @@
 // Copyright Paul Dardeau, SwampBits LLC 2014
 // BSD License
 
-#ifndef __HttpServer__ServerStatusHandler__
-#define __HttpServer__ServerStatusHandler__
+#ifndef MISERE_SERVERSTATUSHANDLER_H
+#define MISERE_SERVERSTATUSHANDLER_H
 
 #include "AbstractHandler.h"
 
-class HttpRequest;
-class HttpResponse;
+namespace misere
+{
+   class HttpRequest;
+   class HttpResponse;
 
-/*!
+/**
  *
  */
 class ServerStatusHandler : public AbstractHandler
@@ -23,5 +25,6 @@ public:
    
 };
 
+}
 
-#endif /* defined(__HttpServer__ServerStatusHandler__) */
+#endif

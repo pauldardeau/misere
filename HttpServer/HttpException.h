@@ -1,17 +1,20 @@
 // Copyright Paul Dardeau, SwampBits LLC 2014
 // BSD License
 
-#ifndef __HttpServer__HttpException__
-#define __HttpServer__HttpException__
+#ifndef MISERE_HTTPEXCEPTION_H
+#define MISERE_HTTPEXCEPTION_H
 
 #include <string>
 
 #include "BasicException.h"
 
+namespace misere
+{
+
 /**
  * HttpException is an exception that contains an HTTP status code.
  */
-class HttpException : public BasicException
+class HttpException : public chaudiere::BasicException
 {
 private:
    int m_statusCode;
@@ -65,5 +68,6 @@ public:
    
 };
 
+}
 
-#endif /* defined(__HttpServer__HttpException__) */
+#endif

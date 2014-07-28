@@ -1,15 +1,19 @@
 // Copyright Paul Dardeau, SwampBits LLC 2014
 // BSD License
 
-#ifndef __HttpServer__HttpSocketServiceHandler__
-#define __HttpServer__HttpSocketServiceHandler__
+#ifndef MISERE_HTTPSOCKETSERVICEHANDLER_H
+#define MISERE_HTTPSOCKETSERVICEHANDLER_H
 
 #include <string>
 #include <memory>
 
 #include "SocketServiceHandler.h"
+#include "SocketRequest.h"
 
-class SocketRequest;
+
+namespace misere
+{
+
 class HttpServer;
 
 
@@ -17,7 +21,7 @@ class HttpServer;
  * HttpSocketServiceHandler is a SocketServiceHandler built for use
  * with HttpServer.
  */
-class HttpSocketServiceHandler : public SocketServiceHandler
+class HttpSocketServiceHandler : public chaudiere::SocketServiceHandler
 {
 public:
    /**
@@ -37,7 +41,7 @@ public:
     * @param socketRequest the SocketRequest to be processed
     * @see SocketRequest()
     */
-   virtual void serviceSocket(std::shared_ptr<SocketRequest> socketRequest) override;
+   virtual void serviceSocket(std::shared_ptr<chaudiere::SocketRequest> socketRequest) override;
    
    /**
     * Retrieves the handler name. This is primarily an aid for debugging.
@@ -49,5 +53,7 @@ private:
    HttpServer& m_httpServer;
 };
 
-#endif /* defined(__HttpServer__HttpSocketServiceHandler__) */
+}
+
+#endif
 

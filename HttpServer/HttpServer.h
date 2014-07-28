@@ -1,21 +1,23 @@
 // Copyright Paul Dardeau, SwampBits LLC 2014
 // BSD License
 
-#ifndef HTTPSERVER_H
-#define HTTPSERVER_H
+#ifndef MISERE_HTTPSERVER_H
+#define MISERE_HTTPSERVER_H
 
 #include <string>
 #include <unordered_map>
 
 #include "HttpHandler.h"
 #include "KernelEventServer.h"
+#include "ServerSocket.h"
+#include "SocketRequest.h"
+#include "ThreadPoolDispatcher.h"
+#include "SectionedConfigDataSource.h"
+#include "ThreadingFactory.h"
 
-class ServerSocket;
-class SocketRequest;
-class ThreadPoolDispatcher;
-class SectionedConfigDataSource;
-class ThreadingFactory;
 
+namespace misere
+{
 
 /**
  * HttpServer is an HTTP server meant to be used for servicing application
@@ -132,7 +134,7 @@ class HttpServer
        * @see SectionedConfigDataSource()
        * @return the configuration data source
        */
-      std::unique_ptr<SectionedConfigDataSource> getConfigDataSource();
+      std::unique_ptr<chaudiere::SectionedConfigDataSource> getConfigDataSource();
    
       /**
        * Retrieves the size of the socket send buffer
@@ -163,7 +165,7 @@ class HttpServer
        * @param socketRequest the SocketRequest to process
        * @see SocketRequest()
        */
-      void serviceSocket(std::shared_ptr<SocketRequest> socketRequest);
+      void serviceSocket(std::shared_ptr<chaudiere::SocketRequest> socketRequest);
 
       /**
        * Convenience method to retrieve a setting and convert it to a boolean
@@ -172,7 +174,7 @@ class HttpServer
        * @see KeyValuePairs()
        * @return boolean value (or false if value cannot be retrieved or converted)
        */
-      bool hasTrueValue(const KeyValuePairs& kvp,
+      bool hasTrueValue(const chaudiere::KeyValuePairs& kvp,
                         const std::string& setting) const noexcept;
    
       /**
@@ -182,7 +184,7 @@ class HttpServer
        * @see KeyValuePairs()
        * @return integer value (or -1 if value cannot be retrieved or converted)
        */
-      int getIntValue(const KeyValuePairs& kvp,
+      int getIntValue(const chaudiere::KeyValuePairs& kvp,
                       const std::string& setting) const noexcept;
    
       /**
@@ -190,7 +192,7 @@ class HttpServer
        * @param kvp the collection of key/value pairs for replacement
        * @param s the string to search and replace all variables in
        */
-      void replaceVariables(const KeyValuePairs& kvp, std::string& s) const noexcept;
+      void replaceVariables(const chaudiere::KeyValuePairs& kvp, std::string& s) const noexcept;
    
       /**
        * Determines if compression is turned on for the specified mime type
@@ -229,10 +231,10 @@ class HttpServer
 
 
    private:
-      std::unique_ptr<KernelEventServer> m_kernelEventServer;
-      std::unique_ptr<ServerSocket> m_serverSocket;
-      std::shared_ptr<ThreadPoolDispatcher> m_threadPool;
-      std::shared_ptr<ThreadingFactory> m_threadingFactory;
+      std::unique_ptr<chaudiere::KernelEventServer> m_kernelEventServer;
+      std::unique_ptr<chaudiere::ServerSocket> m_serverSocket;
+      std::shared_ptr<chaudiere::ThreadPoolDispatcher> m_threadPool;
+      std::shared_ptr<chaudiere::ThreadingFactory> m_threadingFactory;
       std::unordered_map<std::string, std::string> m_mapProperties;
       std::unordered_map<std::string, std::unique_ptr<HttpHandler>> m_mapPathHandlers;
       std::string m_accessLogFile;
@@ -259,6 +261,7 @@ class HttpServer
 
 };
 
+}
 
 #endif
 

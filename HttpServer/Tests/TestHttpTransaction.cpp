@@ -5,6 +5,8 @@
 #include "HttpTransaction.h"
 #include "Socket.h"
 
+using namespace misere;
+
 //******************************************************************************
 
 TestHttpTransaction::TestHttpTransaction() :

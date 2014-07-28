@@ -1,12 +1,14 @@
 // Copyright Paul Dardeau, SwampBits LLC 2014
 // BSD License
 
-#ifndef __HttpServer__TestCase__
-#define __HttpServer__TestCase__
+#ifndef MISERE_TESTCASE_H
+#define MISERE_TESTCASE_H
 
 #include <string>
 
-class TestSuite;
+namespace misere
+{
+   class TestSuite;
 
 
 class TestCase
@@ -26,5 +28,7 @@ public:
    const std::string& getName() const;
    
 };
+   
+}
 
-#endif /* defined(__HttpServer__TestCase__) */
+#endif

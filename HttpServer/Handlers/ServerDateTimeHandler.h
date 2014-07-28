@@ -1,15 +1,17 @@
 // Copyright Paul Dardeau, SwampBits LLC 2014
 // BSD License
 
-#ifndef HttpServer_ServerDateTimeHandler_h
-#define HttpServer_ServerDateTimeHandler_h
+#ifndef MISERE_SERVERDATETIMEHANDLER_H
+#define MISERE_SERVERDATETIMEHANDLER_H
 
 #include "AbstractHandler.h"
 
-class HttpRequest;
-class HttpResponse;
+namespace misere
+{
+   class HttpRequest;
+   class HttpResponse;
 
-/*!
+/**
  *
  */
 class ServerDateTimeHandler : public AbstractHandler
@@ -23,5 +25,6 @@ public:
    
 };
 
+}
 
 #endif

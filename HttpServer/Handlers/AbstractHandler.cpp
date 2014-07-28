@@ -4,6 +4,9 @@
 #include "AbstractHandler.h"
 #include "Logger.h"
 
+using namespace misere;
+using namespace chaudiere;
+
 //******************************************************************************
 
 bool AbstractHandler::init(const std::string& path,

@@ -1,11 +1,13 @@
 // Copyright Paul Dardeau, SwampBits LLC 2014
 // BSD License
 
-#ifndef __HttpServer__TestHttpServer__
-#define __HttpServer__TestHttpServer__
+#ifndef MISERE_TESTHTTPSERVER_H
+#define MISERE_TESTHTTPSERVER_H
 
 #include "TestSuite.h"
 
+namespace misere
+{
 
 class TestHttpServer : public TestSuite
 {
@@ -33,8 +35,9 @@ protected:
 
 public:
    TestHttpServer();
-   
 
 };
 
-#endif /* defined(__HttpServer__TestHttpServer__) */
+}
+
+#endif

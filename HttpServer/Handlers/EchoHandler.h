@@ -1,15 +1,17 @@
 // Copyright Paul Dardeau, SwampBits LLC 2014
 // BSD License
 
-#ifndef __HttpServer__EchoHandler__
-#define __HttpServer__EchoHandler__
+#ifndef MISERE_ECHOHANDLER_H
+#define MISERE_ECHOHANDLER_H
 
 #include "AbstractHandler.h"
 
-class HttpRequest;
-class HttpResponse;
+namespace misere
+{
+   class HttpRequest;
+   class HttpResponse;
 
-/*!
+/**
  *
  */
 class EchoHandler : public AbstractHandler
@@ -23,4 +25,6 @@ public:
    
 };
 
-#endif /* defined(__HttpServer__EchoHandler__) */
+}
+
+#endif

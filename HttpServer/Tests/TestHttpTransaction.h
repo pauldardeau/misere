@@ -1,11 +1,13 @@
 // Copyright Paul Dardeau, SwampBits LLC 2014
 // BSD License
 
-#ifndef __HttpServer__TestHttpTransaction__
-#define __HttpServer__TestHttpTransaction__
+#ifndef MISERE_TESTHTTPTRANSACTION_H
+#define MISERE_TESTHTTPTRANSACTION_H
 
 #include "TestSuite.h"
 
+namespace misere
+{
 
 class TestHttpTransaction : public TestSuite
 {
@@ -33,4 +35,6 @@ public:
 
 };
 
-#endif /* defined(__HttpServer__TestHttpTransaction__) */
+}
+
+#endif

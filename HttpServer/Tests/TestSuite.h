@@ -1,14 +1,16 @@
 // Copyright Paul Dardeau, SwampBits LLC 2014
 // BSD License
 
-#ifndef __HttpServer__TestSuite__
-#define __HttpServer__TestSuite__
+#ifndef MISERE_TESTSUITE_H
+#define MISERE_TESTSUITE_H
 
 #include <string>
 
 #include "TestMacros.h"
 
-class TestCase;
+namespace misere
+{
+   class TestCase;
 
 
 class TestSuite
@@ -58,4 +60,6 @@ public:
    
 };
 
-#endif /* defined(__HttpServer__TestSuite__) */
+}
+
+#endif

@@ -16,6 +16,8 @@
 static const std::string COLON  = ":";
 static const std::string EOL_NL = "\n";
 
+using namespace misere;
+using namespace chaudiere;
 
 //******************************************************************************
 
