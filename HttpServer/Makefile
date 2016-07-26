@@ -4,6 +4,7 @@
 CC = clang++
 CC_OPTS = -c -Wall -O2 -pthread -fblocks -std=c++11 -I../../chaudiere/src
 LINK_CMD = clang++
+LINK_LIBS = -lpthread -ldl
 
 EXE_NAME = misere
 
@@ -32,7 +33,7 @@ clean :
 	rm -f $(EXE_NAME)
 
 $(EXE_NAME) : $(OBJS)
-	$(LINK_CMD) -o $(EXE_NAME) $(OBJS) ../../chaudiere/src/libchaudiere.a
+	$(LINK_CMD) -o $(EXE_NAME) $(OBJS) ../../chaudiere/src/libchaudiere.a $(LINK_LIBS)
 
 %.o : %.cpp
 	$(CC) $(CC_OPTS) $< -o $@
