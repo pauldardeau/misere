@@ -99,10 +99,10 @@ void ServerObjectsDebugging::serviceRequest(const HttpRequest& request,
    Logger* logger = Logger::getLogger();
    
    if (logger) {
-      Logger* pLoggerInstance = logger.get();
+      Logger* pLoggerInstance = logger;
       StdLogger* stdLogger = dynamic_cast<StdLogger*>(pLoggerInstance);
       if (stdLogger) {
-         std::unordered_map<std::string, LifecycleStats> mapClassStats;
+         std::map<std::string, LifecycleStats> mapClassStats;
          stdLogger->populateClassLifecycleStats(mapClassStats);
          
          if (!mapClassStats.empty()) {

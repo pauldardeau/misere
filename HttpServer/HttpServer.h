@@ -16,16 +16,14 @@
 #include "ThreadingFactory.h"
 
 
-namespace misere
-{
+namespace misere {
 
 /**
  * HttpServer is an HTTP server meant to be used for servicing application
  * HTTP requests. It is not meant to be a general purpose web server (no
  * provisions for serving files).
  */
-class HttpServer
-{
+class HttpServer {
    public:
       /**
        * Constructs an HttpServer with the file name/path for a configuration file
@@ -40,9 +38,7 @@ class HttpServer
    
       // copies not allowed
       HttpServer(const HttpServer&) = delete;
-      HttpServer(HttpServer&&) = delete;
       HttpServer& operator=(const HttpServer&) = delete;
-      HttpServer& operator=(HttpServer&&) = delete;
 
       /**
        * Retrieves the current time in Greenwich Mean Time (GMT)
@@ -192,7 +188,8 @@ class HttpServer
        * @param kvp the collection of key/value pairs for replacement
        * @param s the string to search and replace all variables in
        */
-      void replaceVariables(const chaudiere::KeyValuePairs& kvp, std::string& s) const noexcept;
+      void replaceVariables(const chaudiere::KeyValuePairs& kvp,
+                            std::string& s) const noexcept;
    
       /**
        * Determines if compression is turned on for the specified mime type

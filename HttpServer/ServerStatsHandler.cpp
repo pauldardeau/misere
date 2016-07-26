@@ -66,10 +66,10 @@ void ServerStatsHandler::serviceRequest(const HttpRequest& request,
    Logger* logger = Logger::getLogger();
    
    if (logger) {
-      Logger* pLoggerInstance = logger.get();
+      Logger* pLoggerInstance = logger;
       StdLogger* stdLogger = dynamic_cast<StdLogger*>(pLoggerInstance);
       if (stdLogger) {
-         std::unordered_map<std::string, std::unordered_map<std::string, long long>> mapOccurrenceTypes;
+         std::map<std::string, std::map<std::string, long long>> mapOccurrenceTypes;
          stdLogger->populateOccurrences(mapOccurrenceTypes);
          
          if (!mapOccurrenceTypes.empty()) {
@@ -81,7 +81,7 @@ void ServerStatsHandler::serviceRequest(const HttpRequest& request,
             
             for (const auto kv : mapOccurrenceTypes) {
                const std::string& occurrenceType = kv.first;
-               const std::unordered_map<std::string, long long>& mapOccurrences = kv.second;
+               const std::map<std::string, long long>& mapOccurrences = kv.second;
 
                for (const auto kvOccurrence : mapOccurrences) {
                   const std::string& occurrenceName = kvOccurrence.first;

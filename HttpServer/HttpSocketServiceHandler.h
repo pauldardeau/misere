@@ -47,7 +47,7 @@ public:
     * Retrieves the handler name. This is primarily an aid for debugging.
     * @return the handler name
     */
-   virtual const std::string& getName() const;
+   virtual const std::string& getName() const override;
    
 private:
    HttpServer& m_httpServer;

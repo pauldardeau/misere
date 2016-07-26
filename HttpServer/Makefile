@@ -16,6 +16,13 @@ HttpResponse.o \
 HttpServer.o \
 HttpSocketServiceHandler.o \
 HttpTransaction.o \
+AbstractHandler.o \
+EchoHandler.o \
+GMTDateTimeHandler.o \
+ServerDateTimeHandler.o \
+ServerObjectsDebugging.o \
+ServerStatsHandler.o \
+ServerStatusHandler.o \
 main.o
 
 all : $(EXE_NAME)
@@ -25,7 +32,7 @@ clean :
 	rm -f $(EXE_NAME)
 
 $(EXE_NAME) : $(OBJS)
-	$(LINK_CMD) $(EXE_NAME) $(OBJS)
+	$(LINK_CMD) -o $(EXE_NAME) $(OBJS) ../../chaudiere/src/libchaudiere.a
 
 %.o : %.cpp
 	$(CC) $(CC_OPTS) $< -o $@

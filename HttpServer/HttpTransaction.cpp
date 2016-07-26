@@ -195,14 +195,14 @@ bool HttpTransaction::streamFromSocket(Socket& socket)
             try {
                char* buffer = new char[contentLength + 1];
 
-               if (socket.read(buffer.get(), contentLength)) {
+               if (socket.read(buffer, contentLength)) {
                   buffer[contentLength] = '\0';
                   
                   if (isLoggingDebug) {
-                     Logger::debug(std::string("HttpTransaction (body) socket.read: ") + std::string(buffer.get()));
+                     Logger::debug(std::string("HttpTransaction (body) socket.read: ") + std::string(buffer));
                   }
                   
-                  m_body += buffer.get();
+                  m_body += buffer;
                }
             } catch(const std::exception& e) {
                Logger::error(std::string("HTTPTransaction::streamFromSocket exception caught: ") + std::string(e.what()));
