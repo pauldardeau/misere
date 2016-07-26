@@ -182,9 +182,18 @@ bool HttpTransaction::streamFromSocket(Socket& socket) {
                Logger::debug(std::string(msg));
             }
 
-            try {
-               char* buffer = new char[contentLength + 1];
+            char small_buffer[1024];
+            char* large_buffer = NULL;
+            char* buffer;
 
+            if (contentLength > 1023) {
+               large_buffer = new char[contentLength + 1];
+               buffer = large_buffer;
+            } else {
+               buffer = small_buffer;
+            }
+
+            try {
                if (socket.read(buffer, contentLength)) {
                   buffer[contentLength] = '\0';
                   
@@ -198,6 +207,10 @@ bool HttpTransaction::streamFromSocket(Socket& socket) {
                Logger::error(std::string("HTTPTransaction::streamFromSocket exception caught: ") + std::string(e.what()));
             } catch (...) {
                Logger::error("HTTPTransaction::streamFromSocket unknown exception caught");
+            }
+
+            if (large_buffer != NULL) {
+               delete [] large_buffer;
             }
 
             done = true;

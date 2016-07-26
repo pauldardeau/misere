@@ -38,6 +38,7 @@
 #include "PthreadsThreadingFactory.h"
 
 // kernel events
+#include "KernelEventServer.h"
 #include "EpollServer.h"
 #include "KqueueServer.h"
 
@@ -134,7 +135,6 @@ typedef HttpHandler* (*PFN_CREATE_HANDLER)();
 //******************************************************************************
 
 HttpServer::HttpServer(const std::string& configFilePath) :
-   m_kernelEventServer(nullptr),
    m_serverSocket(nullptr),
    m_threadPool(nullptr),
    m_threadingFactory(nullptr),
@@ -233,26 +233,27 @@ void HttpServer::replaceVariables(const KeyValuePairs& kvp,
 
 bool HttpServer::init(int port) {
    const bool isLoggingDebug = Logger::isLogging(Logger::LogLevel::Debug);
-   
    m_serverPort = port;
 	
-   SectionedConfigDataSource* configDataSource;
+   SectionedConfigDataSource* configDataSource = NULL;
+   bool haveDataSource = false;
    
    try {
       configDataSource = getConfigDataSource();
+      haveDataSource = true;
    } catch (const BasicException& be) {
       Logger::error("exception retrieving config data: " + be.whatString());
-      return false;
    } catch (const std::exception& e) {
       Logger::error("exception retrieving config data: " + std::string(e.what()));
-      return false;
    } catch (...) {
       Logger::error("exception retrieving config data");
-      return false;
    }
    
-   if (!configDataSource) {
+   if (!configDataSource || !haveDataSource) {
       Logger::error("unable to retrieve config data");
+      if (configDataSource != NULL) {
+         delete configDataSource;
+      }
       return false;
    }
 
@@ -485,19 +486,19 @@ bool HttpServer::init(int port) {
                                    "'");
                   }
                   
-                  DynamicLibrary* dll = new DynamicLibrary(dllName);
+                  DynamicLibrary dll(dllName);
 
                   // load the dll
                   try {
-                     void* pfn = dll->resolve("CreateHandler");
+                     void* pfn = dll.resolve("CreateHandler");
                      if (pfn == nullptr) {
-                        dll->close();
                         Logger::error("unable to find module library entry point");
                      } else {
                         if (isLoggingDebug) {
                            Logger::debug("dynamic library loaded");
                         }
                      }
+                     dll.close();
 
                      PFN_CREATE_HANDLER pfnCreateHandler = (PFN_CREATE_HANDLER) pfn;
                      pHandler = (*pfnCreateHandler)();
@@ -667,10 +668,22 @@ HttpServer::~HttpServer() noexcept {
 
    if (m_serverSocket) {
       m_serverSocket->close();
+      delete m_serverSocket;
    }
 
    if (m_threadPool) {
       m_threadPool->stop();
+      delete m_threadPool;
+   }
+
+   if (m_threadingFactory != NULL) {
+      delete m_threadingFactory;
+   }
+
+   for (auto it = m_mapPathHandlers.begin();
+        it != m_mapPathHandlers.end();
+        it++) {
+      delete it->second;
    }
 
    m_mapPathHandlers.erase(m_mapPathHandlers.begin(),
@@ -946,6 +959,7 @@ int HttpServer::runKernelEventServer() noexcept {
          } catch (...) {
             Logger::critical("unidentified exception running kernel event server");
          }
+         delete kernelEventServer;
       }
    } else {
       Logger::critical("no threading factory configured");

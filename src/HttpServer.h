@@ -8,7 +8,6 @@
 #include <unordered_map>
 
 #include "HttpHandler.h"
-#include "KernelEventServer.h"
 #include "ServerSocket.h"
 #include "SocketRequest.h"
 #include "ThreadPoolDispatcher.h"
@@ -228,7 +227,6 @@ class HttpServer {
 
 
    private:
-      chaudiere::KernelEventServer* m_kernelEventServer;
       chaudiere::ServerSocket* m_serverSocket;
       chaudiere::ThreadPoolDispatcher* m_threadPool;
       chaudiere::ThreadingFactory* m_threadingFactory;
