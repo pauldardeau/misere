@@ -39,17 +39,6 @@ HttpResponse::HttpResponse(const HttpResponse& copy) noexcept :
 
 //******************************************************************************
 
-HttpResponse::HttpResponse(HttpResponse&& move) noexcept :
-   HttpTransaction(move),
-   m_statusCode(std::move(move.m_statusCode)),
-   m_reasonPhrase(std::move(move.m_reasonPhrase)),
-   m_statusCodeAsInteger(move.m_statusCodeAsInteger)
-{
-   Logger::logInstanceCreate("HttpResponse");
-}
-
-//******************************************************************************
-
 HttpResponse::HttpResponse(Socket& socket)
 {
    Logger::logInstanceCreate("HttpResponse");
@@ -79,22 +68,6 @@ HttpResponse& HttpResponse::operator=(const HttpResponse& copy) noexcept
    m_reasonPhrase = copy.m_reasonPhrase;
    m_statusCodeAsInteger = copy.m_statusCodeAsInteger;
 
-   return *this;
-}
-
-//******************************************************************************
-
-HttpResponse& HttpResponse::operator=(HttpResponse&& move) noexcept
-{
-   if (this == &move) {
-      return *this;
-   }
-   
-   HttpTransaction::operator=(move);
-   m_statusCode = std::move(move.m_statusCode);
-   m_reasonPhrase = std::move(move.m_reasonPhrase);
-   m_statusCodeAsInteger = move.m_statusCodeAsInteger;
-   
    return *this;
 }
 

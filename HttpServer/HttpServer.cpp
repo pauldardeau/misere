@@ -166,15 +166,13 @@ HttpServer::HttpServer(const std::string& configFilePath) :
 
 //******************************************************************************
 
-std::unique_ptr<SectionedConfigDataSource> HttpServer::getConfigDataSource()
-{
-   return std::unique_ptr<SectionedConfigDataSource>(new IniReader(m_configFilePath));
+SectionedConfigDataSource* HttpServer::getConfigDataSource() {
+   return new IniReader(m_configFilePath);
 }
 
 //******************************************************************************
 
-int HttpServer::getSocketSendBufferSize() const noexcept
-{
+int HttpServer::getSocketSendBufferSize() const noexcept {
    return m_socketSendBufferSize;
 }
 
@@ -248,29 +246,22 @@ void HttpServer::replaceVariables(const KeyValuePairs& kvp,
 
 //******************************************************************************
 
-bool HttpServer::init(int port)
-{
+bool HttpServer::init(int port) {
    const bool isLoggingDebug = Logger::isLogging(Logger::LogLevel::Debug);
    
-	m_serverPort = port;
+   m_serverPort = port;
 	
-   std::unique_ptr<SectionedConfigDataSource> configDataSource;
+   SectionedConfigDataSource* configDataSource;
    
    try {
-      configDataSource = std::move(getConfigDataSource());
-   }
-   catch (const BasicException& be)
-   {
+      configDataSource = getConfigDataSource();
+   } catch (const BasicException& be) {
       Logger::error("exception retrieving config data: " + be.whatString());
       return false;
-   }
-   catch (const std::exception& e)
-   {
+   } catch (const std::exception& e) {
       Logger::error("exception retrieving config data: " + std::string(e.what()));
       return false;
-   }
-   catch (...)
-   {
+   } catch (...) {
       Logger::error("exception retrieving config data");
       return false;
    }
@@ -375,7 +366,7 @@ bool HttpServer::init(int port)
             if (!m_logLevel.empty()) {
                StrUtils::toLowerCase(m_logLevel);
                Logger::info(std::string("log level: ") + m_logLevel);
-               std::shared_ptr<Logger> logger = Logger::getLogger();
+               Logger* logger = Logger::getLogger();
                
                if (logger != nullptr) {
                   if (m_logLevel == CFG_LOGGING_CRITICAL) {
@@ -508,7 +499,7 @@ bool HttpServer::init(int port)
                                    "'");
                   }
                   
-                  std::unique_ptr<DynamicLibrary> dll(new DynamicLibrary(dllName));
+                  DynamicLibrary* dll = new DynamicLibrary(dllName);
 
                   // load the dll
                   try {
@@ -633,11 +624,8 @@ bool HttpServer::init(int port)
             Logger::debug(std::string(msg));
          }
       
-         std::unique_ptr<ServerSocket> serverSocket(new ServerSocket(port));
-         m_serverSocket = std::move(serverSocket);
-      }
-      catch (...)
-      {
+         m_serverSocket = new ServerSocket(port);
+      } catch (...) {
          std::string exception = "unable to open server socket port '";
          exception += std::to_string(port);
          exception += "'";
@@ -645,7 +633,6 @@ bool HttpServer::init(int port)
          return false;
       }
    }
-
 
    std::string concurrencyModel = EMPTY;
 
@@ -664,10 +651,8 @@ bool HttpServer::init(int port)
          threadingPackage = ThreadingFactory::ThreadingPackage::PTHREADS;
       }
       
-      std::shared_ptr<ThreadingFactory>
-         threadingFactory(new ThreadingFactory(threadingPackage));
-      ThreadingFactory::setThreadingFactory(threadingFactory);
-      m_threadingFactory = std::move(threadingFactory);
+      m_threadingFactory = new ThreadingFactory(threadingPackage);
+      ThreadingFactory::setThreadingFactory(m_threadingFactory);
       
       if (m_isUsingKernelEventServer) {
          m_threadingFactory->setMutexType(ThreadingFactory::ThreadingPackage::PTHREADS);
@@ -807,8 +792,7 @@ bool HttpServer::addPathHandler(const std::string& path,
    bool isSuccess = false;
 
    if (!path.empty() && (nullptr != pHandler)) {
-      std::unique_ptr<HttpHandler> handler(pHandler);
-      m_mapPathHandlers[path] = std::move(handler);
+      m_mapPathHandlers[path] = pHandler;
       isSuccess = true;
    }
 
@@ -837,7 +821,7 @@ HttpHandler* HttpServer::getPathHandler(const std::string& path) noexcept
    auto it = m_mapPathHandlers.find(path);
 
    if (it != m_mapPathHandlers.end()) {
-      return (*it).second.get();
+      return (*it).second;
    }
 
    return nullptr;
@@ -901,11 +885,11 @@ int HttpServer::platformPointerSizeBits() const noexcept
 
 //******************************************************************************
 
-void HttpServer::serviceSocket(std::shared_ptr<SocketRequest> socketRequest)
+void HttpServer::serviceSocket(SocketRequest* socketRequest)
 {
    if (nullptr != m_threadPool) {
       // Hand off the request to the thread pool for asynchronous processing
-      std::shared_ptr<HttpRequestHandler> requestHandler(new HttpRequestHandler(*this, socketRequest));
+      HttpRequestHandler* requestHandler = new HttpRequestHandler(*this, socketRequest);
       requestHandler->setThreadPooling(true);
       m_threadPool->addRequest(requestHandler);
    } else {
@@ -928,7 +912,7 @@ int HttpServer::runSocketServer() noexcept
    
    while (!m_isDone) {
       
-      std::shared_ptr<Socket> socket(m_serverSocket->accept());
+      Socket* socket = m_serverSocket->accept();
 
       if (nullptr == socket) {
          continue;
@@ -942,7 +926,7 @@ int HttpServer::runSocketServer() noexcept
       try {
          
          if (m_isThreaded && (nullptr != m_threadPool)) {
-            std::shared_ptr<HttpRequestHandler> handler(new HttpRequestHandler(*this, socket));
+            HttpRequestHandler* handler = new HttpRequestHandler(*this, socket);
 
             handler->setThreadPooling(true);
 
@@ -952,21 +936,15 @@ int HttpServer::runSocketServer() noexcept
             HttpRequestHandler handler(*this, socket);
             handler.run();
          }
-      }
-      catch (const BasicException& be)
-      {
+      } catch (const BasicException& be) {
          rc = 1;
          Logger::error("HttpServer runServer exception caught: " +
                        be.whatString());
-      }
-      catch (const std::exception& e)
-      {
+      } catch (const std::exception& e) {
          rc = 1;
          Logger::error(std::string("HttpServer runServer exception caught: ") +
                        std::string(e.what()));
-      }
-      catch (...)
-      {
+      } catch (...) {
          rc = 1;
          Logger::error("HttpServer runServer unknown exception caught");
       }
@@ -984,16 +962,16 @@ int HttpServer::runKernelEventServer() noexcept
    int rc = 0;
    
    if (m_threadingFactory != nullptr) {
-      std::shared_ptr<Mutex> mutexFD(m_threadingFactory->createMutex("fdMutex"));
-      std::shared_ptr<Mutex> mutexHWMConnections(m_threadingFactory->createMutex("hwmConnectionsMutex"));
-      std::unique_ptr<KernelEventServer> kernelEventServer = nullptr;
+      Mutex* mutexFD = m_threadingFactory->createMutex("fdMutex");
+      Mutex* mutexHWMConnections = m_threadingFactory->createMutex("hwmConnectionsMutex");
+      KernelEventServer* kernelEventServer = nullptr;
       
       if (KqueueServer::isSupportedPlatform()) {
          kernelEventServer =
-            std::unique_ptr<KernelEventServer>(new KqueueServer(*mutexFD, *mutexHWMConnections));
+            new KqueueServer(*mutexFD, *mutexHWMConnections);
       } else if (EpollServer::isSupportedPlatform()) {
          kernelEventServer =
-            std::unique_ptr<KernelEventServer>(new EpollServer(*mutexFD, *mutexHWMConnections));
+            new EpollServer(*mutexFD, *mutexHWMConnections);
       } else {
          Logger::critical("no kernel event server available for platform");
          rc = 1;
@@ -1001,7 +979,7 @@ int HttpServer::runKernelEventServer() noexcept
       
       if (kernelEventServer != nullptr) {
          try {
-            std::shared_ptr<SocketServiceHandler> serviceHandler(new HttpSocketServiceHandler(*this));
+            SocketServiceHandler* serviceHandler = new HttpSocketServiceHandler(*this);
 
             if (kernelEventServer->init(serviceHandler, m_serverPort, MAX_CON))
             {

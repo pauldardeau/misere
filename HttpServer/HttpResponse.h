@@ -40,12 +40,6 @@ class HttpResponse : public HttpTransaction
       HttpResponse(const HttpResponse& copy) noexcept;
    
       /**
-       * Move constructor
-       * @param move the source of the move
-       */
-      HttpResponse(HttpResponse&& move) noexcept;
-   
-      /**
        * Destructor
        */
       ~HttpResponse() noexcept;
@@ -57,13 +51,6 @@ class HttpResponse : public HttpTransaction
        */
       HttpResponse& operator=(const HttpResponse& copy) noexcept;
    
-      /**
-       * Move operator
-       * @param move the source of the move
-       * @return reference to the target of the move
-       */
-      HttpResponse& operator=(HttpResponse&& move) noexcept;
-
       /**
        * Initializes HttpResponse instance by reading data from socket
        * @param socket the socket to read from for initialization

@@ -33,7 +33,7 @@ public:
     * @see HttpServer()
     * @see SocketRequest()
     */
-   HttpRequestHandler(HttpServer& server, std::shared_ptr<chaudiere::SocketRequest> socketRequest) noexcept;
+   HttpRequestHandler(HttpServer& server, chaudiere::SocketRequest* socketRequest) noexcept;
    
    /**
     * Constructs a HttpRequestHandler using a Socket
@@ -42,7 +42,7 @@ public:
     * @param HttpServer()
     * @param Socket()
     */
-   HttpRequestHandler(HttpServer& server, std::shared_ptr<chaudiere::Socket> socket) noexcept;
+   HttpRequestHandler(HttpServer& server, chaudiere::Socket* socket) noexcept;
    
    /**
     * Destructor
@@ -57,12 +57,11 @@ public:
    
    // disallow copies
    HttpRequestHandler(const HttpRequestHandler&) = delete;
-   HttpRequestHandler(HttpRequestHandler&&) = delete;
    HttpRequestHandler& operator=(const HttpRequestHandler&) = delete;
-   HttpRequestHandler& operator=(HttpRequestHandler&&) = delete;
    
 };
 
 }
 
 #endif
+

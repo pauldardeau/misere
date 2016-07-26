@@ -16,8 +16,7 @@ static const std::string CFG_FILE_NAME           = "misere.ini";
 using namespace misere;
 using namespace chaudiere;
 
-int main(int argc, char* argv[])
-{
+int main(int argc, char* argv[]) {
    //Tests tests;
    //tests.run();
    
@@ -39,7 +38,7 @@ int main(int argc, char* argv[])
       }
    }
 
-   std::shared_ptr<StdLogger> logger(new StdLogger(Logger::LogLevel::Warning));
+   StdLogger* logger = new StdLogger(Logger::LogLevel::Warning);
    logger->setLogInstanceLifecycles(true);
    Logger::setLogger(logger);
 
@@ -48,25 +47,17 @@ int main(int argc, char* argv[])
       return 1;
    }
    
-   
-   try
-   {
+   try {
       HttpServer server(configFilePath);
       server.run();
       return 0;
-   }
-   catch (const BasicException& be)
-   {
+   } catch (const BasicException& be) {
       Logger::critical("exception running HttpServer: " + be.whatString());
       return 1;
-   }
-   catch (const std::exception& e)
-   {
+   } catch (const std::exception& e) {
       Logger::critical("exception running HttpServer: " + std::string(e.what()));
       return 1;
-   }
-   catch (...)
-   {
+   } catch (...) {
       Logger::critical("unknown exception running HttpServer");
       return 1;
    }

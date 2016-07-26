@@ -36,12 +36,6 @@ public:
    HttpException(const HttpException& copy) noexcept;
    
    /**
-    * Move constructor
-    * @param move the source of the move
-    */
-   HttpException(HttpException&& move) noexcept;
-   
-   /**
     * Destructor
     */
    ~HttpException() noexcept;
@@ -52,13 +46,6 @@ public:
     * @return reference to the updated object
     */
    HttpException& operator=(const HttpException& copy) noexcept;
-   
-   /**
-    * Move operator
-    * @param move the source of the move
-    * @return reference to the target of the move
-    */
-   HttpException& operator=(HttpException&& move) noexcept;
    
    /**
     * Retrieves the HTTP status code

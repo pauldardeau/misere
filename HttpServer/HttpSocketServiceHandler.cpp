@@ -28,7 +28,7 @@ HttpSocketServiceHandler::~HttpSocketServiceHandler()
 
 //******************************************************************************
 
-void HttpSocketServiceHandler::serviceSocket(std::shared_ptr<SocketRequest> socketRequest)
+void HttpSocketServiceHandler::serviceSocket(SocketRequest* socketRequest)
 {
    m_httpServer.serviceSocket(socketRequest);
 }

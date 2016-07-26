@@ -42,7 +42,7 @@ using namespace chaudiere;
 //******************************************************************************
 
 HttpRequestHandler::HttpRequestHandler(HttpServer& server,
-                               std::shared_ptr<SocketRequest> socketRequest) noexcept :
+                               SocketRequest* socketRequest) noexcept :
    RequestHandler(socketRequest),
    m_server(server)
 {
@@ -51,7 +51,7 @@ HttpRequestHandler::HttpRequestHandler(HttpServer& server,
 
 //******************************************************************************
 
-HttpRequestHandler::HttpRequestHandler(HttpServer& server, std::shared_ptr<Socket> socket) noexcept :
+HttpRequestHandler::HttpRequestHandler(HttpServer& server, Socket* socket) noexcept :
    RequestHandler(socket),
    m_server(server)
 {
@@ -69,7 +69,7 @@ HttpRequestHandler::~HttpRequestHandler() noexcept
 
 void HttpRequestHandler::run()
 {
-   std::shared_ptr<Socket> socket(getSocket());
+   Socket* socket = getSocket();
    
    if (!socket) {
       Logger::error("no socket or socket request present in RequestHandler");

@@ -34,12 +34,6 @@ class HttpTransaction
       HttpTransaction(const HttpTransaction& copy) noexcept;
    
       /**
-       * Move constructor
-       * @param move the source of the move
-       */
-      HttpTransaction(HttpTransaction&& move) noexcept;
-   
-      /**
        * Destructor
        */
       virtual ~HttpTransaction() noexcept {}
@@ -51,13 +45,6 @@ class HttpTransaction
        */
       HttpTransaction& operator=(const HttpTransaction& copy) noexcept;
    
-      /**
-       * Move operator
-       * @param move the source of the move
-       * @return reference to the target of the move
-       */
-      HttpTransaction& operator=(HttpTransaction&& move) noexcept;
-
       /**
        * Initializes object by reading from socket
        * @param socket the socket to read the HTTP request or response

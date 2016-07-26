@@ -97,19 +97,6 @@ HttpRequest::HttpRequest(const HttpRequest& copy) noexcept :
 
 //******************************************************************************
 
-HttpRequest::HttpRequest(HttpRequest&& move) noexcept :
-   HttpTransaction(move),
-   m_method(std::move(move.m_method)),
-   m_path(std::move(move.m_path)),
-   m_arguments(std::move(move.m_arguments)),
-   m_initialized(move.m_initialized)
-{
-   Logger::logInstanceCreate("HttpRequest");
-   move.m_initialized = false;
-}
-
-//******************************************************************************
-
 HttpRequest::~HttpRequest() noexcept
 {
    Logger::logInstanceDestroy("HttpRequest");
@@ -128,22 +115,6 @@ HttpRequest& HttpRequest::operator=(const HttpRequest& copy) noexcept
    m_path = copy.m_path;
    m_arguments = copy.m_arguments;
 
-   return *this;
-}
-
-//******************************************************************************
-
-HttpRequest& HttpRequest::operator=(HttpRequest&& move) noexcept
-{
-   if (this == &move) {
-      return *this;
-   }
-   
-   HttpTransaction::operator=(move);
-   m_method = std::move(move.m_method);
-   m_path = std::move(move.m_path);
-   m_arguments = std::move(move.m_arguments);
-   
    return *this;
 }
 

@@ -134,7 +134,7 @@ class HttpServer
        * @see SectionedConfigDataSource()
        * @return the configuration data source
        */
-      std::unique_ptr<chaudiere::SectionedConfigDataSource> getConfigDataSource();
+      chaudiere::SectionedConfigDataSource* getConfigDataSource();
    
       /**
        * Retrieves the size of the socket send buffer
@@ -165,7 +165,7 @@ class HttpServer
        * @param socketRequest the SocketRequest to process
        * @see SocketRequest()
        */
-      void serviceSocket(std::shared_ptr<chaudiere::SocketRequest> socketRequest);
+      void serviceSocket(chaudiere::SocketRequest* socketRequest);
 
       /**
        * Convenience method to retrieve a setting and convert it to a boolean
@@ -231,12 +231,12 @@ class HttpServer
 
 
    private:
-      std::unique_ptr<chaudiere::KernelEventServer> m_kernelEventServer;
-      std::unique_ptr<chaudiere::ServerSocket> m_serverSocket;
-      std::shared_ptr<chaudiere::ThreadPoolDispatcher> m_threadPool;
-      std::shared_ptr<chaudiere::ThreadingFactory> m_threadingFactory;
+      chaudiere::KernelEventServer* m_kernelEventServer;
+      chaudiere::ServerSocket* m_serverSocket;
+      chaudiere::ThreadPoolDispatcher* m_threadPool;
+      chaudiere::ThreadingFactory* m_threadingFactory;
       std::unordered_map<std::string, std::string> m_mapProperties;
-      std::unordered_map<std::string, std::unique_ptr<HttpHandler>> m_mapPathHandlers;
+      std::unordered_map<std::string, HttpHandler*> m_mapPathHandlers;
       std::string m_accessLogFile;
       std::string m_errorLogFile;
       std::string m_logLevel;
@@ -264,5 +264,4 @@ class HttpServer
 }
 
 #endif
-
 

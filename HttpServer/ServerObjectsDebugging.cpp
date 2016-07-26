@@ -96,7 +96,7 @@ void ServerObjectsDebugging::serviceRequest(const HttpRequest& request,
 {
    std::string body = "<html><body>";
    
-   std::shared_ptr<Logger> logger = Logger::getLogger();
+   Logger* logger = Logger::getLogger();
    
    if (logger) {
       Logger* pLoggerInstance = logger.get();

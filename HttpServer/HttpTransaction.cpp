@@ -43,21 +43,6 @@ HttpTransaction::HttpTransaction(const HttpTransaction& copy) noexcept :
 
 //******************************************************************************
 
-HttpTransaction::HttpTransaction(HttpTransaction&& move) noexcept :
-   m_vecHeaderLines(std::move(move.m_vecHeaderLines)),
-   m_vecRequestLineValues(std::move(move.m_vecRequestLineValues)),
-   m_header(std::move(move.m_header)),
-   m_body(std::move(move.m_body)),
-   m_protocol(std::move(move.m_protocol)),
-   m_requestLine(std::move(move.m_requestLine)),
-   m_hashHeaders(std::move(move.m_hashHeaders)),
-   m_method(std::move(move.m_method)),
-   m_contentLength(move.m_contentLength)
-{
-}
-
-//******************************************************************************
-
 HttpTransaction& HttpTransaction::operator=(const HttpTransaction& copy) noexcept
 {
    if (this == &copy) {
@@ -74,27 +59,6 @@ HttpTransaction& HttpTransaction::operator=(const HttpTransaction& copy) noexcep
    m_method = copy.m_method;
    m_contentLength = copy.m_contentLength;
 
-   return *this;
-}
-
-//******************************************************************************
-
-HttpTransaction& HttpTransaction::operator=(HttpTransaction&& move) noexcept
-{
-   if (this == &move) {
-      return *this;
-   }
-   
-   m_vecHeaderLines = std::move(move.m_vecHeaderLines);
-   m_vecRequestLineValues = std::move(move.m_vecRequestLineValues);
-   m_header = std::move(move.m_header);
-   m_body = std::move(move.m_body);
-   m_protocol = std::move(move.m_protocol);
-   m_requestLine = std::move(move.m_requestLine);
-   m_hashHeaders = std::move(move.m_hashHeaders);
-   m_method = std::move(move.m_method);
-   m_contentLength = move.m_contentLength;
-   
    return *this;
 }
 
@@ -229,7 +193,7 @@ bool HttpTransaction::streamFromSocket(Socket& socket)
             }
 
             try {
-               std::unique_ptr<char []> buffer(new char[contentLength + 1]);
+               char* buffer = new char[contentLength + 1];
 
                if (socket.read(buffer.get(), contentLength)) {
                   buffer[contentLength] = '\0';
@@ -240,13 +204,9 @@ bool HttpTransaction::streamFromSocket(Socket& socket)
                   
                   m_body += buffer.get();
                }
-            }
-            catch(const std::exception& e)
-            {
+            } catch(const std::exception& e) {
                Logger::error(std::string("HTTPTransaction::streamFromSocket exception caught: ") + std::string(e.what()));
-            }
-            catch (...)
-            {
+            } catch (...) {
                Logger::error("HTTPTransaction::streamFromSocket unknown exception caught");
             }
 

@@ -28,15 +28,6 @@ HttpException::HttpException(const HttpException& copy) noexcept :
 
 //******************************************************************************
 
-HttpException::HttpException(HttpException&& move) noexcept :
-   BasicException(move),
-   m_statusCode(move.m_statusCode)
-{
-   Logger::logInstanceCreate("HttpException");
-}
-
-//******************************************************************************
-
 HttpException::~HttpException() noexcept
 {
    Logger::logInstanceDestroy("HttpException");
@@ -52,20 +43,6 @@ HttpException& HttpException::operator=(const HttpException& copy) noexcept
    
    BasicException::operator=(copy);
    m_statusCode = copy.m_statusCode;
-   
-   return *this;
-}
-
-//******************************************************************************
-
-HttpException& HttpException::operator=(HttpException&& move) noexcept
-{
-   if (this == &move) {
-      return *this;
-   }
-   
-   BasicException::operator=(move);
-   m_statusCode = move.m_statusCode;
    
    return *this;
 }

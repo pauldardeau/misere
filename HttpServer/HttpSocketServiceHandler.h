@@ -41,7 +41,7 @@ public:
     * @param socketRequest the SocketRequest to be processed
     * @see SocketRequest()
     */
-   virtual void serviceSocket(std::shared_ptr<chaudiere::SocketRequest> socketRequest) override;
+   virtual void serviceSocket(chaudiere::SocketRequest* socketRequest) override;
    
    /**
     * Retrieves the handler name. This is primarily an aid for debugging.

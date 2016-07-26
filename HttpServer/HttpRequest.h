@@ -36,12 +36,6 @@ class HttpRequest : public HttpTransaction
       HttpRequest(const HttpRequest& copy) noexcept;
    
       /**
-       * Move constructor
-       * @param move the source of the move
-       */
-      HttpRequest(HttpRequest&& move) noexcept;
-
-      /**
        * Destructor
        */
       virtual ~HttpRequest() noexcept;
@@ -53,13 +47,6 @@ class HttpRequest : public HttpTransaction
        */
       HttpRequest& operator=(const HttpRequest& copy) noexcept;
    
-      /**
-       * Move operator
-       * @param move source of the move
-       * @return reference to updated object
-       */
-      HttpRequest& operator=(HttpRequest&& move) noexcept;
-
       /**
        * Initializes HTTP request by reading from socket
        * @param socket the socket to read from
