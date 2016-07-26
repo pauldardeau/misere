@@ -76,10 +76,9 @@ using namespace chaudiere;
 //******************************************************************************
 
 HttpRequest::HttpRequest(Socket& socket) :
-   m_initialized(false)
-{
+   m_initialized(false) {
+
    Logger::logInstanceCreate("HttpRequest");
-   
    m_initialized = streamFromSocket(socket);
 }
 
@@ -90,22 +89,19 @@ HttpRequest::HttpRequest(const HttpRequest& copy) noexcept :
    m_method(copy.m_method),
    m_path(copy.m_path),
    m_arguments(copy.m_arguments),
-   m_initialized(copy.m_initialized)
-{
+   m_initialized(copy.m_initialized) {
    Logger::logInstanceCreate("HttpRequest");
 }
 
 //******************************************************************************
 
-HttpRequest::~HttpRequest() noexcept
-{
+HttpRequest::~HttpRequest() noexcept {
    Logger::logInstanceDestroy("HttpRequest");
 }
 
 //******************************************************************************
 
-HttpRequest& HttpRequest::operator=(const HttpRequest& copy) noexcept
-{
+HttpRequest& HttpRequest::operator=(const HttpRequest& copy) noexcept {
    if (this == &copy) {
       return *this;
    }
@@ -120,8 +116,7 @@ HttpRequest& HttpRequest::operator=(const HttpRequest& copy) noexcept
 
 //******************************************************************************
 
-bool HttpRequest::streamFromSocket(Socket& socket)
-{
+bool HttpRequest::streamFromSocket(Socket& socket) {
    const bool isLoggingDebug = Logger::isLogging(Logger::LogLevel::Debug);
    
    if (isLoggingDebug) {
@@ -135,7 +130,8 @@ bool HttpRequest::streamFromSocket(Socket& socket)
          Logger::debug("calling getRequestLineValues");
       }
       
-      const std::vector<std::string>& vecRequestLineValues = getRequestLineValues();
+      const std::vector<std::string>& vecRequestLineValues =
+         getRequestLineValues();
 
       if (3 == vecRequestLineValues.size()) {
          m_method = vecRequestLineValues[0];
@@ -151,7 +147,9 @@ bool HttpRequest::streamFromSocket(Socket& socket)
       } else {
          if (Logger::isLogging(Logger::LogLevel::Warning)) {
             char msg[128];
-            std::snprintf(msg, 128, "number of tokens: %lu", vecRequestLineValues.size());
+            std::snprintf(msg, 128,
+                          "number of tokens: %lu",
+                          vecRequestLineValues.size());
             Logger::warning(std::string(msg));
             
             for (const std::string& s : vecRequestLineValues) {
@@ -171,57 +169,49 @@ bool HttpRequest::streamFromSocket(Socket& socket)
 
 //******************************************************************************
 
-bool HttpRequest::isInitialized() const noexcept
-{
+bool HttpRequest::isInitialized() const noexcept {
    return m_initialized;
 }
 
 //******************************************************************************
 
-const std::string& HttpRequest::getRequest() const noexcept
-{
+const std::string& HttpRequest::getRequest() const noexcept {
    return getRequestLine();
 }
 
 //******************************************************************************
 
-const std::string& HttpRequest::getMethod() const noexcept
-{
+const std::string& HttpRequest::getMethod() const noexcept {
    return m_method;
 }
 
 //******************************************************************************
 
-const std::string& HttpRequest::getPath() const noexcept
-{
+const std::string& HttpRequest::getPath() const noexcept {
    return m_path;
 }
 
 //******************************************************************************
 
-bool HttpRequest::hasArgument(const std::string& key) const noexcept
-{
+bool HttpRequest::hasArgument(const std::string& key) const noexcept {
    return m_arguments.hasKey(key);
 }
 
 //******************************************************************************
 
-const std::string& HttpRequest::getArgument(const std::string& key) const noexcept
-{
+const std::string& HttpRequest::getArgument(const std::string& key) const noexcept {
    return m_arguments.getValue(key);
 }
 
 //******************************************************************************
 
-void HttpRequest::getArgumentKeys(std::vector<std::string>& vecKeys) const noexcept
-{
+void HttpRequest::getArgumentKeys(std::vector<std::string>& vecKeys) const noexcept {
    m_arguments.getKeys(vecKeys);
 }
 
 //******************************************************************************
 
-void HttpRequest::parseBody() noexcept
-{
+void HttpRequest::parseBody() noexcept {
    const std::string& body = getBody();
    
    if (!body.empty() && StrUtils::containsString(body, AMPERSAND)) {
@@ -272,99 +262,85 @@ void HttpRequest::parseBody() noexcept
 
 //******************************************************************************
 
-bool HttpRequest::hasAccept() const noexcept
-{
+bool HttpRequest::hasAccept() const noexcept {
    return hasHeaderValue(HTTP::HTTP_ACCEPT);
 }
 
 //******************************************************************************
 
-bool HttpRequest::hasAcceptEncoding() const noexcept
-{
+bool HttpRequest::hasAcceptEncoding() const noexcept {
    return hasHeaderValue(HTTP::HTTP_ACCEPT_ENCODING);
 }
 
 //******************************************************************************
 
-bool HttpRequest::hasAcceptLanguage() const noexcept
-{
+bool HttpRequest::hasAcceptLanguage() const noexcept {
    return hasHeaderValue(HTTP::HTTP_ACCEPT_LANGUAGE);
 }
 
 //******************************************************************************
 
-bool HttpRequest::hasConnection() const noexcept
-{
+bool HttpRequest::hasConnection() const noexcept {
    return hasHeaderValue(HTTP::HTTP_CONNECTION);
 }
 
 //******************************************************************************
 
-bool HttpRequest::hasDNT() const noexcept
-{
+bool HttpRequest::hasDNT() const noexcept {
    return hasHeaderValue("dnt");
 }
 
 //******************************************************************************
 
-bool HttpRequest::hasHost() const noexcept
-{
+bool HttpRequest::hasHost() const noexcept {
    return hasHeaderValue(HTTP::HTTP_HOST);
 }
 
 //******************************************************************************
 
-bool HttpRequest::hasUserAgent() const noexcept
-{
+bool HttpRequest::hasUserAgent() const noexcept {
    return hasHeaderValue(HTTP::HTTP_USER_AGENT);
 }
 
 //******************************************************************************
 
-const std::string& HttpRequest::getAccept() const
-{
+const std::string& HttpRequest::getAccept() const {
    return getHeaderValue(HTTP::HTTP_ACCEPT);
 }
 
 //******************************************************************************
 
-const std::string& HttpRequest::getAcceptEncoding() const
-{
+const std::string& HttpRequest::getAcceptEncoding() const {
    return getHeaderValue(HTTP::HTTP_ACCEPT_ENCODING);
 }
 
 //******************************************************************************
 
-const std::string& HttpRequest::getAcceptLanguage() const
-{
+const std::string& HttpRequest::getAcceptLanguage() const {
    return getHeaderValue(HTTP::HTTP_ACCEPT_LANGUAGE);
 }
 
 //******************************************************************************
 
-const std::string& HttpRequest::getConnection() const
-{
+const std::string& HttpRequest::getConnection() const {
    return getHeaderValue(HTTP::HTTP_CONNECTION);
 }
 
 //******************************************************************************
 
-const std::string& HttpRequest::getDNT() const
-{
+const std::string& HttpRequest::getDNT() const {
    return getHeaderValue("dnt");
 }
 
 //******************************************************************************
 
-const std::string& HttpRequest::getHost() const
-{
+const std::string& HttpRequest::getHost() const {
    return getHeaderValue(HTTP::HTTP_HOST);
 }
 
 //******************************************************************************
 
-const std::string& HttpRequest::getUserAgent() const
-{
+const std::string& HttpRequest::getUserAgent() const {
    return getHeaderValue(HTTP::HTTP_USER_AGENT);
 }
 

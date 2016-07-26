@@ -42,33 +42,30 @@ using namespace chaudiere;
 //******************************************************************************
 
 HttpRequestHandler::HttpRequestHandler(HttpServer& server,
-                               SocketRequest* socketRequest) noexcept :
+                                       SocketRequest* socketRequest) noexcept :
    RequestHandler(socketRequest),
-   m_server(server)
-{
+   m_server(server) {
    Logger::logInstanceCreate("HttpRequestHandler");
 }
 
 //******************************************************************************
 
-HttpRequestHandler::HttpRequestHandler(HttpServer& server, Socket* socket) noexcept :
+HttpRequestHandler::HttpRequestHandler(HttpServer& server,
+                                       Socket* socket) noexcept :
    RequestHandler(socket),
-   m_server(server)
-{
+   m_server(server) {
    Logger::logInstanceCreate("HttpRequestHandler");
 }
 
 //******************************************************************************
 
-HttpRequestHandler::~HttpRequestHandler() noexcept
-{
+HttpRequestHandler::~HttpRequestHandler() noexcept {
    Logger::logInstanceDestroy("HttpRequestHandler");
 }
 
 //******************************************************************************
 
-void HttpRequestHandler::run()
-{
+void HttpRequestHandler::run() {
    Socket* socket = getSocket();
    
    if (!socket) {
@@ -126,13 +123,9 @@ void HttpRequestHandler::run()
    
       // assume the worst
       std::string responseCode = HTTP::HTTP_RESP_SERV_ERR_INTERNAL_ERROR;
-   
       const std::string systemDate = m_server.getSystemDateGMT();
-   
       std::unordered_map<std::string, std::string> mapHeaders;
-   
       mapHeaders[HTTP_CONNECTION] = CONNECTION_CLOSE;
-   
       const std::string& serverString = m_server.getServerId();
    
       if (!serverString.empty()) {
@@ -175,8 +168,7 @@ void HttpRequestHandler::run()
       HttpResponse response;
    
       if ((nullptr != pHandler) && handlerAvailable) {
-         try
-         {
+         try {
             pHandler->serviceRequest(request, response);
             responseCode = std::to_string(response.getStatusCode());
             const std::string& responseBody = response.getBody();
@@ -198,8 +190,7 @@ void HttpRequestHandler::run()
                         contentLength = compressedResponseBody.size();
                         response.setBody(compressedResponseBody);
                         response.setContentEncoding(GZIP);
-                     }
-                     catch (const std::exception& e) {
+                     } catch (const std::exception& e) {
                         Logger::error("unable to compress response");
                      }
                   }
@@ -207,19 +198,13 @@ void HttpRequestHandler::run()
             }
          
             response.populateWithHeaders(mapHeaders);
-         }
-         catch (const BasicException& be)
-         {
+         } catch (const BasicException& be) {
             responseCode = HTTP::HTTP_RESP_SERV_ERR_INTERNAL_ERROR;
             Logger::error("exception handling request: " + be.whatString());
-         }
-         catch (const std::exception& e)
-         {
+         } catch (const std::exception& e) {
             responseCode = HTTP::HTTP_RESP_SERV_ERR_INTERNAL_ERROR;
             Logger::error("exception handling request: " + std::string(e.what()));
-         }
-         catch (...)
-         {
+         } catch (...) {
             responseCode = HTTP::HTTP_RESP_SERV_ERR_INTERNAL_ERROR;
             Logger::error("unknown exception handling request");
          }
@@ -230,7 +215,6 @@ void HttpRequestHandler::run()
       } else {
          mapHeaders[HTTP_CONTENT_LENGTH] = ZERO;
       }
-
    
       // log the request
       if (isThreadPooling()) {
@@ -252,7 +236,8 @@ void HttpRequestHandler::run()
                              responseCode);
       }
    
-      std::string responseAsString = m_server.buildHeader(responseCode, mapHeaders);
+      std::string responseAsString =
+         m_server.buildHeader(responseCode, mapHeaders);
    
       if (contentLength > 0) {
          responseAsString += response.getBody();

@@ -34,15 +34,13 @@ using namespace chaudiere;
 
 //******************************************************************************
 
-HttpClient::HttpClient() noexcept
-{
+HttpClient::HttpClient() noexcept {
    Logger::logInstanceCreate("HttpClient");
 }
 
 //******************************************************************************
 
-HttpClient::~HttpClient() noexcept
-{
+HttpClient::~HttpClient() noexcept {
    Logger::logInstanceDestroy("HttpClient");
 }
 
@@ -55,8 +53,7 @@ void HttpClient::buildHeader(std::string& header,
                              const std::string& method,
                              const std::string& contentType,
                              unsigned long contentLength,
-                             const KeyValuePairs& kvpAddlHeaders) noexcept
-{
+                             const KeyValuePairs& kvpAddlHeaders) noexcept {
    bool haveContent = false;  // assume we don't
 
    if ((method == HTTP::HTTP_METHOD_POST) && (contentLength > 0)) {
@@ -125,8 +122,7 @@ std::string HttpClient::post(const std::string& address,
                              const std::string& url,
                              const std::string& postData,
                              const std::string& contentType,
-                             const KeyValuePairs& kvpAddlHeaders)
-{
+                             const KeyValuePairs& kvpAddlHeaders) {
    const auto postDataLength = postData.length();
 
    std::string requestPayload;
@@ -151,8 +147,7 @@ std::string HttpClient::post(const std::string& address,
 
 std::string HttpClient::sendReceive(const std::string& address,
                                     int port,
-                                    const std::string& sendBuffer)
-{
+                                    const std::string& sendBuffer) {
    Socket socket(address.c_str(), port);
    socket.setTcpNoDelay(true);
    socket.setSendBufferSize(SOCKET_SEND_BUFFER_SIZE);

@@ -13,23 +13,20 @@ using namespace chaudiere;
 //******************************************************************************
 //******************************************************************************
 
-GMTDateTimeHandler::GMTDateTimeHandler() noexcept
-{
+GMTDateTimeHandler::GMTDateTimeHandler() noexcept {
    Logger::logInstanceCreate("GMTDateTimeHandler");
 }
 
 //******************************************************************************
 
-GMTDateTimeHandler::~GMTDateTimeHandler() noexcept
-{
+GMTDateTimeHandler::~GMTDateTimeHandler() noexcept {
    Logger::logInstanceDestroy("GMTDateTimeHandler");
 }
 
 //******************************************************************************
 
 void GMTDateTimeHandler::serviceRequest(const HttpRequest& request,
-                                        HttpResponse& response) noexcept
-{
+                                        HttpResponse& response) noexcept {
    std::string body = "<html><body>";
    
    time_t currentTime = time(nullptr);
@@ -44,13 +41,14 @@ void GMTDateTimeHandler::serviceRequest(const HttpRequest& request,
       
       char dateBuffer[128];
       
-      std::snprintf(dateBuffer, 128, "%d-%.2d-%.2d %.2d:%.2d:%.2d",
-                1900 + timeptr->tm_year,
-                timeptr->tm_mon,
-                timeptr->tm_mday,
-                timeptr->tm_hour,
-                timeptr->tm_min,
-                timeptr->tm_sec);
+      std::snprintf(dateBuffer, 128,
+                    "%d-%.2d-%.2d %.2d:%.2d:%.2d",
+                    1900 + timeptr->tm_year,
+                    timeptr->tm_mon,
+                    timeptr->tm_mday,
+                    timeptr->tm_hour,
+                    timeptr->tm_min,
+                    timeptr->tm_sec);
 
       body += dateBuffer;
    }

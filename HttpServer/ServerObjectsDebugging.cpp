@@ -13,15 +13,13 @@ using namespace chaudiere;
 //******************************************************************************
 //******************************************************************************
 
-ServerObjectsDebugging::ServerObjectsDebugging() noexcept
-{
+ServerObjectsDebugging::ServerObjectsDebugging() noexcept {
    Logger::logInstanceCreate("ServerObjectsDebugging");
 }
 
 //******************************************************************************
 
-ServerObjectsDebugging::~ServerObjectsDebugging() noexcept
-{
+ServerObjectsDebugging::~ServerObjectsDebugging() noexcept {
    Logger::logInstanceDestroy("ServerObjectsDebugging");
 }
 
@@ -30,8 +28,7 @@ ServerObjectsDebugging::~ServerObjectsDebugging() noexcept
 std::string ServerObjectsDebugging::constructRow(const std::string& className,
                                                  long long created,
                                                  long long destroyed,
-                                                 long long alive) const noexcept
-{
+                                                 long long alive) const noexcept {
    std::string row;
    char buffer[128];
    
@@ -92,8 +89,7 @@ std::string ServerObjectsDebugging::constructRow(const std::string& className,
 //******************************************************************************
 
 void ServerObjectsDebugging::serviceRequest(const HttpRequest& request,
-                                            HttpResponse& response) noexcept
-{
+                                            HttpResponse& response) noexcept {
    std::string body = "<html><body>";
    
    Logger* logger = Logger::getLogger();

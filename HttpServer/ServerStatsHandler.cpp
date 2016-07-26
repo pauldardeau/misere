@@ -2,7 +2,6 @@
 // BSD License
 
 #include "HttpResponse.h"
-#include "HttpServer.h"
 #include "Logger.h"
 #include "StdLogger.h"
 
@@ -14,16 +13,13 @@ using namespace chaudiere;
 //******************************************************************************
 //******************************************************************************
 
-ServerStatsHandler::ServerStatsHandler(const HttpServer& server) noexcept :
-   m_server(server)
-{
+ServerStatsHandler::ServerStatsHandler() noexcept {
    Logger::logInstanceCreate("ServerStatsHandler");
 }
 
 //******************************************************************************
 
-ServerStatsHandler::~ServerStatsHandler() noexcept
-{
+ServerStatsHandler::~ServerStatsHandler() noexcept {
    Logger::logInstanceDestroy("ServerStatsHandler");
 }
 
@@ -31,8 +27,7 @@ ServerStatsHandler::~ServerStatsHandler() noexcept
 
 std::string ServerStatsHandler::constructRow(const std::string& occurrenceType,
                                              const std::string& occurrenceName,
-                                             long long occurrences) const noexcept
-{
+                                             long long occurrences) const noexcept {
    std::string row;
    char buffer[128];
    
@@ -59,8 +54,7 @@ std::string ServerStatsHandler::constructRow(const std::string& occurrenceType,
 //******************************************************************************
 
 void ServerStatsHandler::serviceRequest(const HttpRequest& request,
-                                        HttpResponse& response) noexcept
-{
+                                        HttpResponse& response) noexcept {
    std::string body = "<html><body>";
    
    Logger* logger = Logger::getLogger();

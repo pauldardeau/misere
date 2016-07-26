@@ -6,22 +6,18 @@
 
 #include "AbstractHandler.h"
 
-namespace misere
-{
-   class HttpRequest;
-   class HttpResponse;
-   class HttpServer;
+namespace misere {
+
+class HttpRequest;
+class HttpResponse;
 
 /**
  *
  */
-class ServerStatsHandler : public AbstractHandler
-{
-private:
-   const HttpServer& m_server;
-   
+class ServerStatsHandler : public AbstractHandler {
+
 public:
-   explicit ServerStatsHandler(const HttpServer& server) noexcept;
+   ServerStatsHandler() noexcept;
    virtual ~ServerStatsHandler() noexcept;
    
    virtual void serviceRequest(const HttpRequest& request,

@@ -12,23 +12,20 @@ using namespace chaudiere;
 //******************************************************************************
 //******************************************************************************
 
-ServerStatusHandler::ServerStatusHandler() noexcept
-{
+ServerStatusHandler::ServerStatusHandler() noexcept {
    Logger::logInstanceCreate("ServerStatusHandler");
 }
 
 //******************************************************************************
 
-ServerStatusHandler::~ServerStatusHandler() noexcept
-{
+ServerStatusHandler::~ServerStatusHandler() noexcept {
    Logger::logInstanceDestroy("ServerStatusHandler");
 }
 
 //******************************************************************************
 
 void ServerStatusHandler::serviceRequest(const HttpRequest& request,
-                                         HttpResponse& response) noexcept
-{
+                                         HttpResponse& response) noexcept {
    std::string body = "<html><body>";
 
    double oneMinuteLoad = 0.0;

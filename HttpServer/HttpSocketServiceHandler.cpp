@@ -14,29 +14,25 @@ using namespace chaudiere;
 //******************************************************************************
 
 HttpSocketServiceHandler::HttpSocketServiceHandler(HttpServer& httpServer) :
-   m_httpServer(httpServer)
-{
+   m_httpServer(httpServer) {
    Logger::logInstanceCreate("HttpSocketServiceHandler");
 }
 
 //******************************************************************************
 
-HttpSocketServiceHandler::~HttpSocketServiceHandler()
-{
+HttpSocketServiceHandler::~HttpSocketServiceHandler() {
    Logger::logInstanceDestroy("HttpSocketServiceHandler");
 }
 
 //******************************************************************************
 
-void HttpSocketServiceHandler::serviceSocket(SocketRequest* socketRequest)
-{
+void HttpSocketServiceHandler::serviceSocket(SocketRequest* socketRequest) {
    m_httpServer.serviceSocket(socketRequest);
 }
 
 //******************************************************************************
 
-const std::string& HttpSocketServiceHandler::getName() const
-{
+const std::string& HttpSocketServiceHandler::getName() const {
    return HANDLER_NAME;
 }
 
