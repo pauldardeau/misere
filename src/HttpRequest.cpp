@@ -162,6 +162,7 @@ bool HttpRequest::streamFromSocket(Socket& socket) {
 
    } else {
       //throw BasicException("unable to parse headers");
+      printf("HttpTransaction::streamFromSocket failed\n");
    }
    
    return streamSuccess;
