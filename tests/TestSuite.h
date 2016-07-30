@@ -8,19 +8,18 @@
 
 #include "TestMacros.h"
 
-namespace misere
-{
-   class TestCase;
+namespace misere {
+
+class TestCase;
 
 
-class TestSuite
-{
+class TestSuite {
+
 private:
    std::string m_suiteName;
    int m_numTestsExecuted;
    int m_numFailures;
 
-   
 protected:
    virtual void setup();
    virtual void tearDown();
@@ -29,7 +28,6 @@ protected:
    virtual void suiteTearDown();
    virtual void runTests() = 0;
 
-   
 public:
    TestSuite(const std::string& suiteName);
    TestSuite(const TestSuite& copy);
@@ -38,7 +36,6 @@ public:
    
    TestSuite& operator=(const TestSuite& copy);
 
-   
    // file management
    std::string getTempFile() const;
    bool deleteFile(const std::string& filePath);
@@ -53,7 +50,8 @@ public:
    void requireStringEquals(const std::string& expected,
                             const std::string& actual,
                             const std::string& testDesc);
-   void requireNonEmptyString(const std::string& actual, const std::string& testDesc);
+   void requireNonEmptyString(const std::string& actual,
+                              const std::string& testDesc);
    
    void startingTestCase(const TestCase& testCase);
    void endingTestCase(const TestCase& testCase);
@@ -63,3 +61,4 @@ public:
 }
 
 #endif
+

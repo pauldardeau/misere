@@ -9,14 +9,12 @@ using namespace misere;
 //******************************************************************************
 
 TestHttpClient::TestHttpClient() :
-   TestSuite("TestHttpClient")
-{
+   TestSuite("TestHttpClient") {
 }
 
 //******************************************************************************
 
-void TestHttpClient::runTests()
-{
+void TestHttpClient::runTests() {
    testConstructor();
    testPost();
    testSendReceive();
@@ -27,43 +25,37 @@ void TestHttpClient::runTests()
 
 //******************************************************************************
 
-void TestHttpClient::testConstructor()
-{
+void TestHttpClient::testConstructor() {
    TEST_CASE("testConstructor");
 }
 
 //******************************************************************************
 
-void TestHttpClient::testPost()
-{
+void TestHttpClient::testPost() {
    TEST_CASE("testPost");
 }
 
 //******************************************************************************
 
-void TestHttpClient::testSendReceive()
-{
+void TestHttpClient::testSendReceive() {
    TEST_CASE("testSendReceive");
 }
 
 //******************************************************************************
 
-void TestHttpClient::testSendReceiveWithPost()
-{
+void TestHttpClient::testSendReceiveWithPost() {
    TEST_CASE("testSendReceiveWithPost");
 }
 
 //******************************************************************************
 
-void TestHttpClient::testBuildHeader()
-{
+void TestHttpClient::testBuildHeader() {
    TEST_CASE("testBuildHeader");
 }
 
 //******************************************************************************
 
-void TestHttpClient::testBuildHttpRequest()
-{
+void TestHttpClient::testBuildHttpRequest() {
    TEST_CASE("testBuildHttpRequest");
 }
 

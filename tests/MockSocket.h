@@ -8,11 +8,9 @@
 
 #include "Socket.h"
 
-namespace misere
-{
+namespace misere {
 
-class MockSocket : public chaudiere::Socket
-{
+class MockSocket : public chaudiere::Socket {
 public:
    MockSocket(const std::string& payload);
 };

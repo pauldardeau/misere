@@ -10,14 +10,12 @@ using namespace misere;
 //******************************************************************************
 
 TestHttpResponse::TestHttpResponse() :
-   TestSuite("TestHttpResponse")
-{
+   TestSuite("TestHttpResponse") {
 }
 
 //******************************************************************************
 
-void TestHttpResponse::runTests()
-{
+void TestHttpResponse::runTests() {
    testConstructor();
    testConstructorWithSocket();
    testCopyConstructor();
@@ -33,78 +31,67 @@ void TestHttpResponse::runTests()
 
 //******************************************************************************
 
-void TestHttpResponse::testConstructor()
-{
+void TestHttpResponse::testConstructor() {
    TEST_CASE("testConstructor");
 }
 
 //******************************************************************************
 
-void TestHttpResponse::testConstructorWithSocket()
-{
+void TestHttpResponse::testConstructorWithSocket() {
    TEST_CASE("testConstructorWithSocket");
 }
 
 //******************************************************************************
 
-void TestHttpResponse::testCopyConstructor()
-{
+void TestHttpResponse::testCopyConstructor() {
    TEST_CASE("testCopyConstructor");
 }
 
 //******************************************************************************
 
-void TestHttpResponse::testMoveConstructor()
-{
+void TestHttpResponse::testMoveConstructor() {
    TEST_CASE("testMoveConstructor");
 }
 
 //******************************************************************************
 
-void TestHttpResponse::testAssignmentCopy()
-{
+void TestHttpResponse::testAssignmentCopy() {
    TEST_CASE("testAssignmentCopy");
 }
 
 //******************************************************************************
 
-void TestHttpResponse::testAssignmentMove()
-{
+void TestHttpResponse::testAssignmentMove() {
    TEST_CASE("testAssignmentMove");
 }
 
 //******************************************************************************
 
-void TestHttpResponse::testStreamFromSocket()
-{
+void TestHttpResponse::testStreamFromSocket() {
    TEST_CASE("testStreamFromSocket");
 }
 
 //******************************************************************************
 
-void TestHttpResponse::testGetStatusLine()
-{
+void TestHttpResponse::testGetStatusLine() {
    TEST_CASE("testGetStatusLine");
 }
 
 //******************************************************************************
 
-void TestHttpResponse::testGetStatusCode()
-{
+void TestHttpResponse::testGetStatusCode() {
    TEST_CASE("testGetStatusCode");
 }
 
 //******************************************************************************
 
-void TestHttpResponse::testSetStatusCode()
-{
+void TestHttpResponse::testSetStatusCode() {
    TEST_CASE("testSetStatusCode");
 }
 
 //******************************************************************************
 
-void TestHttpResponse::testGetReasonPhrase()
-{
+void TestHttpResponse::testGetReasonPhrase() {
    TEST_CASE("testGetReasonPhrase");
 }
 

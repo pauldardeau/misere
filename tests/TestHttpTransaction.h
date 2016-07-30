@@ -6,11 +6,10 @@
 
 #include "TestSuite.h"
 
-namespace misere
-{
+namespace misere {
 
-class TestHttpTransaction : public TestSuite
-{
+class TestHttpTransaction : public TestSuite {
+
 protected:
    void runTests();
    
@@ -31,10 +30,10 @@ protected:
 
 public:
    TestHttpTransaction();
-   
 
 };
 
 }
 
 #endif
+

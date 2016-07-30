@@ -10,14 +10,12 @@ using namespace misere;
 //******************************************************************************
 
 TestHttpTransaction::TestHttpTransaction() :
-   TestSuite("TestHttpTransaction")
-{
+   TestSuite("TestHttpTransaction") {
 }
 
 //******************************************************************************
 
-void TestHttpTransaction::runTests()
-{
+void TestHttpTransaction::runTests() {
    testConstructor();
    testCopyConstructor();
    testMoveConstructor();
@@ -36,114 +34,86 @@ void TestHttpTransaction::runTests()
 
 //******************************************************************************
 
-void TestHttpTransaction::testConstructor()
-{
+void TestHttpTransaction::testConstructor() {
    TEST_CASE("testConstructor");
-
 }
 
 //******************************************************************************
 
-void TestHttpTransaction::testCopyConstructor()
-{
+void TestHttpTransaction::testCopyConstructor() {
    TEST_CASE("testCopyConstructor");
-   
 }
 
 //******************************************************************************
 
-void TestHttpTransaction::testMoveConstructor()
-{
+void TestHttpTransaction::testMoveConstructor() {
    TEST_CASE("testMoveConstructor");
-   
 }
 
 //******************************************************************************
 
-void TestHttpTransaction::testAssignmentCopy()
-{
+void TestHttpTransaction::testAssignmentCopy() {
    TEST_CASE("testAssignmentCopy");
-   
 }
 
 //******************************************************************************
 
-void TestHttpTransaction::testAssignmentMove()
-{
+void TestHttpTransaction::testAssignmentMove() {
    TEST_CASE("testAssignmentMove");
-   
 }
 
 //******************************************************************************
 
-void TestHttpTransaction::testStreamFromSocket()
-{
+void TestHttpTransaction::testStreamFromSocket() {
    TEST_CASE("testStreamFromSocket");
-   
 }
 
 //******************************************************************************
 
-void TestHttpTransaction::testGetRawHeader()
-{
+void TestHttpTransaction::testGetRawHeader() {
    TEST_CASE("testGetRawHeader");
-   
 }
 
 //******************************************************************************
 
-void TestHttpTransaction::testGetBody()
-{
+void TestHttpTransaction::testGetBody() {
    TEST_CASE("testGetBody");
-   
 }
 
 //******************************************************************************
 
-void TestHttpTransaction::testSetBody()
-{
+void TestHttpTransaction::testSetBody() {
    TEST_CASE("testSetBody");
-   
 }
 
 //******************************************************************************
 
-void TestHttpTransaction::testHasHeaderValue()
-{
+void TestHttpTransaction::testHasHeaderValue() {
    TEST_CASE("testHasHeaderValue");
-   
 }
 
 //******************************************************************************
 
-void TestHttpTransaction::testGetHeaderValue()
-{
+void TestHttpTransaction::testGetHeaderValue() {
    TEST_CASE("testGetHeaderValue");
-   
 }
 
 //******************************************************************************
 
-void TestHttpTransaction::testGetHeaderValues()
-{
+void TestHttpTransaction::testGetHeaderValues() {
    TEST_CASE("testGetHeaderValues");
-   
 }
 
 //******************************************************************************
 
-void TestHttpTransaction::testSetHeaderValue()
-{
+void TestHttpTransaction::testSetHeaderValue() {
    TEST_CASE("testSetHeaderValue");
-   
 }
 
 //******************************************************************************
 
-void TestHttpTransaction::testGetProtocol()
-{
+void TestHttpTransaction::testGetProtocol() {
    TEST_CASE("testGetProtocol");
-   
 }
 
 //******************************************************************************

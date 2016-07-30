@@ -6,13 +6,12 @@
 
 #include <string>
 
-namespace misere
-{
-   class TestSuite;
+namespace misere {
+
+class TestSuite;
 
 
-class TestCase
-{
+class TestCase {
 private:
    TestSuite& m_testSuite;
    std::string m_testCaseName;
@@ -20,7 +19,6 @@ private:
    TestCase(const TestCase& copy);
    TestCase& operator=(const TestCase& copy);
 
-   
 public:
    TestCase(TestSuite& testSuite, const std::string& testCaseName);
    virtual ~TestCase();
@@ -32,3 +30,4 @@ public:
 }
 
 #endif
+

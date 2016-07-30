@@ -4,11 +4,9 @@
 #ifndef MISERE_TESTS_H
 #define MISERE_TESTS_H
 
-namespace misere
-{
+namespace misere {
    
-class Tests
-{
+class Tests {
 public:
    void run();
 };
@@ -16,3 +14,4 @@ public:
 }
 
 #endif
+

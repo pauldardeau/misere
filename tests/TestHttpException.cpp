@@ -10,14 +10,12 @@ using namespace chaudiere;
 //******************************************************************************
 
 TestHttpException::TestHttpException() :
-   TestSuite("TestHttpException")
-{
+   TestSuite("TestHttpException") {
 }
 
 //******************************************************************************
 
-void TestHttpException::runTests()
-{
+void TestHttpException::runTests() {
    testConstructor();
    testCopyConstructor();
    testMoveConstructor();
@@ -28,17 +26,14 @@ void TestHttpException::runTests()
 
 //******************************************************************************
 
-void TestHttpException::testConstructor()
-{
+void TestHttpException::testConstructor() {
    TEST_CASE("testConstructor");
-   
    HttpException httpException(500,"Server Error");
 }
 
 //******************************************************************************
 
-void TestHttpException::testCopyConstructor()
-{
+void TestHttpException::testCopyConstructor() {
    TEST_CASE("testCopyConstructor");
 
    const int statusCode = 500;
@@ -52,15 +47,13 @@ void TestHttpException::testCopyConstructor()
 
 //******************************************************************************
 
-void TestHttpException::testMoveConstructor()
-{
+void TestHttpException::testMoveConstructor() {
    TEST_CASE("testMoveConstructor");
 }
 
 //******************************************************************************
 
-void TestHttpException::testAssignmentCopy()
-{
+void TestHttpException::testAssignmentCopy() {
    TEST_CASE("testAssignmentCopy");
    
    const int statusCode = 500;
@@ -75,15 +68,13 @@ void TestHttpException::testAssignmentCopy()
 
 //******************************************************************************
 
-void TestHttpException::testAssignmentMove()
-{
+void TestHttpException::testAssignmentMove() {
    TEST_CASE("testAssignmentMove");
 }
 
 //******************************************************************************
 
-void TestHttpException::testGetStatusCode()
-{
+void TestHttpException::testGetStatusCode() {
    TEST_CASE("testGetStatusCode");
    
    const int statusCode = 500;

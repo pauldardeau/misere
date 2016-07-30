@@ -13,8 +13,7 @@
 
 using namespace misere;
 
-void Tests::run()
-{
+void Tests::run() {
    TestHTTP testHTTP;
    testHTTP.run();
    
@@ -36,3 +35,4 @@ void Tests::run()
    TestHttpTransaction testHttpTransaction;
    testHttpTransaction.run();
 }
+

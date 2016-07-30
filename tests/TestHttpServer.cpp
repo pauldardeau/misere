@@ -8,14 +8,12 @@ using namespace misere;
 //******************************************************************************
 
 TestHttpServer::TestHttpServer() :
-   TestSuite("TestHttpServer")
-{
+   TestSuite("TestHttpServer") {
 }
 
 //******************************************************************************
 
-void TestHttpServer::runTests()
-{
+void TestHttpServer::runTests() {
    testConstructor();
    testConstructorWithPort();
    testConstructorWithConfigFile();
@@ -38,128 +36,111 @@ void TestHttpServer::runTests()
 
 //******************************************************************************
 
-void TestHttpServer::testConstructor()
-{
+void TestHttpServer::testConstructor() {
    TEST_CASE("test");
 }
 
 //******************************************************************************
 
-void TestHttpServer::testConstructorWithPort()
-{
+void TestHttpServer::testConstructorWithPort() {
    TEST_CASE("test");
 }
 
 //******************************************************************************
 
-void TestHttpServer::testConstructorWithConfigFile()
-{
+void TestHttpServer::testConstructorWithConfigFile() {
    TEST_CASE("test");
 }
 
 //******************************************************************************
 
-void TestHttpServer::testGetSystemDateGMT()
-{
+void TestHttpServer::testGetSystemDateGMT() {
    TEST_CASE("test");
 }
 
 //******************************************************************************
 
-void TestHttpServer::testGetLocalDateTime()
-{
+void TestHttpServer::testGetLocalDateTime() {
    TEST_CASE("test");
 }
 
 //******************************************************************************
 
-void TestHttpServer::testBuildHeader()
-{
+void TestHttpServer::testBuildHeader() {
    TEST_CASE("test");
 }
 
 //******************************************************************************
 
-void TestHttpServer::testIsDebug()
-{
+void TestHttpServer::testIsDebug() {
    TEST_CASE("test");
 }
 
 //******************************************************************************
 
-void TestHttpServer::testAddPathHandler()
-{
+void TestHttpServer::testAddPathHandler() {
    TEST_CASE("test");
 }
 
 //******************************************************************************
 
-void TestHttpServer::testRemovePathHandler()
-{
+void TestHttpServer::testRemovePathHandler() {
    TEST_CASE("test");
 }
 
 //******************************************************************************
 
-void TestHttpServer::testGetPathHandler()
-{
+void TestHttpServer::testGetPathHandler() {
    TEST_CASE("test");
 }
 
 //******************************************************************************
 
-void TestHttpServer::testRunServer()
-{
+void TestHttpServer::testRunServer() {
    TEST_CASE("test");
 }
 
 //******************************************************************************
 
-void TestHttpServer::testLogRequest()
-{
+void TestHttpServer::testLogRequest() {
    TEST_CASE("test");
 }
 
 //******************************************************************************
 
-void TestHttpServer::testLogRequestWithThreadId()
-{
+void TestHttpServer::testLogRequestWithThreadId() {
    TEST_CASE("test");
 }
 
 //******************************************************************************
 
-void TestHttpServer::testGetConfigDataSource()
-{
+void TestHttpServer::testGetConfigDataSource() {
    TEST_CASE("test");
 }
 
 //******************************************************************************
 
-void TestHttpServer::testGetSocketSendBufferSize()
-{
+void TestHttpServer::testGetSocketSendBufferSize() {
    TEST_CASE("test");
 }
 
 //******************************************************************************
 
-void TestHttpServer::testGetSocketReceiveBufferSize()
-{
+void TestHttpServer::testGetSocketReceiveBufferSize() {
    TEST_CASE("test");
 }
 
 //******************************************************************************
 
-void TestHttpServer::testGetServerId()
-{
+void TestHttpServer::testGetServerId() {
    TEST_CASE("test");
 }
 
 //******************************************************************************
 
-void TestHttpServer::testPlatformPointerSizeBits()
-{
+void TestHttpServer::testPlatformPointerSizeBits() {
    TEST_CASE("test");
 }
 
 //******************************************************************************
+

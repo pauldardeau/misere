@@ -12,38 +12,36 @@ static const std::string GET_PATH = "http://a.valid.host/here.html";
 static const std::string POST_PATH = "/here.html";
 
 static const std::string DEFAULT_GET =
-"GET " + GET_PATH  + " HTTP/1.0\r\n" +
-"Host: my-proxy:8080\r\n" +
-"Connection: close\r\n";
+   "GET " + GET_PATH  + " HTTP/1.0\r\n" +
+   "Host: my-proxy:8080\r\n" +
+   "Connection: close\r\n";
 
 static const std::string DEFAULT_POST =
-"POST " + POST_PATH + " HTTP/1.0\r\n" +
-"Host: a.valid.host\r\n" +
-"Connection: close\r\n";
+   "POST " + POST_PATH + " HTTP/1.0\r\n" +
+   "Host: a.valid.host\r\n" +
+   "Connection: close\r\n";
 
 static const std::string GET_WITH_PORT =
-"GET /here.html HTTP/1.0\r\n"
-"Host: a.valid.host:81\r\n"
-"Connection: close\r\n";
+   "GET /here.html HTTP/1.0\r\n"
+   "Host: a.valid.host:81\r\n"
+   "Connection: close\r\n";
 
 static const std::string GET_WITH_PARAMETERS =
-"GET /here.html?a=1&b=2 HTTP/1.0\r\n"
-"Host: a.valid.host\r\n"
-"Connection: close\r\n";
+   "GET /here.html?a=1&b=2 HTTP/1.0\r\n"
+   "Host: a.valid.host\r\n"
+   "Connection: close\r\n";
 
 using namespace misere;
 
 //******************************************************************************
 
 TestHttpRequest::TestHttpRequest() :
-   TestSuite("TestHttpRequest")
-{
+   TestSuite("TestHttpRequest") {
 }
 
 //******************************************************************************
 
-void TestHttpRequest::runTests()
-{
+void TestHttpRequest::runTests() {
    testConstructor();
    testCopyConstructor();
    testMoveConstructor();
@@ -61,46 +59,39 @@ void TestHttpRequest::runTests()
 
 //******************************************************************************
 
-void TestHttpRequest::testConstructor()
-{
+void TestHttpRequest::testConstructor() {
    TEST_CASE("testConstructor");
-   
    MockSocket socket(DEFAULT_GET);
    HttpRequest request(socket);
 }
 
 //******************************************************************************
 
-void TestHttpRequest::testCopyConstructor()
-{
+void TestHttpRequest::testCopyConstructor() {
    TEST_CASE("testCopyConstructor");
 }
 
 //******************************************************************************
 
-void TestHttpRequest::testMoveConstructor()
-{
+void TestHttpRequest::testMoveConstructor() {
    TEST_CASE("testMoveConstructor");
 }
 
 //******************************************************************************
 
-void TestHttpRequest::testAssignmentCopy()
-{
+void TestHttpRequest::testAssignmentCopy() {
    TEST_CASE("testAssignmentCopy");
 }
 
 //******************************************************************************
 
-void TestHttpRequest::testAssignmentMove()
-{
+void TestHttpRequest::testAssignmentMove() {
    TEST_CASE("testAssignmentMove");
 }
 
 //******************************************************************************
 
-void TestHttpRequest::testStreamFromSocket()
-{
+void TestHttpRequest::testStreamFromSocket() {
    TEST_CASE("testStreamFromSocket");
    
    MockSocket socket(DEFAULT_GET);
@@ -109,19 +100,16 @@ void TestHttpRequest::testStreamFromSocket()
 
 //******************************************************************************
 
-void TestHttpRequest::testGetRequest()
-{
+void TestHttpRequest::testGetRequest() {
    TEST_CASE("testGetRequest");
    
    MockSocket socket(DEFAULT_GET);
    HttpRequest request(socket);
-
 }
 
 //******************************************************************************
 
-void TestHttpRequest::testGetMethod()
-{
+void TestHttpRequest::testGetMethod() {
    TEST_CASE("testGetMethod");
 
    MockSocket socketGet(DEFAULT_GET);
@@ -135,8 +123,7 @@ void TestHttpRequest::testGetMethod()
 
 //******************************************************************************
 
-void TestHttpRequest::testGetPath()
-{
+void TestHttpRequest::testGetPath() {
    TEST_CASE("testGetPath");
 
    MockSocket socketGet(DEFAULT_GET);
@@ -150,29 +137,25 @@ void TestHttpRequest::testGetPath()
 
 //******************************************************************************
 
-void TestHttpRequest::testGetRequestLine()
-{
+void TestHttpRequest::testGetRequestLine() {
    TEST_CASE("testGetRequestLine");
 }
 
 //******************************************************************************
 
-void TestHttpRequest::testHasArgument()
-{
+void TestHttpRequest::testHasArgument() {
    TEST_CASE("testHasArgument");
 }
 
 //******************************************************************************
 
-void TestHttpRequest::testGetArgument()
-{
+void TestHttpRequest::testGetArgument() {
    TEST_CASE("testGetArgument");
 }
 
 //******************************************************************************
 
-void TestHttpRequest::testGetArgumentKeys()
-{
+void TestHttpRequest::testGetArgumentKeys() {
    TEST_CASE("testGetArgumentKeys");
 }
 

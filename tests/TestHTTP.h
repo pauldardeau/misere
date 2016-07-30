@@ -7,11 +7,10 @@
 #include "TestSuite.h"
 
 
-namespace misere
-{
+namespace misere {
 
-class TestHTTP : public TestSuite
-{
+class TestHTTP : public TestSuite {
+
 protected:
    void runTests();
 
@@ -23,3 +22,4 @@ public:
 }
 
 #endif
+
