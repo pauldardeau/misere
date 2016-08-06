@@ -4,7 +4,8 @@
 CC = clang++
 CC_OPTS = -c -Wall -O2 -pthread -fblocks -std=c++11 -I../../chaudiere/src
 LINK_CMD = clang++
-LINK_LIBS = -lpthread -ldl
+# remove -ldl for non-linux
+LINK_LIBS = -lpthread
 
 EXE_NAME = misere
 
