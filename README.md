@@ -24,6 +24,21 @@ Misere uses an .INI for configuration. See 'What's an INI file'
 if you're not familiar with them. The .INI format was chosen
 because it's very simple and I like simple.
 
+Building
+--------
+Currently there is not autoconf support. There's a basic Makefile in
+src directory.
+
+Running
+-------
+./misere misere.ini
+
+Load Testing
+------------
+Using siege: siege -b -r 10 -c 100 http://127.0.0.1:13001/Echo
+
+Apache bench (ab): ab -t 60 -n 1000 -c 400 http://127.0.0.1:13001/Echo
+
 Platforms/Compilers
 -------------------
 This project is implemented with C++11. It is tested with clang and
