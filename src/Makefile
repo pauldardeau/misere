@@ -3,7 +3,7 @@
 
 CC = g++
 CC_OPTS = -c -Wall -O2 -pthread -I../../chaudiere/src
-LINK_CMD = clang++
+LINK_CMD = g++
 # remove -ldl for non-linux
 LINK_LIBS = -lpthread -ldl
 
