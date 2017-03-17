@@ -220,7 +220,7 @@ void HttpRequestHandler::run() {
       if (contentLength > 0) {
          char contentLengthStr[10];
          memset(contentLengthStr, 0, 10);
-         snprintf(contentLengthStr, 10, "%ld", contentLength);
+         snprintf(contentLengthStr, 10, "%zu", contentLength);
          mapHeaders[HTTP_CONTENT_LENGTH] = std::string(contentLengthStr);
       } else {
          mapHeaders[HTTP_CONTENT_LENGTH] = ZERO;

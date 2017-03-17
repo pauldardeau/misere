@@ -148,7 +148,7 @@ bool HttpRequest::streamFromSocket(Socket& socket) {
          if (Logger::isLogging(Warning)) {
             char msg[128];
             std::snprintf(msg, 128,
-                          "number of tokens: %lu",
+                          "number of tokens: %zu",
                           vecRequestLineValues.size());
             Logger::warning(std::string(msg));
 
