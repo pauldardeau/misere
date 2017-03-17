@@ -14,10 +14,10 @@ class AbstractHandler : public HttpHandler
 {
 public:
    virtual bool init(const std::string& path,
-                     const chaudiere::KeyValuePairs& kvpArguments) noexcept override;
+                     const chaudiere::KeyValuePairs& kvpArguments);
    virtual void serviceRequest(const HttpRequest& request,
-                               HttpResponse& response) noexcept override;
-   virtual bool isAvailable() const noexcept override;
+                               HttpResponse& response);
+   virtual bool isAvailable() const;
 
 };
 

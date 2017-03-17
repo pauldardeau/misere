@@ -17,11 +17,11 @@ namespace misere
 class ServerStatusHandler : public AbstractHandler
 {
 public:
-   ServerStatusHandler() noexcept;
-   virtual ~ServerStatusHandler() noexcept;
+   ServerStatusHandler();
+   virtual ~ServerStatusHandler();
    
    virtual void serviceRequest(const HttpRequest& request,
-                               HttpResponse& response) noexcept override;
+                               HttpResponse& response);
    
 };
 

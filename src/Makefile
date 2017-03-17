@@ -1,8 +1,8 @@
 # Copyright Paul Dardeau, SwampBits LLC 2014
 # BSD License
 
-CC = clang++
-CC_OPTS = -c -Wall -O2 -pthread -fblocks -std=c++11 -I../../chaudiere/src
+CC = g++
+CC_OPTS = -c -Wall -O2 -pthread -I../../chaudiere/src
 LINK_CMD = clang++
 # remove -ldl for non-linux
 LINK_LIBS = -lpthread -ldl

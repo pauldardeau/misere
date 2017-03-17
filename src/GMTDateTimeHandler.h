@@ -17,11 +17,11 @@ namespace misere
 class GMTDateTimeHandler : public AbstractHandler
 {
 public:
-   GMTDateTimeHandler() noexcept;
-   virtual ~GMTDateTimeHandler() noexcept;
+   GMTDateTimeHandler();
+   virtual ~GMTDateTimeHandler();
    
    virtual void serviceRequest(const HttpRequest& request,
-                               HttpResponse& response) noexcept override;
+                               HttpResponse& response);
    
 };
 

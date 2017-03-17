@@ -33,19 +33,19 @@ class HttpRequest : public HttpTransaction
        * Copy constructor
        * @param copy the source of the copy
        */
-      HttpRequest(const HttpRequest& copy) noexcept;
+      HttpRequest(const HttpRequest& copy);
    
       /**
        * Destructor
        */
-      virtual ~HttpRequest() noexcept;
+      virtual ~HttpRequest();
 
       /**
        * Assignment operator
        * @param copy the source of the copy
        * @return reference to updated object
        */
-      HttpRequest& operator=(const HttpRequest& copy) noexcept;
+      HttpRequest& operator=(const HttpRequest& copy);
    
       /**
        * Initializes HTTP request by reading from socket
@@ -53,38 +53,38 @@ class HttpRequest : public HttpTransaction
        * @see Socket()
        * @return boolean indicating whether reading from the socket succeeded
        */
-      virtual bool streamFromSocket(chaudiere::Socket& socket) override;
+      virtual bool streamFromSocket(chaudiere::Socket& socket);
    
       /**
        * Determines if the request object has been successfully initialized
        * @return boolean indicating whether the object was initialized
        */
-      bool isInitialized() const noexcept;
+      bool isInitialized() const;
 
       /**
        * Retrieves the request line for the request
        * @return the request line value
        */
-      const std::string& getRequest() const noexcept;
+      const std::string& getRequest() const;
    
       /**
        * Retrieves the HTTP method for the request
        * @return the method value
        */
-      const std::string& getMethod() const noexcept;
+      const std::string& getMethod() const;
    
       /**
        * Retrieves the path for the request
        * @return the path value
        */
-      const std::string& getPath() const noexcept;
+      const std::string& getPath() const;
 
       /**
        * Determines if the specified key exists in the arguments
        * @param key the key whose existence is being tested
        * @return boolean indicating whether the specified key exists in the arguments
        */
-      bool hasArgument(const std::string& key) const noexcept;
+      bool hasArgument(const std::string& key) const;
    
       /**
        * Retrieves the value associated with the specified argument key
@@ -92,55 +92,55 @@ class HttpRequest : public HttpTransaction
        * @throw InvalidKeyException
        * @return the value for the associated key
        */
-      const std::string& getArgument(const std::string& key) const noexcept;
+      const std::string& getArgument(const std::string& key) const;
    
       /**
        * Retrieves the keys for all arguments given with the request
        * @param vector to be populated with argument keys
        */
-      void getArgumentKeys(std::vector<std::string>& vecKeys) const noexcept;
+      void getArgumentKeys(std::vector<std::string>& vecKeys) const;
 
       /**
        * Determines if the Accept header is present
        * @return boolean indicating if the header value is present
        */
-      bool hasAccept() const noexcept;
+      bool hasAccept() const;
    
       /**
        * Determines if the Accept-encoding header is present
        * @return boolean indicating if the header value is present
        */
-      bool hasAcceptEncoding() const noexcept;
+      bool hasAcceptEncoding() const;
    
       /**
        * Determines if the Accept-language header is present
        * @return boolean indicating if the header value is present
        */
-      bool hasAcceptLanguage() const noexcept;
+      bool hasAcceptLanguage() const;
    
       /**
        * Determines if the Connection header is present
        * @return boolean indicating if the header value is present
        */
-      bool hasConnection() const noexcept;
+      bool hasConnection() const;
    
       /**
        * Determines if the Do Not Track (dnt) header is present
        * @return boolean indicating if the header value is present
        */
-      bool hasDNT() const noexcept;
+      bool hasDNT() const;
    
       /**
        * Determines if the Host header is present
        * @return boolean indicating if the header value is present
        */
-      bool hasHost() const noexcept;
+      bool hasHost() const;
    
       /**
        * Determines if the User-agent header is present
        * @return boolean indicating if the header value is present
        */
-      bool hasUserAgent() const noexcept;
+      bool hasUserAgent() const;
 
       /**
        * Retrieves the value associated with the Accept header
@@ -189,7 +189,7 @@ class HttpRequest : public HttpTransaction
       /**
        * Parse the body (if present in the request)
        */
-      void parseBody() noexcept;
+      void parseBody();
 
 
 

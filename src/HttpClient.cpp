@@ -2,8 +2,8 @@
 // BSD License
 
 #include <string>
-
-#include <cstdio>
+#include <stdio.h>
+#include <string.h>
 
 #include "HttpClient.h"
 #include "HTTP.h"
@@ -34,13 +34,13 @@ using namespace chaudiere;
 
 //******************************************************************************
 
-HttpClient::HttpClient() noexcept {
+HttpClient::HttpClient() {
    Logger::logInstanceCreate("HttpClient");
 }
 
 //******************************************************************************
 
-HttpClient::~HttpClient() noexcept {
+HttpClient::~HttpClient() {
    Logger::logInstanceDestroy("HttpClient");
 }
 
@@ -53,7 +53,7 @@ void HttpClient::buildHeader(std::string& header,
                              const std::string& method,
                              const std::string& contentType,
                              unsigned long contentLength,
-                             const KeyValuePairs& kvpAddlHeaders) noexcept {
+                             const KeyValuePairs& kvpAddlHeaders) {
    bool haveContent = false;  // assume we don't
 
    if ((method == HTTP::HTTP_METHOD_POST) && (contentLength > 0)) {
@@ -77,7 +77,10 @@ void HttpClient::buildHeader(std::string& header,
    } else {
       std::string host = address;
       host += COLON;
-      host += std::to_string(port);
+      char portAsString[10];
+      memset(portAsString, 0, 10);
+      snprintf(portAsString, 10, "%d", port);
+      host += std::string(portAsString);
       header += host;
    }
 
@@ -95,14 +98,20 @@ void HttpClient::buildHeader(std::string& header,
 
       // content length
       header += CONTENT_LENGTH;
-      header += std::to_string(contentLength);
+      char contentLengthAsString[10];
+      memset(contentLengthAsString, 0, 10);
+      snprintf(contentLengthAsString, 10, "%ld", contentLength);
+      header += std::string(contentLengthAsString);
       header += EOL;
    }
 
    std::vector<std::string> vecKeys;
    kvpAddlHeaders.getKeys(vecKeys);
+   const std::vector<std::string>::const_iterator itEnd = vecKeys.end();
+   std::vector<std::string>::const_iterator it = vecKeys.begin();
 
-   for (const std::string& key : vecKeys) {
+   for (; it != itEnd; it++) {
+      const std::string& key = *it;
       const std::string& value = kvpAddlHeaders.getValue(key);
 
       header += key;
@@ -123,7 +132,7 @@ std::string HttpClient::post(const std::string& address,
                              const std::string& postData,
                              const std::string& contentType,
                              const KeyValuePairs& kvpAddlHeaders) {
-   const auto postDataLength = postData.length();
+   const std::size_t postDataLength = postData.length();
 
    std::string requestPayload;
 
@@ -154,20 +163,20 @@ std::string HttpClient::sendReceive(const std::string& address,
    socket.setReceiveBufferSize(SOCKET_RECV_BUFFER_SIZE);
    socket.setIncludeMessageSize(false);
    
-   if (Logger::isLogging(Logger::LogLevel::Debug)) {
-      Logger::log(Logger::LogLevel::Debug, "*** start of send data ***");
-      Logger::log(Logger::LogLevel::Debug, sendBuffer);
-      Logger::log(Logger::LogLevel::Debug, "*** end of send data ***");
+   if (Logger::isLogging(Debug)) {
+      Logger::log(Debug, "*** start of send data ***");
+      Logger::log(Debug, sendBuffer);
+      Logger::log(Debug, "*** end of send data ***");
    }
 
    socket.write(sendBuffer);
 
    HttpResponse response(socket);
 
-   if (Logger::isLogging(Logger::LogLevel::Debug)) {
-      Logger::log(Logger::LogLevel::Debug, "*** start of reply data ***");
-      Logger::log(Logger::LogLevel::Debug, response.getBody());
-      Logger::log(Logger::LogLevel::Debug, "*** end of reply data ***");
+   if (Logger::isLogging(Debug)) {
+      Logger::log(Debug, "*** start of reply data ***");
+      Logger::log(Debug, response.getBody());
+      Logger::log(Debug, "*** end of reply data ***");
    }
 
    return std::string(response.getBody());

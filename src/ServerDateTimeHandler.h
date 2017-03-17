@@ -17,11 +17,11 @@ namespace misere
 class ServerDateTimeHandler : public AbstractHandler
 {
 public:
-   ServerDateTimeHandler() noexcept;
-   virtual ~ServerDateTimeHandler() noexcept;
+   ServerDateTimeHandler();
+   virtual ~ServerDateTimeHandler();
    
    virtual void serviceRequest(const HttpRequest& request,
-                               HttpResponse& response) noexcept override;
+                               HttpResponse& response);
    
 };
 

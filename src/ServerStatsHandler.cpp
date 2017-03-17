@@ -1,25 +1,28 @@
 // Copyright Paul Dardeau, SwampBits LLC 2014
 // BSD License
 
+#include <stdio.h>
+
 #include "HttpResponse.h"
 #include "Logger.h"
 #include "StdLogger.h"
 
 #include "ServerStatsHandler.h"
 
+using namespace std;
 using namespace misere;
 using namespace chaudiere;
 
 //******************************************************************************
 //******************************************************************************
 
-ServerStatsHandler::ServerStatsHandler() noexcept {
+ServerStatsHandler::ServerStatsHandler() {
    Logger::logInstanceCreate("ServerStatsHandler");
 }
 
 //******************************************************************************
 
-ServerStatsHandler::~ServerStatsHandler() noexcept {
+ServerStatsHandler::~ServerStatsHandler() {
    Logger::logInstanceDestroy("ServerStatsHandler");
 }
 
@@ -27,7 +30,7 @@ ServerStatsHandler::~ServerStatsHandler() noexcept {
 
 std::string ServerStatsHandler::constructRow(const std::string& occurrenceType,
                                              const std::string& occurrenceName,
-                                             long long occurrences) const noexcept {
+                                             long long occurrences) const {
    std::string row;
    char buffer[128];
    
@@ -41,7 +44,7 @@ std::string ServerStatsHandler::constructRow(const std::string& occurrenceType,
    row += occurrenceName;
    row += "</td>";
 
-   std::snprintf(buffer, 128, "%lld", occurrences);
+   ::snprintf(buffer, 128, "%lld", occurrences);
    row += "<td align=\"right\">";
    row += std::string(buffer);
    row += "</td>";
@@ -54,8 +57,8 @@ std::string ServerStatsHandler::constructRow(const std::string& occurrenceType,
 //******************************************************************************
 
 void ServerStatsHandler::serviceRequest(const HttpRequest& request,
-                                        HttpResponse& response) noexcept {
-   std::string body = "<html><body>";
+                                        HttpResponse& response) {
+   string body = "<html><body>";
    
    Logger* logger = Logger::getLogger();
    
@@ -63,7 +66,7 @@ void ServerStatsHandler::serviceRequest(const HttpRequest& request,
       Logger* pLoggerInstance = logger;
       StdLogger* stdLogger = dynamic_cast<StdLogger*>(pLoggerInstance);
       if (stdLogger) {
-         std::map<std::string, std::map<std::string, long long>> mapOccurrenceTypes;
+         map<string, map<string, long long> > mapOccurrenceTypes;
          stdLogger->populateOccurrences(mapOccurrenceTypes);
          
          if (!mapOccurrenceTypes.empty()) {
@@ -72,14 +75,22 @@ void ServerStatsHandler::serviceRequest(const HttpRequest& request,
             body += "<tr><th align=\"left\">Type</th><th align=\"left\">Name</th><th>Occurrences</th></tr>";
             
             long long totalForType = 0L;
+            map<string, map<string, long long> >::const_iterator it =
+               mapOccurrenceTypes.begin();
+            const map<string, map<string, long long> >::const_iterator itEnd =
+               mapOccurrenceTypes.end();
             
-            for (const auto kv : mapOccurrenceTypes) {
-               const std::string& occurrenceType = kv.first;
-               const std::map<std::string, long long>& mapOccurrences = kv.second;
+            for (; it != itEnd; it++) {
+               const string& occurrenceType = (*it).first;
+               const map<string, long long>& mapOccurrences = (*it).second;
+               map<string, long long>::const_iterator itOcc =
+                  mapOccurrences.begin();
+               const map<string, long long>::const_iterator itEndOcc =
+                  mapOccurrences.end();
 
-               for (const auto kvOccurrence : mapOccurrences) {
-                  const std::string& occurrenceName = kvOccurrence.first;
-                  const long long numOccurrences = kvOccurrence.second;
+               for (; itOcc != itEndOcc; itOcc++) {
+                  const string& occurrenceName = (*itOcc).first;
+                  const long long numOccurrences = (*itOcc).second;
                   
                   totalForType += numOccurrences;
                   

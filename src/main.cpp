@@ -27,7 +27,7 @@ int main(int argc, char* argv[]) {
    } else {
       const char* configPath = std::getenv(ENV_VAR_CFG_PATH.c_str());
       
-      if (nullptr != configPath) {
+      if (NULL != configPath) {
          configFilePath = configFilePath;
          
          if (configFilePath[configFilePath.length()-1] != '/') {
@@ -38,7 +38,7 @@ int main(int argc, char* argv[]) {
       }
    }
 
-   StdLogger* logger = new StdLogger(Logger::LogLevel::Warning);
+   StdLogger* logger = new StdLogger(Warning);
    logger->setLogInstanceLifecycles(true);
    Logger::setLogger(logger);
 

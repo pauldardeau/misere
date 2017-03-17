@@ -19,16 +19,16 @@ namespace misere
 class ServerObjectsDebugging : public AbstractHandler
 {
 public:
-   ServerObjectsDebugging() noexcept;
-   virtual ~ServerObjectsDebugging() noexcept;
+   ServerObjectsDebugging();
+   virtual ~ServerObjectsDebugging();
    
    virtual void serviceRequest(const HttpRequest& request,
-                               HttpResponse& response) noexcept override;
+                               HttpResponse& response);
    
    std::string constructRow(const std::string& className,
                             long long created,
                             long long destroyed,
-                            long long alive) const noexcept;
+                            long long alive) const;
    
 };
 

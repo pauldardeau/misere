@@ -14,23 +14,23 @@ using namespace chaudiere;
 //******************************************************************************
 //******************************************************************************
 
-ServerDateTimeHandler::ServerDateTimeHandler() noexcept {
+ServerDateTimeHandler::ServerDateTimeHandler() {
    Logger::logInstanceCreate("ServerDateTimeHandler");
 }
 
 //******************************************************************************
 
-ServerDateTimeHandler::~ServerDateTimeHandler() noexcept {
+ServerDateTimeHandler::~ServerDateTimeHandler() {
    Logger::logInstanceDestroy("ServerDateTimeHandler");
 }
 
 //******************************************************************************
 
 void ServerDateTimeHandler::serviceRequest(const HttpRequest& request,
-                                           HttpResponse& response) noexcept {
+                                           HttpResponse& response) {
    std::string body = "<html><body>";
    
-   time_t currentTime = time(nullptr);
+   time_t currentTime = time(NULL);
    
    if (currentTime == (time_t)-1) {
       body += "Unavailable";

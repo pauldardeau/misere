@@ -6,27 +6,28 @@
 #include "HttpResponse.h"
 #include "Logger.h"
 
+using namespace std;
 using namespace misere;
 using namespace chaudiere;
 
 //******************************************************************************
 //******************************************************************************
 
-EchoHandler::EchoHandler() noexcept {
+EchoHandler::EchoHandler() {
    Logger::logInstanceCreate("EchoHandler");
 }
 
 //******************************************************************************
 
-EchoHandler::~EchoHandler() noexcept {
+EchoHandler::~EchoHandler() {
    Logger::logInstanceDestroy("EchoHandler");
 }
 
 //******************************************************************************
 
 void EchoHandler::serviceRequest(const HttpRequest& request,
-                                 HttpResponse& response) noexcept {
-   std::string body = "<html><body>";
+                                 HttpResponse& response) {
+   string body = "<html><body>";
    
    body += request.getRequestMethod();
    body += " ";
@@ -35,11 +36,14 @@ void EchoHandler::serviceRequest(const HttpRequest& request,
    body += request.getProtocol();
    body += "<br/>";
 
-   std::vector<std::string> headerKeys;
+   vector<string> headerKeys;
    request.getHeaderKeys(headerKeys);
    
    if (!headerKeys.empty()) {
-      for (const std::string& headerKey : headerKeys) {
+      vector<string>::const_iterator it = headerKeys.begin();
+      const vector<string>::const_iterator itEnd = headerKeys.end();
+      for (; it != itEnd; it++) {
+         const std::string& headerKey = *it;
          const std::string& headerValue = request.getHeaderValue(headerKey);
          body += headerKey;
          body += ": ";
@@ -52,7 +56,7 @@ void EchoHandler::serviceRequest(const HttpRequest& request,
    
    body += "<br/>";
    
-   const std::string& requestBody = request.getBody();
+   const string& requestBody = request.getBody();
    
    if (!requestBody.empty()) {
       body += requestBody;

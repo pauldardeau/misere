@@ -17,11 +17,11 @@ namespace misere
 class EchoHandler : public AbstractHandler
 {
 public:
-   EchoHandler() noexcept;
-   virtual ~EchoHandler() noexcept;
+   EchoHandler();
+   virtual ~EchoHandler();
    
    virtual void serviceRequest(const HttpRequest& request,
-                               HttpResponse& response) noexcept override;
+                               HttpResponse& response);
    
 };
 

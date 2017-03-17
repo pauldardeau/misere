@@ -18,7 +18,7 @@ using namespace chaudiere;
 
 //******************************************************************************
 
-HttpResponse::HttpResponse() noexcept :
+HttpResponse::HttpResponse() :
    m_statusCodeAsInteger(200) {
 
    Logger::logInstanceCreate("HttpResponse");
@@ -27,7 +27,7 @@ HttpResponse::HttpResponse() noexcept :
 
 //******************************************************************************
 
-HttpResponse::HttpResponse(const HttpResponse& copy) noexcept :
+HttpResponse::HttpResponse(const HttpResponse& copy) :
    HttpTransaction(copy),
    m_statusCode(copy.m_statusCode),
    m_reasonPhrase(copy.m_reasonPhrase),
@@ -47,13 +47,13 @@ HttpResponse::HttpResponse(Socket& socket) {
 
 //******************************************************************************
 
-HttpResponse::~HttpResponse() noexcept {
+HttpResponse::~HttpResponse() {
    Logger::logInstanceDestroy("HttpResponse");
 }
 
 //******************************************************************************
 
-HttpResponse& HttpResponse::operator=(const HttpResponse& copy) noexcept {
+HttpResponse& HttpResponse::operator=(const HttpResponse& copy) {
    if (this == &copy) {
       return *this;
    }
@@ -69,7 +69,7 @@ HttpResponse& HttpResponse::operator=(const HttpResponse& copy) noexcept {
 //******************************************************************************
 
 bool HttpResponse::streamFromSocket(Socket& socket) {
-   if (Logger::isLogging(Logger::LogLevel::Debug)) {
+   if (Logger::isLogging(Debug)) {
       Logger::debug("******** start of HttpResponse::streamFromSocket");
    }
    
@@ -84,7 +84,7 @@ bool HttpResponse::streamFromSocket(Socket& socket) {
          setProtocol(vecRequestLineValues[0]);
          m_statusCode = vecRequestLineValues[1];
          m_reasonPhrase = vecRequestLineValues[2];
-         m_statusCodeAsInteger = std::stoi(m_statusCode);
+         m_statusCodeAsInteger = atoi(m_statusCode.c_str());
 
          if (0 == m_statusCodeAsInteger) {
             Logger::error("unable to parse status code");
@@ -212,55 +212,55 @@ bool HttpResponse::streamFromSocket(Socket& socket) {
 
 //******************************************************************************
 
-int HttpResponse::getStatusCode() const noexcept {
+int HttpResponse::getStatusCode() const {
    return m_statusCodeAsInteger;
 }
 
 //******************************************************************************
 
-void HttpResponse::setStatusCode(int statusCode) noexcept {
+void HttpResponse::setStatusCode(int statusCode) {
    m_statusCodeAsInteger = statusCode;
 }
 
 //******************************************************************************
 
-const std::string& HttpResponse::getReasonPhrase() const noexcept {
+const std::string& HttpResponse::getReasonPhrase() const {
    return m_reasonPhrase;
 }
 
 //******************************************************************************
 
-bool HttpResponse::hasContentEncoding() const noexcept {
+bool HttpResponse::hasContentEncoding() const {
    return hasHeaderValue(HTTP::HTTP_CONTENT_ENCODING);
 }
 
 //******************************************************************************
 
-bool HttpResponse::hasContentType() const noexcept {
+bool HttpResponse::hasContentType() const {
    return hasHeaderValue(HTTP::HTTP_CONTENT_TYPE);
 }
 
 //******************************************************************************
 
-const std::string& HttpResponse::getContentEncoding() const noexcept {
+const std::string& HttpResponse::getContentEncoding() const {
    return getHeaderValue(HTTP::HTTP_CONTENT_ENCODING);
 }
 
 //******************************************************************************
 
-const std::string& HttpResponse::getContentType() const noexcept {
+const std::string& HttpResponse::getContentType() const {
    return getHeaderValue(HTTP::HTTP_CONTENT_TYPE);
 }
 
 //******************************************************************************
 
-void HttpResponse::setContentEncoding(const std::string& contentEncoding) noexcept {
+void HttpResponse::setContentEncoding(const std::string& contentEncoding) {
    setHeaderValue(HTTP::HTTP_CONTENT_ENCODING, contentEncoding);
 }
 
 //******************************************************************************
 
-void HttpResponse::setContentType(const std::string& contentType) noexcept {
+void HttpResponse::setContentType(const std::string& contentType) {
    setHeaderValue(HTTP::HTTP_CONTENT_TYPE, contentType);
 }
 

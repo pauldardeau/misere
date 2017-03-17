@@ -33,7 +33,7 @@ public:
     * @see HttpServer()
     * @see SocketRequest()
     */
-   HttpRequestHandler(HttpServer& server, chaudiere::SocketRequest* socketRequest) noexcept;
+   HttpRequestHandler(HttpServer& server, chaudiere::SocketRequest* socketRequest);
    
    /**
     * Constructs a HttpRequestHandler using a Socket
@@ -42,22 +42,23 @@ public:
     * @param HttpServer()
     * @param Socket()
     */
-   HttpRequestHandler(HttpServer& server, chaudiere::Socket* socket) noexcept;
+   HttpRequestHandler(HttpServer& server, chaudiere::Socket* socket);
    
    /**
     * Destructor
     */
-   ~HttpRequestHandler() noexcept;
+   ~HttpRequestHandler();
    
    /**
     * Process the HTTP request from beginning to end
     */
-   void run() override;
+   void run();
    
-   
+  
+private: 
    // disallow copies
-   HttpRequestHandler(const HttpRequestHandler&) = delete;
-   HttpRequestHandler& operator=(const HttpRequestHandler&) = delete;
+   HttpRequestHandler(const HttpRequestHandler&);
+   HttpRequestHandler& operator=(const HttpRequestHandler&);
    
 };
 

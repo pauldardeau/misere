@@ -4,9 +4,9 @@
 #include <string>
 #include <exception>
 
-#include <cstdio>
-#include <cstdlib>
-#include <cstring>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include <sys/time.h>
 
 // http
@@ -49,6 +49,9 @@
 #include "ServerObjectsDebugging.h"
 #include "ServerStatsHandler.h"
 #include "ServerStatusHandler.h"
+
+
+using namespace std;
 
 
 static const std::string SERVER_NAME             = "Misere";
@@ -114,7 +117,7 @@ static const std::string MIME_TEXT_PLAIN        = "text/plain";
 static const std::string MODULE_DLL_NAME = "dll";
 static const std::string APP_PREFIX = "app:";
 
-static const auto APP_PREFIX_LEN = APP_PREFIX.length();
+static const std::size_t APP_PREFIX_LEN = APP_PREFIX.length();
 
 static const char* LOG_WEEKDAY_NAME[7] = {
    "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"
@@ -135,9 +138,9 @@ typedef HttpHandler* (*PFN_CREATE_HANDLER)();
 //******************************************************************************
 
 HttpServer::HttpServer(const std::string& configFilePath) :
-   m_serverSocket(nullptr),
-   m_threadPool(nullptr),
-   m_threadingFactory(nullptr),
+   m_serverSocket(NULL),
+   m_threadPool(NULL),
+   m_threadingFactory(NULL),
    m_configFilePath(configFilePath),
    m_isDone(false),
    m_isThreaded(true),
@@ -162,26 +165,26 @@ SectionedConfigDataSource* HttpServer::getConfigDataSource() {
 
 //******************************************************************************
 
-int HttpServer::getSocketSendBufferSize() const noexcept {
+int HttpServer::getSocketSendBufferSize() const {
    return m_socketSendBufferSize;
 }
 
 //******************************************************************************
 
-int HttpServer::getSocketReceiveBufferSize() const noexcept {
+int HttpServer::getSocketReceiveBufferSize() const {
    return m_socketReceiveBufferSize;
 }
 
 //******************************************************************************
 
-const std::string& HttpServer::getServerId() const noexcept {
+const std::string& HttpServer::getServerId() const {
    return m_serverString;
 }
 
 //******************************************************************************
 
 bool HttpServer::hasTrueValue(const KeyValuePairs& kvp,
-                              const std::string& setting) const noexcept {
+                              const std::string& setting) const {
    bool hasTrueValue = false;
    
    if (kvp.hasKey(setting)) {
@@ -198,12 +201,12 @@ bool HttpServer::hasTrueValue(const KeyValuePairs& kvp,
 //******************************************************************************
 
 int HttpServer::getIntValue(const KeyValuePairs& kvp,
-                            const std::string& setting) const noexcept {
+                            const std::string& setting) const {
    int value = -1;
    
    if (kvp.hasKey(setting)) {
       const std::string& valueAsString = kvp.getValue(setting);
-      const int intValue = std::stoi(valueAsString);
+      const int intValue = atoi(valueAsString.c_str());
       
       if (intValue > 0) {
          value = intValue;
@@ -216,12 +219,15 @@ int HttpServer::getIntValue(const KeyValuePairs& kvp,
 //******************************************************************************
 
 void HttpServer::replaceVariables(const KeyValuePairs& kvp,
-                                  std::string& s) const noexcept {
+                                  std::string& s) const {
    if (!s.empty()) {
-      std::vector<std::string> keys;
+      vector<string> keys;
       kvp.getKeys(keys);
+      vector<string>::const_iterator it = keys.begin();
+      const vector<string>::const_iterator itEnd = keys.end();
       
-      for (const std::string& key : keys) {
+      for (; it != itEnd; it++) {
+         const string& key = *it;
          if (StrUtils::containsString(s, key)) {
             StrUtils::replaceAll(s, key, kvp.getValue(key));
          }
@@ -232,7 +238,7 @@ void HttpServer::replaceVariables(const KeyValuePairs& kvp,
 //******************************************************************************
 
 bool HttpServer::init(int port) {
-   const bool isLoggingDebug = Logger::isLogging(Logger::LogLevel::Debug);
+   const bool isLoggingDebug = Logger::isLogging(Debug);
    m_serverPort = port;
 	
    SectionedConfigDataSource* configDataSource = NULL;
@@ -300,7 +306,7 @@ bool HttpServer::init(int port) {
                
                if (isLoggingDebug) {
                   char msg[128];
-                  std::snprintf(msg, 128, "port number=%d", port);
+                  ::snprintf(msg, 128, "port number=%d", port);
                   Logger::debug(std::string(msg));
                }
             }
@@ -355,19 +361,19 @@ bool HttpServer::init(int port) {
                Logger::info(std::string("log level: ") + m_logLevel);
                Logger* logger = Logger::getLogger();
                
-               if (logger != nullptr) {
+               if (logger != NULL) {
                   if (m_logLevel == CFG_LOGGING_CRITICAL) {
-                     logger->setLogLevel(Logger::LogLevel::Critical);
+                     logger->setLogLevel(Critical);
                   } else if (m_logLevel == CFG_LOGGING_ERROR) {
-                     logger->setLogLevel(Logger::LogLevel::Error);
+                     logger->setLogLevel(Error);
                   } else if (m_logLevel == CFG_LOGGING_WARNING) {
-                     logger->setLogLevel(Logger::LogLevel::Warning);
+                     logger->setLogLevel(Warning);
                   } else if (m_logLevel == CFG_LOGGING_INFO) {
-                     logger->setLogLevel(Logger::LogLevel::Info);
+                     logger->setLogLevel(Info);
                   } else if (m_logLevel == CFG_LOGGING_DEBUG) {
-                     logger->setLogLevel(Logger::LogLevel::Debug);
+                     logger->setLogLevel(Debug);
                   } else if (m_logLevel == CFG_LOGGING_VERBOSE) {
-                     logger->setLogLevel(Logger::LogLevel::Verbose);
+                     logger->setLogLevel(Verbose);
                   } else {
                      Logger::warning("unrecognized log level: '" + m_logLevel);
                   }
@@ -402,7 +408,8 @@ bool HttpServer::init(int port) {
             if (!serverString.empty()) {
                m_serverString = serverString;
 
-               const auto posDollar = serverString.find("$");
+               const std::string::size_type posDollar =
+                  serverString.find("$");
                if (posDollar != std::string::npos) {
                   KeyValuePairs kvpVars;
                   kvpVars.addPair("$PRODUCT_NAME", SERVER_NAME);
@@ -410,7 +417,8 @@ bool HttpServer::init(int port) {
                   kvpVars.addPair("$CFG_SOCKETS", m_sockets);
                   kvpVars.addPair("$CFG_THREADING", m_threading);
                   
-                  const auto posDollarOS = serverString.find("$OS_");
+                  const std::string::size_type posDollarOS =
+                     serverString.find("$OS_");
                   
                   if (posDollarOS != std::string::npos) {
                      SystemInfo systemInfo;
@@ -451,8 +459,8 @@ bool HttpServer::init(int port) {
          std::vector<std::string> vecKeys;
          kvpHandlers.getKeys(vecKeys);
 
-         auto it = vecKeys.begin();
-         const auto itEnd = vecKeys.end();
+         std::vector<std::string>::const_iterator it = vecKeys.begin();
+         const std::vector<std::string>::const_iterator itEnd = vecKeys.end();
 
          for ( ; it != itEnd; ++it) {
             const std::string& path = (*it);
@@ -478,7 +486,7 @@ bool HttpServer::init(int port) {
                   }
 
                   const std::string& dllName = kvpModule.getValue(MODULE_DLL_NAME);
-                  HttpHandler* pHandler = nullptr;
+                  HttpHandler* pHandler = NULL;
                   
                   if (isLoggingDebug) {
                      Logger::debug("trying to load dynamic library='" +
@@ -491,7 +499,7 @@ bool HttpServer::init(int port) {
                   // load the dll
                   try {
                      void* pfn = dll.resolve("CreateHandler");
-                     if (pfn == nullptr) {
+                     if (pfn == NULL) {
                         Logger::error("unable to find module library entry point");
                      } else {
                         if (isLoggingDebug) {
@@ -515,8 +523,10 @@ bool HttpServer::init(int port) {
                   std::vector<std::string> vecModuleKeys;
                   kvpModule.getKeys(vecModuleKeys);
 
-                  auto itMod = vecModuleKeys.begin();
-                  const auto itModEnd = vecModuleKeys.end();
+                  std::vector<std::string>::const_iterator itMod =
+                     vecModuleKeys.begin();
+                  const std::vector<std::string>::const_iterator itModEnd =
+                     vecModuleKeys.end();
 
                   KeyValuePairs kvpApp;
 
@@ -596,16 +606,19 @@ bool HttpServer::init(int port) {
       try {
          if (isLoggingDebug) {
             char msg[128];
-            std::snprintf(msg, 128,
-                          "creating server socket on port=%d",
-                          port);
+            ::snprintf(msg, 128,
+                       "creating server socket on port=%d",
+                       port);
             Logger::debug(std::string(msg));
          }
       
          m_serverSocket = new ServerSocket(port);
       } catch (...) {
          std::string exception = "unable to open server socket port '";
-         exception += std::to_string(port);
+         char portStr[10];
+         memset(portStr, 0, 10);
+         snprintf(portStr, 10, "%d", port);
+         exception += std::string(portStr);
          exception += "'";
          Logger::critical(exception);
          return false;
@@ -629,8 +642,8 @@ bool HttpServer::init(int port) {
       
       if (!isUsingLibDispatch) {
          char numberThreads[128];
-         std::snprintf(numberThreads, 128, " [%d threads]",
-                       m_threadPoolSize);
+         ::snprintf(numberThreads, 128, " [%d threads]",
+                    m_threadPoolSize);
          concurrencyModel += numberThreads;
       }
    } else {
@@ -640,7 +653,10 @@ bool HttpServer::init(int port) {
 
    m_concurrencyModel = concurrencyModel;
 
-   std::string portAsString = std::to_string(port);
+   char portStr[10];
+   memset(portStr, 0, 10);
+   snprintf(portStr, 10, "%d", port);
+   std::string portAsString = std::string(portStr);
 
    std::string startupMsg = SERVER_NAME;
    startupMsg += " ";
@@ -654,7 +670,7 @@ bool HttpServer::init(int port) {
    startupMsg += m_sockets;
    startupMsg += ")";
 
-   std::printf("%s\n", startupMsg.c_str());
+   ::printf("%s\n", startupMsg.c_str());
 
    m_isFullyInitialized = true;
    
@@ -663,7 +679,7 @@ bool HttpServer::init(int port) {
 
 //******************************************************************************
 
-HttpServer::~HttpServer() noexcept {
+HttpServer::~HttpServer() {
    Logger::logInstanceDestroy("HttpServer");
 
    if (m_serverSocket) {
@@ -680,9 +696,11 @@ HttpServer::~HttpServer() noexcept {
       delete m_threadingFactory;
    }
 
-   for (auto it = m_mapPathHandlers.begin();
-        it != m_mapPathHandlers.end();
-        it++) {
+   map<string,HttpHandler*>::iterator it =
+      m_mapPathHandlers.begin();
+   const map<string,HttpHandler*>::const_iterator itEnd =
+      m_mapPathHandlers.end();
+   for (; it != itEnd; it++) {
       delete it->second;
    }
 
@@ -692,50 +710,50 @@ HttpServer::~HttpServer() noexcept {
 
 //******************************************************************************
 
-std::string HttpServer::getSystemDateGMT() const noexcept {
+std::string HttpServer::getSystemDateGMT() const {
    time_t currentGMT;
    ::time(&currentGMT);
    
    struct tm* timeptr = ::gmtime(&currentGMT);
    char dateBuffer[128];
    
-   std::snprintf(dateBuffer, 128,
-                 "%.3s, %02d %.3s %d %.2d:%.2d:%.2d GMT",
-                 LOG_WEEKDAY_NAME[timeptr->tm_wday],
-                 timeptr->tm_mday,
-                 LOG_MONTH_NAME[timeptr->tm_mon],
-                 1900 + timeptr->tm_year,
-                 timeptr->tm_hour,
-                 timeptr->tm_min,
-                 timeptr->tm_sec);
+   ::snprintf(dateBuffer, 128,
+              "%.3s, %02d %.3s %d %.2d:%.2d:%.2d GMT",
+              LOG_WEEKDAY_NAME[timeptr->tm_wday],
+              timeptr->tm_mday,
+              LOG_MONTH_NAME[timeptr->tm_mon],
+              1900 + timeptr->tm_year,
+              timeptr->tm_hour,
+              timeptr->tm_min,
+              timeptr->tm_sec);
    
    return std::string(dateBuffer);
 }
 
 //******************************************************************************
 
-std::string HttpServer::getLocalDateTime() const noexcept {
+std::string HttpServer::getLocalDateTime() const {
    time_t currentTime;
    ::time(&currentTime);
    
    struct tm* timeptr = ::localtime(&currentTime);
    char dateBuffer[128];
    
-   std::snprintf(dateBuffer, 128,
-                 "%d-%02d-%02d %.2d:%.2d:%.2d",
-                 1900 + timeptr->tm_year,
-                 timeptr->tm_mon + 1,
-                 timeptr->tm_mday,
-                 timeptr->tm_hour,
-                 timeptr->tm_min,
-                 timeptr->tm_sec);
+   ::snprintf(dateBuffer, 128,
+              "%d-%02d-%02d %.2d:%.2d:%.2d",
+              1900 + timeptr->tm_year,
+              timeptr->tm_mon + 1,
+              timeptr->tm_mday,
+              timeptr->tm_hour,
+              timeptr->tm_min,
+              timeptr->tm_sec);
    
    return std::string(dateBuffer);
 }
 
 //******************************************************************************
 
-bool HttpServer::compressResponse(const std::string& mimeType) const noexcept {
+bool HttpServer::compressResponse(const std::string& mimeType) const {
    //TODO: make this configurable through config file
    return (mimeType == MIME_TEXT_HTML) ||
           (mimeType == MIME_TEXT_PLAIN) ||
@@ -745,23 +763,23 @@ bool HttpServer::compressResponse(const std::string& mimeType) const noexcept {
 
 //******************************************************************************
 
-bool HttpServer::compressionEnabled() const noexcept {
+bool HttpServer::compressionEnabled() const {
    return m_compressionEnabled;
 }
 
 //******************************************************************************
 
-int HttpServer::minimumCompressionSize() const noexcept {
+int HttpServer::minimumCompressionSize() const {
    return m_minimumCompressionSize;
 }
 
 //******************************************************************************
 
 bool HttpServer::addPathHandler(const std::string& path,
-                                HttpHandler* pHandler) noexcept {
+                                HttpHandler* pHandler) {
    bool isSuccess = false;
 
-   if (!path.empty() && (nullptr != pHandler)) {
+   if (!path.empty() && (NULL != pHandler)) {
       m_mapPathHandlers[path] = pHandler;
       isSuccess = true;
    }
@@ -771,11 +789,13 @@ bool HttpServer::addPathHandler(const std::string& path,
 
 //******************************************************************************
 
-bool HttpServer::removePathHandler(const std::string& path) noexcept {
+bool HttpServer::removePathHandler(const std::string& path) {
    bool isSuccess = false;
-   auto it = m_mapPathHandlers.find(path);
+   map<string,HttpHandler*>::iterator it =
+      m_mapPathHandlers.find(path);
    
    if (it != m_mapPathHandlers.end()) {
+      delete (*it).second;
       m_mapPathHandlers.erase(it);
       isSuccess = true;
    }
@@ -785,26 +805,23 @@ bool HttpServer::removePathHandler(const std::string& path) noexcept {
 
 //******************************************************************************
 
-HttpHandler* HttpServer::getPathHandler(const std::string& path) noexcept {
-   auto it = m_mapPathHandlers.find(path);
-
+HttpHandler* HttpServer::getPathHandler(const std::string& path) {
+   map<string,HttpHandler*>::iterator it = m_mapPathHandlers.find(path);
    if (it != m_mapPathHandlers.end()) {
       return (*it).second;
    }
 
-   return nullptr;
+   return NULL;
 }
 
 //******************************************************************************
 
 std::string HttpServer::buildHeader(const std::string& responseCode,
-                                    const std::unordered_map<std::string,
-                                    std::string>& mapHeaders) const noexcept {
-   auto it = mapHeaders.begin();
-   const auto itEnd = mapHeaders.end();
-
-   std::string sb;
-
+                                    const std::map<std::string,
+                                    std::string>& mapHeaders) const {
+   map<string,string>::const_iterator it = mapHeaders.begin();
+   const map<string,string>::const_iterator itEnd = mapHeaders.end();
+   string sb;
    if (!responseCode.empty()) {
       sb += HTTP::HTTP_PROTOCOL1_1;
       sb += SPACE;
@@ -813,7 +830,7 @@ std::string HttpServer::buildHeader(const std::string& responseCode,
    }
 
    for ( ; it != itEnd; ++it) {
-      const std::string& headerKey = (*it).first;
+      const string& headerKey = (*it).first;
       sb += headerKey;  // header key
       
       if (!StrUtils::endsWith(headerKey, COLON)) {
@@ -833,7 +850,7 @@ std::string HttpServer::buildHeader(const std::string& responseCode,
 
 //******************************************************************************
 
-bool HttpServer::addBuiltInHandlers() noexcept {
+bool HttpServer::addBuiltInHandlers() {
    return addPathHandler("/Echo", new EchoHandler()) &&
           addPathHandler("/GMTDateTime", new GMTDateTimeHandler()) &&
           addPathHandler("/ServerDateTime", new ServerDateTimeHandler()) &&
@@ -844,14 +861,14 @@ bool HttpServer::addBuiltInHandlers() noexcept {
 
 //******************************************************************************
 
-int HttpServer::platformPointerSizeBits() const noexcept {
+int HttpServer::platformPointerSizeBits() const {
    return sizeof(void*) * 8;
 }
 
 //******************************************************************************
 
 void HttpServer::serviceSocket(SocketRequest* socketRequest) {
-   if (nullptr != m_threadPool) {
+   if (NULL != m_threadPool) {
       // Hand off the request to the thread pool for asynchronous processing
       HttpRequestHandler* requestHandler =
          new HttpRequestHandler(*this, socketRequest);
@@ -866,7 +883,7 @@ void HttpServer::serviceSocket(SocketRequest* socketRequest) {
 
 //******************************************************************************
 
-int HttpServer::runSocketServer() noexcept {
+int HttpServer::runSocketServer() {
    int rc = 0;
    
    if (!m_serverSocket) {
@@ -877,17 +894,17 @@ int HttpServer::runSocketServer() noexcept {
    while (!m_isDone) {
       Socket* socket = m_serverSocket->accept();
 
-      if (nullptr == socket) {
+      if (NULL == socket) {
          continue;
       }
 
-      if (Logger::isLogging(Logger::LogLevel::Debug)) {
+      if (Logger::isLogging(Debug)) {
          Logger::debug("*****************************************");
          Logger::debug("client connected");
       }
 
       try {
-         if (m_isThreaded && (nullptr != m_threadPool)) {
+         if (m_isThreaded && (NULL != m_threadPool)) {
             HttpRequestHandler* handler =
                new HttpRequestHandler(*this, socket);
             handler->setThreadPooling(true);
@@ -917,15 +934,15 @@ int HttpServer::runSocketServer() noexcept {
 
 //******************************************************************************
 
-int HttpServer::runKernelEventServer() noexcept {
+int HttpServer::runKernelEventServer() {
    const int MAX_CON = 1200;
    int rc = 0;
    
-   if (m_threadingFactory != nullptr) {
+   if (m_threadingFactory != NULL) {
       Mutex* mutexFD = m_threadingFactory->createMutex("fdMutex");
       Mutex* mutexHWMConnections =
          m_threadingFactory->createMutex("hwmConnectionsMutex");
-      KernelEventServer* kernelEventServer = nullptr;
+      KernelEventServer* kernelEventServer = NULL;
       
       if (KqueueServer::isSupportedPlatform()) {
          kernelEventServer =
@@ -938,7 +955,7 @@ int HttpServer::runKernelEventServer() noexcept {
          rc = 1;
       }
       
-      if (kernelEventServer != nullptr) {
+      if (kernelEventServer != NULL) {
          try {
             SocketServiceHandler* serviceHandler =
                new HttpSocketServiceHandler(*this);
@@ -971,7 +988,7 @@ int HttpServer::runKernelEventServer() noexcept {
 
 //******************************************************************************
 
-int HttpServer::run() noexcept {
+int HttpServer::run() {
    if (!m_isFullyInitialized) {
       Logger::critical("server not initialized");
       return 1;
@@ -988,7 +1005,7 @@ int HttpServer::run() noexcept {
 
 void HttpServer::logRequest(const std::string& clientIPAddress,
                             const std::string& requestLine,
-                            const std::string& responseCode) noexcept {
+                            const std::string& responseCode) {
    logRequest(clientIPAddress,
               requestLine,
               responseCode,
@@ -1000,22 +1017,22 @@ void HttpServer::logRequest(const std::string& clientIPAddress,
 void HttpServer::logRequest(const std::string& clientIPAddress,
                             const std::string& requestLine,
                             const std::string& responseCode,
-                            const std::string& workerThreadId) noexcept {
+                            const std::string& workerThreadId) {
    const std::string localDateTime = getLocalDateTime();
 
    if (!workerThreadId.empty()) {
-      std::printf("[%s] [thread=%s] %s, %s, %s\n",
-                  localDateTime.c_str(),
-                  workerThreadId.c_str(),
-                  clientIPAddress.c_str(),
-                  requestLine.c_str(),
-                  responseCode.c_str());
+      ::printf("[%s] [thread=%s] %s, %s, %s\n",
+               localDateTime.c_str(),
+               workerThreadId.c_str(),
+               clientIPAddress.c_str(),
+               requestLine.c_str(),
+               responseCode.c_str());
    } else {
-      std::printf("[%s] %s, %s, %s\n",
-                  localDateTime.c_str(),
-                  clientIPAddress.c_str(),
-                  requestLine.c_str(),
-                  responseCode.c_str());
+      ::printf("[%s] %s, %s, %s\n",
+               localDateTime.c_str(),
+               clientIPAddress.c_str(),
+               requestLine.c_str(),
+               responseCode.c_str());
    }
 }
 

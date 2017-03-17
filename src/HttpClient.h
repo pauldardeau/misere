@@ -25,12 +25,12 @@ class HttpClient
       /**
        * Constructor
        */
-      HttpClient() noexcept;
+      HttpClient();
    
       /**
        * Destructor
        */
-      ~HttpClient() noexcept;
+      ~HttpClient();
 
       /**
        * Sends an HTTP post to HTTP server and returns response
@@ -84,7 +84,7 @@ class HttpClient
                        const std::string& method,
                        const std::string& contentType,
                        unsigned long contentLength,
-                       const chaudiere::KeyValuePairs& kvpAddlHeaders) noexcept;
+                       const chaudiere::KeyValuePairs& kvpAddlHeaders);
 
 };
 

@@ -1,6 +1,8 @@
 // Copyright Paul Dardeau, SwampBits LLC 2014
 // BSD License
 
+#include <stdio.h>
+
 #include "ServerStatusHandler.h"
 #include "HttpResponse.h"
 #include "Logger.h"
@@ -12,20 +14,20 @@ using namespace chaudiere;
 //******************************************************************************
 //******************************************************************************
 
-ServerStatusHandler::ServerStatusHandler() noexcept {
+ServerStatusHandler::ServerStatusHandler() {
    Logger::logInstanceCreate("ServerStatusHandler");
 }
 
 //******************************************************************************
 
-ServerStatusHandler::~ServerStatusHandler() noexcept {
+ServerStatusHandler::~ServerStatusHandler() {
    Logger::logInstanceDestroy("ServerStatusHandler");
 }
 
 //******************************************************************************
 
 void ServerStatusHandler::serviceRequest(const HttpRequest& request,
-                                         HttpResponse& response) noexcept {
+                                         HttpResponse& response) {
    std::string body = "<html><body>";
 
    double oneMinuteLoad = 0.0;
@@ -36,11 +38,11 @@ void ServerStatusHandler::serviceRequest(const HttpRequest& request,
                                     fiveMinuteLoad,
                                     fifteenMinuteLoad)) {
       char buffer[128];
-      snprintf(buffer, 128,
-               "load averages: %f, %f, %f",
-               oneMinuteLoad,
-               fiveMinuteLoad,
-               fifteenMinuteLoad);
+      ::snprintf(buffer, 128,
+                 "load averages: %f, %f, %f",
+                 oneMinuteLoad,
+                 fiveMinuteLoad,
+                 fifteenMinuteLoad);
       body += std::string(buffer);
    }
    

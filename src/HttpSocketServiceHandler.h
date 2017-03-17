@@ -41,13 +41,13 @@ public:
     * @param socketRequest the SocketRequest to be processed
     * @see SocketRequest()
     */
-   virtual void serviceSocket(chaudiere::SocketRequest* socketRequest) override;
+   virtual void serviceSocket(chaudiere::SocketRequest* socketRequest);
    
    /**
     * Retrieves the handler name. This is primarily an aid for debugging.
     * @return the handler name
     */
-   virtual const std::string& getName() const override;
+   virtual const std::string& getName() const;
    
 private:
    HttpServer& m_httpServer;

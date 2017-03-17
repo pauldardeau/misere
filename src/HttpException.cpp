@@ -10,7 +10,7 @@ using namespace chaudiere;
 //******************************************************************************
 
 HttpException::HttpException(int statusCode,
-                             const std::string& reasonPhrase) noexcept :
+                             const std::string& reasonPhrase) :
    BasicException(reasonPhrase),
    m_statusCode(statusCode) {
    Logger::logInstanceCreate("HttpException");
@@ -18,7 +18,7 @@ HttpException::HttpException(int statusCode,
 
 //******************************************************************************
 
-HttpException::HttpException(const HttpException& copy) noexcept :
+HttpException::HttpException(const HttpException& copy) :
    BasicException(copy),
    m_statusCode(copy.m_statusCode) {
    Logger::logInstanceCreate("HttpException");
@@ -26,13 +26,13 @@ HttpException::HttpException(const HttpException& copy) noexcept :
 
 //******************************************************************************
 
-HttpException::~HttpException() noexcept {
+HttpException::~HttpException() throw () {
    Logger::logInstanceDestroy("HttpException");
 }
 
 //******************************************************************************
 
-HttpException& HttpException::operator=(const HttpException& copy) noexcept {
+HttpException& HttpException::operator=(const HttpException& copy) {
    if (this == &copy) {
       return *this;
    }
@@ -45,7 +45,7 @@ HttpException& HttpException::operator=(const HttpException& copy) noexcept {
 
 //******************************************************************************
 
-int HttpException::getStatusCode() const noexcept {
+int HttpException::getStatusCode() const {
    return m_statusCode;
 }
 

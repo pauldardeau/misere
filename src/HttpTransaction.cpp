@@ -13,6 +13,8 @@
 #include "StrUtils.h"
 #include "Logger.h"
 
+using namespace std;
+
 static const std::string COLON  = ":";
 static const std::string EOL_NL = "\n";
 
@@ -21,13 +23,13 @@ using namespace chaudiere;
 
 //******************************************************************************
 
-HttpTransaction::HttpTransaction() noexcept :
+HttpTransaction::HttpTransaction() :
    m_contentLength(0) {
 }
 
 //******************************************************************************
 
-HttpTransaction::HttpTransaction(const HttpTransaction& copy) noexcept :
+HttpTransaction::HttpTransaction(const HttpTransaction& copy) :
    m_vecHeaderLines(copy.m_vecHeaderLines),
    m_vecRequestLineValues(copy.m_vecRequestLineValues),
    m_header(copy.m_header),
@@ -41,7 +43,7 @@ HttpTransaction::HttpTransaction(const HttpTransaction& copy) noexcept :
 
 //******************************************************************************
 
-HttpTransaction& HttpTransaction::operator=(const HttpTransaction& copy) noexcept {
+HttpTransaction& HttpTransaction::operator=(const HttpTransaction& copy) {
    if (this == &copy) {
       return *this;
    }
@@ -61,7 +63,7 @@ HttpTransaction& HttpTransaction::operator=(const HttpTransaction& copy) noexcep
 
 //******************************************************************************
 
-bool HttpTransaction::parseHeaders() noexcept {
+bool HttpTransaction::parseHeaders() {
    bool parseSuccess = false;
 
    if (m_vecHeaderLines.empty()) {
@@ -70,12 +72,12 @@ bool HttpTransaction::parseHeaders() noexcept {
    
    m_requestLine = m_vecHeaderLines[0];
    StringTokenizer st(m_requestLine);
-   const auto tokenCount = st.countTokens();
+   const int tokenCount = st.countTokens();
    
    if (3 <= tokenCount) {
       m_vecRequestLineValues.clear();
       m_vecRequestLineValues.reserve(3);
-      std::string thirdValue;
+      string thirdValue;
       
       for (int i = 0; i < tokenCount; ++i) {
          if (i > 1) {
@@ -86,12 +88,12 @@ bool HttpTransaction::parseHeaders() noexcept {
       }
       
       m_vecRequestLineValues.push_back(thirdValue);
-      auto numHeaderLines = m_vecHeaderLines.size();
+      size_t numHeaderLines = m_vecHeaderLines.size();
       m_method = m_vecRequestLineValues[0];
       
       for (int i = 1; i < numHeaderLines; ++i) {
-         const std::string& headerLine = m_vecHeaderLines[i];
-         const std::string::size_type posColon = headerLine.find(COLON);
+         const string& headerLine = m_vecHeaderLines[i];
+         const string::size_type posColon = headerLine.find(COLON);
          
          if (std::string::npos != posColon) {
             std::string lowerHeaderKey = headerLine.substr(0, posColon);
@@ -107,7 +109,7 @@ bool HttpTransaction::parseHeaders() noexcept {
             getHeaderValue(HTTP::HTTP_CONTENT_LENGTH);
          
          if (!contentLengthAsString.empty()) {
-            const int length = std::stoi(contentLengthAsString);
+            const int length = atoi(contentLengthAsString.c_str());
             
             if (length > 0) {
                m_contentLength = length;
@@ -124,7 +126,7 @@ bool HttpTransaction::parseHeaders() noexcept {
 //******************************************************************************
 
 bool HttpTransaction::streamFromSocket(Socket& socket) {
-   const bool isLoggingDebug = Logger::isLogging(Logger::LogLevel::Debug);
+   const bool isLoggingDebug = Logger::isLogging(Debug);
    
    bool streamSuccess = false;
    bool done = false;
@@ -204,7 +206,7 @@ bool HttpTransaction::streamFromSocket(Socket& socket) {
                   m_body += buffer;
                }
             } catch(const std::exception& e) {
-               Logger::error(std::string("HTTPTransaction::streamFromSocket exception caught: ") + std::string(e.what()));
+               Logger::error(string("HTTPTransaction::streamFromSocket exception caught: ") + string(e.what()));
             } catch (...) {
                Logger::error("HTTPTransaction::streamFromSocket unknown exception caught");
             }
@@ -242,26 +244,26 @@ bool HttpTransaction::streamFromSocket(Socket& socket) {
 
 //******************************************************************************
 
-const std::string& HttpTransaction::getRawHeader() const noexcept {
+const std::string& HttpTransaction::getRawHeader() const {
    return m_header;
 }
 
 //******************************************************************************
 
-const std::string& HttpTransaction::getBody() const noexcept {
+const std::string& HttpTransaction::getBody() const {
    return m_body;
 }
 
 //******************************************************************************
 
-void HttpTransaction::setBody(const std::string& body) noexcept {
+void HttpTransaction::setBody(const std::string& body) {
    m_body = body;
 }
 
 //******************************************************************************
 
-bool HttpTransaction::hasHeaderValue(const std::string& headerKey) const noexcept {
-   std::string lowerHeaderKey = headerKey;
+bool HttpTransaction::hasHeaderValue(const std::string& headerKey) const {
+   string lowerHeaderKey = headerKey;
    StrUtils::toLowerCase(lowerHeaderKey);
    return (m_hashHeaders.end() != m_hashHeaders.find(lowerHeaderKey));
 }
@@ -269,10 +271,11 @@ bool HttpTransaction::hasHeaderValue(const std::string& headerKey) const noexcep
 //******************************************************************************
 
 const std::string& HttpTransaction::getHeaderValue(const std::string& headerKey) const {
-   std::string lowerHeaderKey = headerKey;
+   string lowerHeaderKey = headerKey;
    StrUtils::toLowerCase(lowerHeaderKey);
 
-   auto it = m_hashHeaders.find(lowerHeaderKey);
+   map<string,string>::const_iterator it =
+      m_hashHeaders.find(lowerHeaderKey);
 
    if (m_hashHeaders.end() != it) {
       return (*it).second;
@@ -284,7 +287,7 @@ const std::string& HttpTransaction::getHeaderValue(const std::string& headerKey)
 //******************************************************************************
 
 void HttpTransaction::setHeaderValue(const std::string& key,
-                                     const std::string& value) noexcept {
+                                     const std::string& value) {
    std::string lowerHeaderKey = key;
    StrUtils::toLowerCase(lowerHeaderKey);
    m_hashHeaders[lowerHeaderKey] = value;
@@ -292,9 +295,9 @@ void HttpTransaction::setHeaderValue(const std::string& key,
 
 //******************************************************************************
 
-void HttpTransaction::getHeaderKeys(std::vector<std::string>& vecHeaderKeys) const noexcept {
-   auto it = m_hashHeaders.cbegin();
-   const auto itEnd = m_hashHeaders.cend();
+void HttpTransaction::getHeaderKeys(std::vector<std::string>& vecHeaderKeys) const {
+   map<string,string>::const_iterator it = m_hashHeaders.begin();
+   const map<string,string>::const_iterator itEnd = m_hashHeaders.end();
 
    for ( ; it != itEnd; ++it) {
       vecHeaderKeys.push_back((*it).first);
@@ -303,45 +306,48 @@ void HttpTransaction::getHeaderKeys(std::vector<std::string>& vecHeaderKeys) con
 
 //******************************************************************************
 
-const std::string& HttpTransaction::getProtocol() const noexcept {
+const std::string& HttpTransaction::getProtocol() const {
    return m_protocol;
 }
 
 //******************************************************************************
 
-const std::string& HttpTransaction::getRequestMethod() const noexcept {
+const std::string& HttpTransaction::getRequestMethod() const {
    return m_method;
 }
 
 //******************************************************************************
 
-const std::string& HttpTransaction::getRequestPath() const noexcept {
+const std::string& HttpTransaction::getRequestPath() const {
    return m_vecRequestLineValues[1];
 }
 
 //******************************************************************************
 
-void HttpTransaction::setProtocol(const std::string& protocol) noexcept {
+void HttpTransaction::setProtocol(const std::string& protocol) {
    m_protocol = protocol;
 }
 
 //******************************************************************************
 
-const std::vector<std::string>& HttpTransaction::getRequestLineValues() const noexcept {
+const std::vector<std::string>& HttpTransaction::getRequestLineValues() const {
    return m_vecRequestLineValues;
 }
 
 //******************************************************************************
 
-const std::string& HttpTransaction::getRequestLine() const noexcept {
+const std::string& HttpTransaction::getRequestLine() const {
    return m_requestLine;
 }
 
 //******************************************************************************
 
-void HttpTransaction::populateWithHeaders(std::unordered_map<std::string, std::string>& hashTable) noexcept {
-   for (auto kv : m_hashHeaders) {
-      hashTable[kv.first] = kv.second;
+void HttpTransaction::populateWithHeaders(std::map<std::string, std::string>& hashTable) {
+   map<string,string>::const_iterator it = m_hashHeaders.begin();
+   const map<string,string>::const_iterator itEnd = m_hashHeaders.end();
+
+   for (; it != itEnd; it++) {
+      hashTable[(*it).first] = (*it).second;
    }
 }
 

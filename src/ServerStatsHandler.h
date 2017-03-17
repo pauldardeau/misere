@@ -17,15 +17,15 @@ class HttpResponse;
 class ServerStatsHandler : public AbstractHandler {
 
 public:
-   ServerStatsHandler() noexcept;
-   virtual ~ServerStatsHandler() noexcept;
+   ServerStatsHandler();
+   virtual ~ServerStatsHandler();
    
    virtual void serviceRequest(const HttpRequest& request,
-                               HttpResponse& response) noexcept override;
+                               HttpResponse& response);
    
    std::string constructRow(const std::string& occurrenceType,
                             const std::string& occurrenceName,
-                            long long occurrenceCount) const noexcept;
+                            long long occurrenceCount) const;
 
 };
 

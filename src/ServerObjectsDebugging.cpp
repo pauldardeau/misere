@@ -1,25 +1,28 @@
 // Copyright Paul Dardeau, SwampBits LLC 2014
 // BSD License
 
+#include <stdio.h>
+
 #include "HttpResponse.h"
 #include "Logger.h"
 #include "StdLogger.h"
 
 #include "ServerObjectsDebugging.h"
 
+using namespace std;
 using namespace misere;
 using namespace chaudiere;
 
 //******************************************************************************
 //******************************************************************************
 
-ServerObjectsDebugging::ServerObjectsDebugging() noexcept {
+ServerObjectsDebugging::ServerObjectsDebugging() {
    Logger::logInstanceCreate("ServerObjectsDebugging");
 }
 
 //******************************************************************************
 
-ServerObjectsDebugging::~ServerObjectsDebugging() noexcept {
+ServerObjectsDebugging::~ServerObjectsDebugging() {
    Logger::logInstanceDestroy("ServerObjectsDebugging");
 }
 
@@ -28,7 +31,7 @@ ServerObjectsDebugging::~ServerObjectsDebugging() noexcept {
 std::string ServerObjectsDebugging::constructRow(const std::string& className,
                                                  long long created,
                                                  long long destroyed,
-                                                 long long alive) const noexcept {
+                                                 long long alive) const {
    std::string row;
    char buffer[128];
    
@@ -48,7 +51,7 @@ std::string ServerObjectsDebugging::constructRow(const std::string& className,
    }
    row += "</td>";
    
-   std::snprintf(buffer, 128, "%lld", created);
+   ::snprintf(buffer, 128, "%lld", created);
    row += "<td align=\"right\">";
    if (isAlive) {
       row += "<b>";
@@ -59,7 +62,7 @@ std::string ServerObjectsDebugging::constructRow(const std::string& className,
    }
    row += "</td>";
    
-   std::snprintf(buffer, 128, "%lld", destroyed);
+   ::snprintf(buffer, 128, "%lld", destroyed);
    row += "<td align=\"right\">";
    if (isAlive) {
       row += "<b>";
@@ -70,7 +73,7 @@ std::string ServerObjectsDebugging::constructRow(const std::string& className,
    }
    row += "</td>";
    
-   std::snprintf(buffer, 128, "%lld", alive);
+   ::snprintf(buffer, 128, "%lld", alive);
    row += "<td align=\"right\">";
    if (isAlive) {
       row += "<b>";
@@ -89,7 +92,7 @@ std::string ServerObjectsDebugging::constructRow(const std::string& className,
 //******************************************************************************
 
 void ServerObjectsDebugging::serviceRequest(const HttpRequest& request,
-                                            HttpResponse& response) noexcept {
+                                            HttpResponse& response) {
    std::string body = "<html><body>";
    
    Logger* logger = Logger::getLogger();
@@ -109,10 +112,14 @@ void ServerObjectsDebugging::serviceRequest(const HttpRequest& request,
             long long totalCreated = 0L;
             long long totalDestroyed = 0L;
             long long totalAlive = 0L;
+            map<string, LifecycleStats>::const_iterator it =
+               mapClassStats.begin();
+            const map<string, LifecycleStats>::const_iterator itEnd =
+               mapClassStats.end();
          
-            for (const auto kv : mapClassStats) {
-               const std::string& className = kv.first;
-               const LifecycleStats& stats = kv.second;
+            for (; it != itEnd; it++) {
+               const std::string& className = (*it).first;
+               const LifecycleStats& stats = (*it).second;
                const long long created = stats.m_instancesCreated;
                const long long destroyed = stats.m_instancesDestroyed;
                const long long alive = created - destroyed;

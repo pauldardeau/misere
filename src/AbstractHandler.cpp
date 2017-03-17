@@ -10,20 +10,20 @@ using namespace chaudiere;
 //******************************************************************************
 
 bool AbstractHandler::init(const std::string& path,
-                           const KeyValuePairs& kvpArguments) noexcept {
+                           const KeyValuePairs& kvpArguments) {
    return true;
 }
 
 //******************************************************************************
 
 void AbstractHandler::serviceRequest(const HttpRequest& request,
-                                     HttpResponse& response) noexcept {
+                                     HttpResponse& response) {
    Logger::debug("serviceRequest called on AbstractHandler. did you forget to override serviceRequest?");
 }
 
 //******************************************************************************
 
-bool AbstractHandler::isAvailable() const noexcept {
+bool AbstractHandler::isAvailable() const {
    return true;
 }
 

@@ -1,6 +1,9 @@
 // Copyright Paul Dardeau, SwampBits LLC 2014
 // BSD License
 
+#include <stdio.h>
+#include <string.h>
+
 #include "HttpRequestHandler.h"
 #include "Socket.h"
 #include "SocketRequest.h"
@@ -42,7 +45,7 @@ using namespace chaudiere;
 //******************************************************************************
 
 HttpRequestHandler::HttpRequestHandler(HttpServer& server,
-                                       SocketRequest* socketRequest) noexcept :
+                                       SocketRequest* socketRequest) :
    RequestHandler(socketRequest),
    m_server(server) {
    Logger::logInstanceCreate("HttpRequestHandler");
@@ -51,7 +54,7 @@ HttpRequestHandler::HttpRequestHandler(HttpServer& server,
 //******************************************************************************
 
 HttpRequestHandler::HttpRequestHandler(HttpServer& server,
-                                       Socket* socket) noexcept :
+                                       Socket* socket) :
    RequestHandler(socket),
    m_server(server) {
    Logger::logInstanceCreate("HttpRequestHandler");
@@ -59,7 +62,7 @@ HttpRequestHandler::HttpRequestHandler(HttpServer& server,
 
 //******************************************************************************
 
-HttpRequestHandler::~HttpRequestHandler() noexcept {
+HttpRequestHandler::~HttpRequestHandler() {
    Logger::logInstanceDestroy("HttpRequestHandler");
 }
 
@@ -77,7 +80,7 @@ void HttpRequestHandler::run() {
    socket->setSendBufferSize(m_server.getSocketSendBufferSize());
    socket->setReceiveBufferSize(m_server.getSocketReceiveBufferSize());
 
-   const bool isLoggingDebug = Logger::isLogging(Logger::LogLevel::Debug);
+   const bool isLoggingDebug = Logger::isLogging(Debug);
    if (isLoggingDebug) {
       Logger::debug("starting parse of HttpRequest");
    }
@@ -100,7 +103,8 @@ void HttpRequestHandler::run() {
       
       if (StrUtils::containsString(path, QUESTION_MARK)) {
          // strip arguments from path
-         const auto posQuestionMark = path.find(QUESTION_MARK);
+         const std::string::size_type posQuestionMark =
+            path.find(QUESTION_MARK);
          if (posQuestionMark != std::string::npos) {
             routingPath = path.substr(0, posQuestionMark);
          }
@@ -117,14 +121,14 @@ void HttpRequestHandler::run() {
       HttpHandler* pHandler = m_server.getPathHandler(routingPath);
       bool handlerAvailable = false;
    
-      if (pHandler == nullptr) {
+      if (pHandler == NULL) {
          Logger::info("no handler for request: " + routingPath);
       }
    
       // assume the worst
       std::string responseCode = HTTP::HTTP_RESP_SERV_ERR_INTERNAL_ERROR;
       const std::string systemDate = m_server.getSystemDateGMT();
-      std::unordered_map<std::string, std::string> mapHeaders;
+      std::map<std::string, std::string> mapHeaders;
       mapHeaders[HTTP_CONNECTION] = CONNECTION_CLOSE;
       const std::string& serverString = m_server.getServerId();
    
@@ -139,7 +143,7 @@ void HttpRequestHandler::run() {
           (HTTP::HTTP_PROTOCOL1_1 != protocol)) {
          responseCode = HTTP::HTTP_RESP_SERV_ERR_HTTP_VERSION_UNSUPPORTED;
          Logger::warning("unsupported protocol: " + protocol);
-      } else if (nullptr == pHandler) { // path recognized?
+      } else if (NULL == pHandler) { // path recognized?
          responseCode = HTTP::HTTP_RESP_CLIENT_ERR_NOT_FOUND;
          //Logger::warning("bad request: " + path);
       } else if (!pHandler->isAvailable()) { // is our handler available?
@@ -167,10 +171,13 @@ void HttpRequestHandler::run() {
       std::string::size_type contentLength = 0;
       HttpResponse response;
    
-      if ((nullptr != pHandler) && handlerAvailable) {
+      if ((NULL != pHandler) && handlerAvailable) {
          try {
             pHandler->serviceRequest(request, response);
-            responseCode = std::to_string(response.getStatusCode());
+            char statusCodeString[10];
+            memset(statusCodeString, 0, 10);
+            snprintf(statusCodeString, 10, "%d", response.getStatusCode());
+            responseCode = std::string(statusCodeString);
             const std::string& responseBody = response.getBody();
             contentLength = responseBody.size();
 
@@ -211,7 +218,10 @@ void HttpRequestHandler::run() {
       }
 
       if (contentLength > 0) {
-         mapHeaders[HTTP_CONTENT_LENGTH] = std::to_string(contentLength);
+         char contentLengthStr[10];
+         memset(contentLengthStr, 0, 10);
+         snprintf(contentLengthStr, 10, "%ld", contentLength);
+         mapHeaders[HTTP_CONTENT_LENGTH] = std::string(contentLengthStr);
       } else {
          mapHeaders[HTTP_CONTENT_LENGTH] = ZERO;
       }
@@ -257,12 +267,12 @@ void HttpRequestHandler::run() {
        char readBuffer[5];
        socket->read(readBuffer, 4);
    
-      //if (m_socketRequest != nullptr) {
+      //if (m_socketRequest != NULL) {
       //   m_socketRequest->requestComplete();
       //}
        */
    } else {
-      printf("error: unable to initialize HttpRequest\n");
+      ::printf("error: unable to initialize HttpRequest\n");
    }
 }
 
