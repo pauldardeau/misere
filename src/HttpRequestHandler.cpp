@@ -128,16 +128,16 @@ void HttpRequestHandler::run() {
       // assume the worst
       std::string responseCode = HTTP::HTTP_RESP_SERV_ERR_INTERNAL_ERROR;
       const std::string systemDate = m_server.getSystemDateGMT();
-      std::map<std::string, std::string> mapHeaders;
-      mapHeaders[HTTP_CONNECTION] = CONNECTION_CLOSE;
+      KeyValuePairs headers;
+      headers.addPair(HTTP_CONNECTION, CONNECTION_CLOSE);
       const std::string& serverString = m_server.getServerId();
    
       if (!serverString.empty()) {
-         mapHeaders[HTTP_SERVER] = serverString;
+         headers.addPair(HTTP_SERVER, serverString);
       }
    
-      mapHeaders[HTTP_DATE] = systemDate;
-      //mapHeaders[HTTP_CONTENT_TYPE] = CONTENT_TYPE_HTML;
+      headers.addPair(HTTP_DATE, systemDate);
+      //headers.addPair(HTTP_CONTENT_TYPE, CONTENT_TYPE_HTML);
    
       if ((HTTP::HTTP_PROTOCOL1_0 != protocol) &&
           (HTTP::HTTP_PROTOCOL1_1 != protocol)) {
@@ -204,7 +204,7 @@ void HttpRequestHandler::run() {
                }
             }
          
-            response.populateWithHeaders(mapHeaders);
+            response.populateWithHeaders(headers);
          } catch (const BasicException& be) {
             responseCode = HTTP::HTTP_RESP_SERV_ERR_INTERNAL_ERROR;
             Logger::error("exception handling request: " + be.whatString());
@@ -221,9 +221,9 @@ void HttpRequestHandler::run() {
          char contentLengthStr[10];
          memset(contentLengthStr, 0, 10);
          snprintf(contentLengthStr, 10, "%zu", contentLength);
-         mapHeaders[HTTP_CONTENT_LENGTH] = std::string(contentLengthStr);
+         headers.addPair(HTTP_CONTENT_LENGTH, std::string(contentLengthStr));
       } else {
-         mapHeaders[HTTP_CONTENT_LENGTH] = ZERO;
+         headers.addPair(HTTP_CONTENT_LENGTH, ZERO);
       }
    
       // log the request
@@ -247,7 +247,7 @@ void HttpRequestHandler::run() {
       }
    
       std::string responseAsString =
-         m_server.buildHeader(responseCode, mapHeaders);
+         m_server.buildHeader(responseCode, headers);
    
       if (contentLength > 0) {
          responseAsString += response.getBody();

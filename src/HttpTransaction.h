@@ -7,8 +7,8 @@
 
 #include <string>
 #include <vector>
-#include <map>
 
+#include "KeyValuePairs.h"
 #include "Socket.h"
 
 
@@ -125,9 +125,9 @@ class HttpTransaction
    
       /**
        * Retrieves the HTTP header key/value pairs
-       * @param hashTable the map to populate with HTTP header key/values
+       * @param headers HTTP header key/values
        */
-      void populateWithHeaders(std::map<std::string, std::string>& hashTable);
+      void populateWithHeaders(chaudiere::KeyValuePairs& headers);
 
    
    protected:
@@ -157,7 +157,7 @@ class HttpTransaction
       std::string m_body;
       std::string m_protocol;
       std::string m_requestLine;
-      std::map<std::string,std::string> m_hashHeaders;
+      chaudiere::KeyValuePairs m_headers;
       std::string m_method;
       int m_contentLength;
 
@@ -166,5 +166,4 @@ class HttpTransaction
 }
 
 #endif
-
 

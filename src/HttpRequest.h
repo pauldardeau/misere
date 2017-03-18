@@ -6,7 +6,6 @@
 
 #include <string>
 #include <vector>
-#include <map>
 
 #include "HttpTransaction.h"
 #include "KeyValuePairs.h"

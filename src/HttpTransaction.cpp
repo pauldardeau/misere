@@ -36,7 +36,7 @@ HttpTransaction::HttpTransaction(const HttpTransaction& copy) :
    m_body(copy.m_body),
    m_protocol(copy.m_protocol),
    m_requestLine(copy.m_requestLine),
-   m_hashHeaders(copy.m_hashHeaders),
+   m_headers(copy.m_headers),
    m_method(copy.m_method),
    m_contentLength(copy.m_contentLength) {
 }
@@ -54,7 +54,7 @@ HttpTransaction& HttpTransaction::operator=(const HttpTransaction& copy) {
    m_body = copy.m_body;
    m_protocol = copy.m_protocol;
    m_requestLine = copy.m_requestLine;
-   m_hashHeaders = copy.m_hashHeaders;
+   m_headers = copy.m_headers;
    m_method = copy.m_method;
    m_contentLength = copy.m_contentLength;
 
@@ -100,7 +100,7 @@ bool HttpTransaction::parseHeaders() {
             StrUtils::toLowerCase(lowerHeaderKey);
             std::string value = headerLine.substr(posColon + 1);
             StrUtils::trimLeadingSpaces(value);
-            m_hashHeaders[lowerHeaderKey] = value;
+            m_headers.addPair(lowerHeaderKey, value);
          }
       }
       
@@ -265,7 +265,7 @@ void HttpTransaction::setBody(const std::string& body) {
 bool HttpTransaction::hasHeaderValue(const std::string& headerKey) const {
    string lowerHeaderKey = headerKey;
    StrUtils::toLowerCase(lowerHeaderKey);
-   return (m_hashHeaders.end() != m_hashHeaders.find(lowerHeaderKey));
+   return m_headers.hasKey(lowerHeaderKey);
 }
 
 //******************************************************************************
@@ -274,11 +274,8 @@ const std::string& HttpTransaction::getHeaderValue(const std::string& headerKey)
    string lowerHeaderKey = headerKey;
    StrUtils::toLowerCase(lowerHeaderKey);
 
-   map<string,string>::const_iterator it =
-      m_hashHeaders.find(lowerHeaderKey);
-
-   if (m_hashHeaders.end() != it) {
-      return (*it).second;
+   if (m_headers.hasKey(lowerHeaderKey)) {
+      return m_headers.getValue(lowerHeaderKey);
    }
 
    throw InvalidKeyException(headerKey);
@@ -290,18 +287,13 @@ void HttpTransaction::setHeaderValue(const std::string& key,
                                      const std::string& value) {
    std::string lowerHeaderKey = key;
    StrUtils::toLowerCase(lowerHeaderKey);
-   m_hashHeaders[lowerHeaderKey] = value;
+   m_headers.addPair(lowerHeaderKey, value);
 }
 
 //******************************************************************************
 
 void HttpTransaction::getHeaderKeys(std::vector<std::string>& vecHeaderKeys) const {
-   map<string,string>::const_iterator it = m_hashHeaders.begin();
-   const map<string,string>::const_iterator itEnd = m_hashHeaders.end();
-
-   for ( ; it != itEnd; ++it) {
-      vecHeaderKeys.push_back((*it).first);
-   }
+   m_headers.getKeys(vecHeaderKeys);
 }
 
 //******************************************************************************
@@ -342,13 +334,8 @@ const std::string& HttpTransaction::getRequestLine() const {
 
 //******************************************************************************
 
-void HttpTransaction::populateWithHeaders(std::map<std::string, std::string>& hashTable) {
-   map<string,string>::const_iterator it = m_hashHeaders.begin();
-   const map<string,string>::const_iterator itEnd = m_hashHeaders.end();
-
-   for (; it != itEnd; it++) {
-      hashTable[(*it).first] = (*it).second;
-   }
+void HttpTransaction::populateWithHeaders(KeyValuePairs& headers) {
+   headers = m_headers;
 }
 
 //******************************************************************************

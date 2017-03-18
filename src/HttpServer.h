@@ -8,6 +8,7 @@
 #include <map>
 
 #include "HttpHandler.h"
+#include "KeyValuePairs.h"
 #include "ServerSocket.h"
 #include "SocketRequest.h"
 #include "DynamicLibrary.h"
@@ -52,11 +53,11 @@ class HttpServer {
        * Constructs HTTP response headers using the specified response code and
        * collection of header key/value pairs
        * @param responseCode the HTTP response code
-       * @param mapHeaders collection of HTTP header key/value pairs
+       * @param headers collection of HTTP header key/value pairs
        * @return HTTP headers formatted as a string
        */
       std::string buildHeader(const std::string& responseCode,
-                              const std::map<std::string, std::string>& mapHeaders) const;
+                              const chaudiere::KeyValuePairs& headers) const;
 
       /**
        * Registers an HttpHandler for the specified path
@@ -227,7 +228,7 @@ class HttpServer {
       chaudiere::ServerSocket* m_serverSocket;
       chaudiere::ThreadPoolDispatcher* m_threadPool;
       chaudiere::ThreadingFactory* m_threadingFactory;
-      std::map<std::string, std::string> m_mapProperties;
+      chaudiere::KeyValuePairs m_properties;
       std::map<std::string, HttpHandler*> m_mapPathHandlers;
       std::map<std::string, chaudiere::DynamicLibrary*> m_mapPathLibraries;
       std::string m_accessLogFile;

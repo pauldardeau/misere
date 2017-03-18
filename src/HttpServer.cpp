@@ -818,10 +818,7 @@ HttpHandler* HttpServer::getPathHandler(const std::string& path) {
 //******************************************************************************
 
 std::string HttpServer::buildHeader(const std::string& responseCode,
-                                    const std::map<std::string,
-                                    std::string>& mapHeaders) const {
-   map<string,string>::const_iterator it = mapHeaders.begin();
-   const map<string,string>::const_iterator itEnd = mapHeaders.end();
+                                    const chaudiere::KeyValuePairs& headers) const {
    string sb;
    if (!responseCode.empty()) {
       sb += HTTP::HTTP_PROTOCOL1_1;
@@ -830,8 +827,13 @@ std::string HttpServer::buildHeader(const std::string& responseCode,
       sb += EOL;
    }
 
+   vector<string> keys;
+   headers.getKeys(keys);
+   const vector<string>::const_iterator itEnd = keys.end();
+   vector<string>::const_iterator it = keys.begin();
+
    for ( ; it != itEnd; ++it) {
-      const string& headerKey = (*it).first;
+      const string& headerKey = *it;
       sb += headerKey;  // header key
       
       if (!StrUtils::endsWith(headerKey, COLON)) {
@@ -840,7 +842,7 @@ std::string HttpServer::buildHeader(const std::string& responseCode,
       
       sb += SPACE;
 
-      sb += (*it).second;  // header value
+      sb += headers.getValue(headerKey);  // header value
       sb += EOL;
    }
 
