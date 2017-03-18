@@ -494,11 +494,11 @@ bool HttpServer::init(int port) {
                                    "'");
                   }
                   
-                  DynamicLibrary dll(dllName);
+                  DynamicLibrary* dll = new DynamicLibrary(dllName);
 
                   // load the dll
                   try {
-                     void* pfn = dll.resolve("CreateHandler");
+                     void* pfn = dll->resolve("CreateHandler");
                      if (pfn == NULL) {
                         Logger::error("unable to find module library entry point");
                      } else {
@@ -506,7 +506,6 @@ bool HttpServer::init(int port) {
                            Logger::debug("dynamic library loaded");
                         }
                      }
-                     dll.close();
 
                      PFN_CREATE_HANDLER pfnCreateHandler = (PFN_CREATE_HANDLER) pfn;
                      pHandler = (*pfnCreateHandler)();
@@ -560,6 +559,8 @@ bool HttpServer::init(int port) {
                         if (m_requireAllHandlersForStartup) {
                            return false;
                         }
+                     } else {
+                        m_mapPathLibraries[path] = dll;
                      }
                   } else {
                      Logger::error(std::string("unable to initialize handler for path ") +

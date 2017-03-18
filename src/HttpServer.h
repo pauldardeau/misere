@@ -10,6 +10,7 @@
 #include "HttpHandler.h"
 #include "ServerSocket.h"
 #include "SocketRequest.h"
+#include "DynamicLibrary.h"
 #include "ThreadPoolDispatcher.h"
 #include "SectionedConfigDataSource.h"
 #include "ThreadingFactory.h"
@@ -228,6 +229,7 @@ class HttpServer {
       chaudiere::ThreadingFactory* m_threadingFactory;
       std::map<std::string, std::string> m_mapProperties;
       std::map<std::string, HttpHandler*> m_mapPathHandlers;
+      std::map<std::string, chaudiere::DynamicLibrary*> m_mapPathLibraries;
       std::string m_accessLogFile;
       std::string m_errorLogFile;
       std::string m_logLevel;
