@@ -109,7 +109,7 @@ bool HttpTransaction::parseHeaders() {
             getHeaderValue(HTTP::HTTP_CONTENT_LENGTH);
          
          if (!contentLengthAsString.empty()) {
-            const int length = atoi(contentLengthAsString.c_str());
+            const int length = StrUtils::parseInt(contentLengthAsString);
             
             if (length > 0) {
                m_contentLength = length;

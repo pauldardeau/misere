@@ -10,6 +10,7 @@
 #include "BasicException.h"
 #include "HttpException.h"
 #include "Logger.h"
+#include "StrUtils.h"
 
 static const std::string TEXT_HTML = "text/html";
 
@@ -84,7 +85,7 @@ bool HttpResponse::streamFromSocket(Socket& socket) {
          setProtocol(vecRequestLineValues[0]);
          m_statusCode = vecRequestLineValues[1];
          m_reasonPhrase = vecRequestLineValues[2];
-         m_statusCodeAsInteger = atoi(m_statusCode.c_str());
+         m_statusCodeAsInteger = StrUtils::parseInt(m_statusCode);
 
          if (0 == m_statusCodeAsInteger) {
             Logger::error("unable to parse status code");

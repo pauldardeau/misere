@@ -206,7 +206,7 @@ int HttpServer::getIntValue(const KeyValuePairs& kvp,
    
    if (kvp.hasKey(setting)) {
       const std::string& valueAsString = kvp.getValue(setting);
-      const int intValue = atoi(valueAsString.c_str());
+      const int intValue = StrUtils::parseInt(valueAsString);
       
       if (intValue > 0) {
          value = intValue;
