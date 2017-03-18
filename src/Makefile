@@ -42,7 +42,7 @@ $(SO_NAME) : $(OBJS)
 
 $(EXE_NAME) : $(SO_NAME) $(MAIN_OBJS)
 	$(CC) -c -Wall -O2 -pthread -I../../chaudiere/src main.cpp -o main.o
-	$(LINK_CMD) $(MAIN_OBJS) -o $(EXE_NAME) $(SO_NAME) ../../chaudiere/src/libchaudiere.a $(LINK_LIBS)
+	$(LINK_CMD) $(MAIN_OBJS) -o $(EXE_NAME) $(SO_NAME) ../../chaudiere/src/chaudiere.so $(LINK_LIBS)
 
 %.o : %.cpp
 	$(CC) $(CC_OPTS) $< -o $@
