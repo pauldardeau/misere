@@ -2,12 +2,13 @@
 # BSD License
 
 CC = g++
-CC_OPTS = -c -Wall -O2 -pthread -I../../chaudiere/src
+CC_OPTS = -c -Wall -shared -fPIC -O2 -pthread -I../../chaudiere/src
 LINK_CMD = g++
 # remove -ldl for non-linux
 LINK_LIBS = -lpthread -ldl
 
 EXE_NAME = misere
+SO_NAME = misere.so
 
 OBJS =  HttpClient.o \
 HTTP.o \
@@ -24,17 +25,24 @@ GMTDateTimeHandler.o \
 ServerDateTimeHandler.o \
 ServerObjectsDebugging.o \
 ServerStatsHandler.o \
-ServerStatusHandler.o \
-main.o
+ServerStatusHandler.o
 
-all : $(EXE_NAME)
+MAIN_OBJS = main.o
+
+
+all : $(SO_NAME) $(EXE_NAME)
 
 clean :
 	rm -f *.o
+	rm -f $(SO_NAME)
 	rm -f $(EXE_NAME)
 
-$(EXE_NAME) : $(OBJS)
-	$(LINK_CMD) -o $(EXE_NAME) $(OBJS) ../../chaudiere/src/libchaudiere.a $(LINK_LIBS)
+$(SO_NAME) : $(OBJS)
+	$(LINK_CMD) -shared -fPIC $(OBJS) -o $(SO_NAME) $(LINK_LIBS)
+
+$(EXE_NAME) : $(SO_NAME) $(MAIN_OBJS)
+	$(CC) -c -Wall -O2 -pthread -I../../chaudiere/src main.cpp -o main.o
+	$(LINK_CMD) $(MAIN_OBJS) -o $(EXE_NAME) $(SO_NAME) ../../chaudiere/src/libchaudiere.a $(LINK_LIBS)
 
 %.o : %.cpp
 	$(CC) $(CC_OPTS) $< -o $@
