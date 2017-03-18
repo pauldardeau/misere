@@ -41,9 +41,8 @@ Apache bench (ab): ab -t 60 -n 1000 -c 400 http://127.0.0.1:13001/Echo
 
 Platforms/Compilers
 -------------------
-This project is implemented with C++11. It is tested with clang and
-g++ compilers. It is also tested on Mac OS X, FreeBSD 10, PC-BSD 10,
-and Ubuntu 14.04 Server.
+This project is implemented with pre-C++11. It is tested with g++
+compiler on Linux, FreeBSD, and OpenBSD.
 
 Status/Maturity
 ---------------
@@ -53,8 +52,7 @@ slowly get there.
 
 C++ Standards
 -------------
-The code is somewhat C++11 compliant. The intention is to make it more
-and more C++11 compliant over time.
+The code is pre-c++11 (intentionally) for maximum portability.
 
 Coding Style
 ------------
