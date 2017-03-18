@@ -616,10 +616,7 @@ bool HttpServer::init(int port) {
          m_serverSocket = new ServerSocket(port);
       } catch (...) {
          std::string exception = "unable to open server socket port '";
-         char portStr[10];
-         memset(portStr, 0, 10);
-         snprintf(portStr, 10, "%d", port);
-         exception += std::string(portStr);
+         exception += StrUtils::toString(port);
          exception += "'";
          Logger::critical(exception);
          return false;
@@ -654,16 +651,11 @@ bool HttpServer::init(int port) {
 
    m_concurrencyModel = concurrencyModel;
 
-   char portStr[10];
-   memset(portStr, 0, 10);
-   snprintf(portStr, 10, "%d", port);
-   std::string portAsString = std::string(portStr);
-
    std::string startupMsg = SERVER_NAME;
    startupMsg += " ";
    startupMsg += SERVER_VERSION;
    startupMsg += " listening on port ";
-   startupMsg += portAsString;
+   startupMsg += StrUtils::toString(port);
    startupMsg += " (request concurrency: ";
    startupMsg += concurrencyModel;
    startupMsg += ")";

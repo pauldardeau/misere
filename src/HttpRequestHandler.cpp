@@ -174,10 +174,7 @@ void HttpRequestHandler::run() {
       if ((NULL != pHandler) && handlerAvailable) {
          try {
             pHandler->serviceRequest(request, response);
-            char statusCodeString[10];
-            memset(statusCodeString, 0, 10);
-            snprintf(statusCodeString, 10, "%d", response.getStatusCode());
-            responseCode = std::string(statusCodeString);
+            responseCode = StrUtils::toString(response.getStatusCode());
             const std::string& responseBody = response.getBody();
             contentLength = responseBody.size();
 
@@ -218,10 +215,8 @@ void HttpRequestHandler::run() {
       }
 
       if (contentLength > 0) {
-         char contentLengthStr[10];
-         memset(contentLengthStr, 0, 10);
-         snprintf(contentLengthStr, 10, "%zu", contentLength);
-         headers.addPair(HTTP_CONTENT_LENGTH, std::string(contentLengthStr));
+         headers.addPair(HTTP_CONTENT_LENGTH,
+                         StrUtils::toString(contentLength));
       } else {
          headers.addPair(HTTP_CONTENT_LENGTH, ZERO);
       }

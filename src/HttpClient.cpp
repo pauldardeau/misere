@@ -12,6 +12,7 @@
 #include "BasicException.h"
 #include "KeyValuePairs.h"
 #include "Logger.h"
+#include "StrUtils.h"
 
 static const int SOCKET_SEND_BUFFER_SIZE = 8192;
 static const int SOCKET_RECV_BUFFER_SIZE = 8192;
@@ -77,10 +78,7 @@ void HttpClient::buildHeader(std::string& header,
    } else {
       std::string host = address;
       host += COLON;
-      char portAsString[10];
-      memset(portAsString, 0, 10);
-      snprintf(portAsString, 10, "%d", port);
-      host += std::string(portAsString);
+      host += StrUtils::toString(port);
       header += host;
    }
 
@@ -98,10 +96,7 @@ void HttpClient::buildHeader(std::string& header,
 
       // content length
       header += CONTENT_LENGTH;
-      char contentLengthAsString[10];
-      memset(contentLengthAsString, 0, 10);
-      snprintf(contentLengthAsString, 10, "%ld", contentLength);
-      header += std::string(contentLengthAsString);
+      header += StrUtils::toString(contentLength);
       header += EOL;
    }
 
