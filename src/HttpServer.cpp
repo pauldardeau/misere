@@ -29,6 +29,7 @@
 #include "StrUtils.h"
 #include "Logger.h"
 #include "SystemInfo.h"
+#include "AutoPointer.h"
 
 // threading
 #include "Mutex.h"
@@ -241,11 +242,11 @@ bool HttpServer::init(int port) {
    const bool isLoggingDebug = Logger::isLogging(Debug);
    m_serverPort = port;
 	
-   SectionedConfigDataSource* configDataSource = NULL;
+   AutoPointer<SectionedConfigDataSource*> configDataSource(NULL);
    bool haveDataSource = false;
    
    try {
-      configDataSource = getConfigDataSource();
+      configDataSource.assign(getConfigDataSource());
       haveDataSource = true;
    } catch (const BasicException& be) {
       Logger::error("exception retrieving config data: " + be.whatString());
@@ -255,11 +256,8 @@ bool HttpServer::init(int port) {
       Logger::error("exception retrieving config data");
    }
    
-   if (!configDataSource || !haveDataSource) {
+   if (!configDataSource.haveObject() || !haveDataSource) {
       Logger::error("unable to retrieve config data");
-      if (configDataSource != NULL) {
-         delete configDataSource;
-      }
       return false;
    }
 
@@ -937,20 +935,20 @@ int HttpServer::runKernelEventServer() {
       Mutex* mutexFD = m_threadingFactory->createMutex("fdMutex");
       Mutex* mutexHWMConnections =
          m_threadingFactory->createMutex("hwmConnectionsMutex");
-      KernelEventServer* kernelEventServer = NULL;
+      AutoPointer<KernelEventServer*> kernelEventServer(NULL);
       
       if (KqueueServer::isSupportedPlatform()) {
-         kernelEventServer =
-            new KqueueServer(*mutexFD, *mutexHWMConnections);
+         kernelEventServer.assign(
+            new KqueueServer(*mutexFD, *mutexHWMConnections));
       } else if (EpollServer::isSupportedPlatform()) {
-         kernelEventServer =
-            new EpollServer(*mutexFD, *mutexHWMConnections);
+         kernelEventServer.assign(
+            new EpollServer(*mutexFD, *mutexHWMConnections));
       } else {
          Logger::critical("no kernel event server available for platform");
          rc = 1;
       }
       
-      if (kernelEventServer != NULL) {
+      if (kernelEventServer.haveObject()) {
          try {
             SocketServiceHandler* serviceHandler =
                new HttpSocketServiceHandler(*this);
@@ -971,7 +969,6 @@ int HttpServer::runKernelEventServer() {
          } catch (...) {
             Logger::critical("unidentified exception running kernel event server");
          }
-         delete kernelEventServer;
       }
    } else {
       Logger::critical("no threading factory configured");
