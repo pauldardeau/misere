@@ -1,8 +1,8 @@
 // Copyright Paul Dardeau, SwampBits LLC 2014
 // BSD License
 
-#include <cstdio>
-#include <cstdlib>
+#include <stdio.h>
+#include <stdlib.h>
 
 #include "HttpTransaction.h"
 #include "HTTP.h"
@@ -178,9 +178,9 @@ bool HttpTransaction::streamFromSocket(Socket& socket) {
          if (contentLength > 0) {
             if (isLoggingDebug) {
                char msg[128];
-               std::snprintf(msg, 128,
-                             "contentLength=%d",
-                             contentLength);
+               ::snprintf(msg, 128,
+                          "contentLength=%d",
+                          contentLength);
                Logger::debug(std::string(msg));
             }
 

@@ -1,7 +1,7 @@
 // Copyright Paul Dardeau, SwampBits LLC 2014
 // BSD License
 
-#include <cstdio>
+#include <stdio.h>
 
 #include "HttpRequest.h"
 #include "Socket.h"
@@ -147,9 +147,9 @@ bool HttpRequest::streamFromSocket(Socket& socket) {
       } else {
          if (Logger::isLogging(Warning)) {
             char msg[128];
-            std::snprintf(msg, 128,
-                          "number of tokens: %zu",
-                          vecRequestLineValues.size());
+            ::snprintf(msg, 128,
+                       "number of tokens: %zu",
+                       vecRequestLineValues.size());
             Logger::warning(std::string(msg));
 
             const std::vector<std::string>::const_iterator itEnd =
