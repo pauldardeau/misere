@@ -292,34 +292,7 @@ bool HttpServer::init(int port) {
             }
          }
 
-         // defaults
-         m_isThreaded = true;
-         m_threading = CFG_THREADING_PTHREADS;
-         m_threadPoolSize = 4;
-         
-         if (kvpServerSettings.hasKey(CFG_SERVER_THREADING)) {
-            const string& threading =
-               kvpServerSettings.getValue(CFG_SERVER_THREADING);
-            if (!threading.empty()) {
-               if ((threading == CFG_THREADING_PTHREADS) ||
-                   (threading == CFG_THREADING_CPP11) ||
-                   (threading == CFG_THREADING_GCD_LIBDISPATCH)) {
-                  m_threading = threading;
-                  m_isThreaded = true;
-               } else if (threading == CFG_THREADING_NONE) {
-                  m_isThreaded = false;
-               }
-            }
-         }
-         
-         if (kvpServerSettings.hasKey(CFG_SERVER_THREAD_POOL_SIZE)) {
-            const int poolSize =
-               getIntValue(kvpServerSettings, CFG_SERVER_THREAD_POOL_SIZE);
-
-            if (poolSize > 0) {
-               m_threadPoolSize = poolSize;
-            }
-         }
+         setupThreading(kvpServerSettings);
          
          // defaults
          m_sockets = CFG_SOCKETS_SOCKET_SERVER;
@@ -1062,6 +1035,38 @@ bool HttpServer::setupHandlers(const chaudiere::SectionedConfigDataSource* dataS
    }
 
    return true;
+}
+
+//******************************************************************************
+
+void HttpServer::setupThreading(const chaudiere::KeyValuePairs& kvp) {
+   m_isThreaded = true;
+   m_threading = CFG_THREADING_PTHREADS;
+   m_threadPoolSize = 4;
+         
+   if (kvp.hasKey(CFG_SERVER_THREADING)) {
+      const string& threading =
+         kvp.getValue(CFG_SERVER_THREADING);
+      if (!threading.empty()) {
+         if ((threading == CFG_THREADING_PTHREADS) ||
+             (threading == CFG_THREADING_CPP11) ||
+             (threading == CFG_THREADING_GCD_LIBDISPATCH)) {
+            m_threading = threading;
+            m_isThreaded = true;
+         } else if (threading == CFG_THREADING_NONE) {
+            m_isThreaded = false;
+         }
+      }
+   }
+         
+   if (kvp.hasKey(CFG_SERVER_THREAD_POOL_SIZE)) {
+      const int poolSize =
+         getIntValue(kvp, CFG_SERVER_THREAD_POOL_SIZE);
+
+      if (poolSize > 0) {
+         m_threadPoolSize = poolSize;
+      }
+   }
 }
 
 //******************************************************************************
