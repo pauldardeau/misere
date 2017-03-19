@@ -213,6 +213,10 @@ class HttpServer {
       void setupServerString(const chaudiere::KeyValuePairs& kvp);
       bool setupHandlers(const chaudiere::SectionedConfigDataSource* dataSource);
       void setupThreading(const chaudiere::KeyValuePairs& kvp);
+      void setupConcurrency();
+      bool setupServerSocket();
+      void setupListeningPort(const chaudiere::KeyValuePairs& kvp);
+      void setupSocketHandling(const chaudiere::KeyValuePairs& kvp);
 
    
    protected:

@@ -239,7 +239,6 @@ void HttpServer::replaceVariables(const KeyValuePairs& kvp,
 //******************************************************************************
 
 bool HttpServer::init(int port) {
-   const bool isLoggingDebug = Logger::isLogging(Debug);
    m_serverPort = port;
 	
    AutoPointer<SectionedConfigDataSource*> configDataSource(NULL);
@@ -275,44 +274,15 @@ bool HttpServer::init(int port) {
       if (configDataSource->hasSection(CFG_SECTION_SERVER) &&
           configDataSource->readSection(CFG_SECTION_SERVER,
                                         kvpServerSettings)) {
-         
-         if (kvpServerSettings.hasKey(CFG_SERVER_PORT)) {
-            const int portNumber =
-               getIntValue(kvpServerSettings, CFG_SERVER_PORT);
-
-            if (portNumber > 0) {
-               port = portNumber;
-               m_serverPort = portNumber;
-               
-               if (isLoggingDebug) {
-                  char msg[128];
-                  ::snprintf(msg, 128, "port number=%d", port);
-                  Logger::debug(string(msg));
-               }
-            }
-         }
-
-         setupThreading(kvpServerSettings);
-         
-         // defaults
-         m_sockets = CFG_SOCKETS_SOCKET_SERVER;
-         
-         if (kvpServerSettings.hasKey(CFG_SERVER_SOCKETS)) {
-            const string& sockets =
-               kvpServerSettings.getValue(CFG_SERVER_SOCKETS);
-            if (sockets == CFG_SOCKETS_KERNEL_EVENTS) {
-               m_isUsingKernelEventServer = true;
-               m_sockets = CFG_SOCKETS_KERNEL_EVENTS;
-            }
-         }
-
-         setupLogLevel(kvpServerSettings);
-
-         setupSocketBufferSizes(kvpServerSettings);
-         
-         m_allowBuiltInHandlers = hasTrueValue(kvpServerSettings,
-                                               CFG_SERVER_ALLOW_BUILTIN_HANDLERS);
         
+         setupListeningPort(kvpServerSettings); 
+         setupThreading(kvpServerSettings);
+         setupSocketHandling(kvpServerSettings);
+         setupLogLevel(kvpServerSettings);
+         setupSocketBufferSizes(kvpServerSettings);
+         m_allowBuiltInHandlers =
+            hasTrueValue(kvpServerSettings,
+                         CFG_SERVER_ALLOW_BUILTIN_HANDLERS);
          setupServerString(kvpServerSettings);
       }
 
@@ -334,53 +304,11 @@ bool HttpServer::init(int port) {
       return false;
    }
 
-   if (!m_isUsingKernelEventServer) {
-      try {
-         if (isLoggingDebug) {
-            char msg[128];
-            ::snprintf(msg, 128,
-                       "creating server socket on port=%d",
-                       port);
-            Logger::debug(string(msg));
-         }
-      
-         m_serverSocket = new ServerSocket(port);
-      } catch (...) {
-         string exception = "unable to open server socket port '";
-         exception += StrUtils::toString(port);
-         exception += "'";
-         Logger::critical(exception);
-         return false;
-      }
+   if (!setupServerSocket()) {
+      return false;
    }
 
-   string concurrencyModel = EMPTY;
-
-   if (m_isThreaded) {
-      bool isUsingLibDispatch = false;
-      m_threadingFactory = new PthreadsThreadingFactory;
-      ThreadingFactory::setThreadingFactory(m_threadingFactory);
-      m_threadPool =
-         m_threadingFactory->createThreadPoolDispatcher(m_threadPoolSize,
-                                                        "thread_pool");
-         
-      m_threadPool->start();
-
-      concurrencyModel = "multithreaded - ";
-      concurrencyModel += m_threading;
-      
-      if (!isUsingLibDispatch) {
-         char numberThreads[128];
-         ::snprintf(numberThreads, 128, " [%d threads]",
-                    m_threadPoolSize);
-         concurrencyModel += numberThreads;
-      }
-   } else {
-      concurrencyModel = "serial";
-      m_threadPoolSize = 1;   // not a pool, we have 1 processing thread
-   }
-
-   m_concurrencyModel = concurrencyModel;
+   setupConcurrency();
 
    string startupMsg = SERVER_NAME;
    startupMsg += " ";
@@ -388,7 +316,7 @@ bool HttpServer::init(int port) {
    startupMsg += " listening on port ";
    startupMsg += StrUtils::toString(port);
    startupMsg += " (request concurrency: ";
-   startupMsg += concurrencyModel;
+   startupMsg += m_concurrencyModel;
    startupMsg += ")";
    startupMsg += " (sockets: ";
    startupMsg += m_sockets;
@@ -1067,6 +995,96 @@ void HttpServer::setupThreading(const chaudiere::KeyValuePairs& kvp) {
          m_threadPoolSize = poolSize;
       }
    }
+}
+
+//******************************************************************************
+
+void HttpServer::setupSocketHandling(const chaudiere::KeyValuePairs& kvp) {
+   
+   m_sockets = CFG_SOCKETS_SOCKET_SERVER;
+   if (kvp.hasKey(CFG_SERVER_SOCKETS)) {
+      const string& sockets =
+         kvp.getValue(CFG_SERVER_SOCKETS);
+      if (sockets == CFG_SOCKETS_KERNEL_EVENTS) {
+         m_isUsingKernelEventServer = true;
+         m_sockets = CFG_SOCKETS_KERNEL_EVENTS;
+      }
+   }
+}
+
+//******************************************************************************
+
+void HttpServer::setupListeningPort(const chaudiere::KeyValuePairs& kvp) {
+   if (kvp.hasKey(CFG_SERVER_PORT)) {
+      const int portNumber =
+         getIntValue(kvp, CFG_SERVER_PORT);
+      if (portNumber > 0) {
+         m_serverPort = portNumber;
+         if (Logger::isLogging(Debug)) {
+            char msg[128];
+            ::snprintf(msg, 128, "port number=%d", m_serverPort);
+            Logger::debug(string(msg));
+         }
+      }
+   }
+}
+
+//******************************************************************************
+
+void HttpServer::setupConcurrency() {
+   string concurrencyModel = EMPTY;
+
+   if (m_isThreaded) {
+      bool isUsingLibDispatch = false;
+      m_threadingFactory = new PthreadsThreadingFactory;
+      ThreadingFactory::setThreadingFactory(m_threadingFactory);
+      m_threadPool =
+         m_threadingFactory->createThreadPoolDispatcher(m_threadPoolSize,
+                                                        "thread_pool");
+
+      m_threadPool->start();
+
+      concurrencyModel = "multithreaded - ";
+      concurrencyModel += m_threading;
+
+      if (!isUsingLibDispatch) {
+         char numberThreads[128];
+         ::snprintf(numberThreads, 128, " [%d threads]",
+                    m_threadPoolSize);
+         concurrencyModel += numberThreads;
+      }
+   } else {
+      concurrencyModel = "serial";
+      m_threadPoolSize = 1;   // not a pool, we have 1 processing thread
+   }
+
+   m_concurrencyModel = concurrencyModel;
+}
+
+//******************************************************************************
+
+bool HttpServer::setupServerSocket() {
+   if (!m_isUsingKernelEventServer) {
+      try {
+         if (Logger::isLogging(Debug)) {
+            char msg[128];
+            ::snprintf(msg, 128,
+                       "creating server socket on port=%d",
+                       m_serverPort);
+            Logger::debug(string(msg));
+         }
+
+         m_serverSocket = new ServerSocket(m_serverPort);
+      } catch (...) {
+         string exception = "unable to open server socket port '";
+         exception += StrUtils::toString(m_serverPort);
+         exception += "'";
+         Logger::critical(exception);
+         return false;
+      }
+   }
+
+   return true;
 }
 
 //******************************************************************************
