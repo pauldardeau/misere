@@ -55,14 +55,14 @@
 using namespace std;
 
 
-static const std::string SERVER_NAME             = "Misere";
-static const std::string SERVER_VERSION          = "0.1";
-static const std::string CFG_TRUE_SETTING_VALUES = "yes|true|1";
+static const string SERVER_NAME             = "Misere";
+static const string SERVER_VERSION          = "0.1";
+static const string CFG_TRUE_SETTING_VALUES = "yes|true|1";
 
-static const std::string EMPTY = "";
-static const std::string SPACE = " ";
-static const std::string EOL   = "\n";
-static const std::string COLON = ":";
+static const string EMPTY = "";
+static const string SPACE = " ";
+static const string EOL   = "\n";
+static const string COLON = ":";
 
 // default settings
 static const int CFG_DEFAULT_SEND_BUFFER_SIZE     = 8192;
@@ -71,54 +71,54 @@ static const int CFG_DEFAULT_PORT_NUMBER          = 9000;
 static const int CFG_DEFAULT_THREAD_POOL_SIZE     = 4;
 
 // configuration sections
-static const std::string CFG_SECTION_SERVER                 = "server";
-static const std::string CFG_SECTION_LOGGING                = "logging";
-static const std::string CFG_SECTION_HANDLERS               = "handlers";
+static const string CFG_SECTION_SERVER                 = "server";
+static const string CFG_SECTION_LOGGING                = "logging";
+static const string CFG_SECTION_HANDLERS               = "handlers";
 
 // logging config values
-static const std::string CFG_LOGFILE_ACCESS                 = "access_log";
-static const std::string CFG_LOGFILE_ERROR                  = "error_log";
+static const string CFG_LOGFILE_ACCESS                 = "access_log";
+static const string CFG_LOGFILE_ERROR                  = "error_log";
 
 // server config values
-static const std::string CFG_SERVER_PORT                    = "port";
-static const std::string CFG_SERVER_THREADING               = "threading";
-static const std::string CFG_SERVER_THREAD_POOL_SIZE        = "thread_pool_size";
-static const std::string CFG_SERVER_LOG_LEVEL               = "log_level";
-static const std::string CFG_SERVER_SEND_BUFFER_SIZE        = "socket_send_buffer_size";
-static const std::string CFG_SERVER_RECEIVE_BUFFER_SIZE     = "socket_receive_buffer_size";
-static const std::string CFG_SERVER_ALLOW_BUILTIN_HANDLERS  = "allow_builtin_handlers";
-static const std::string CFG_SERVER_STRING                  = "server_string";
-static const std::string CFG_SERVER_SOCKETS                 = "sockets";
+static const string CFG_SERVER_PORT                    = "port";
+static const string CFG_SERVER_THREADING               = "threading";
+static const string CFG_SERVER_THREAD_POOL_SIZE        = "thread_pool_size";
+static const string CFG_SERVER_LOG_LEVEL               = "log_level";
+static const string CFG_SERVER_SEND_BUFFER_SIZE        = "socket_send_buffer_size";
+static const string CFG_SERVER_RECEIVE_BUFFER_SIZE     = "socket_receive_buffer_size";
+static const string CFG_SERVER_ALLOW_BUILTIN_HANDLERS  = "allow_builtin_handlers";
+static const string CFG_SERVER_STRING                  = "server_string";
+static const string CFG_SERVER_SOCKETS                 = "sockets";
 
 // socket options
-static const std::string CFG_SOCKETS_SOCKET_SERVER          = "socket_server";
-static const std::string CFG_SOCKETS_KERNEL_EVENTS          = "kernel_events";
+static const string CFG_SOCKETS_SOCKET_SERVER          = "socket_server";
+static const string CFG_SOCKETS_KERNEL_EVENTS          = "kernel_events";
 
 // threading options
-static const std::string CFG_THREADING_PTHREADS             = "pthreads";
-static const std::string CFG_THREADING_CPP11                = "c++11";
-static const std::string CFG_THREADING_GCD_LIBDISPATCH      = "gcd_libdispatch";
-static const std::string CFG_THREADING_NONE                 = "none";
+static const string CFG_THREADING_PTHREADS             = "pthreads";
+static const string CFG_THREADING_CPP11                = "c++11";
+static const string CFG_THREADING_GCD_LIBDISPATCH      = "gcd_libdispatch";
+static const string CFG_THREADING_NONE                 = "none";
 
 // logging level options
-static const std::string CFG_LOGGING_CRITICAL               = "critical";
-static const std::string CFG_LOGGING_ERROR                  = "error";
-static const std::string CFG_LOGGING_WARNING                = "warning";
-static const std::string CFG_LOGGING_INFO                   = "info";
-static const std::string CFG_LOGGING_DEBUG                  = "debug";
-static const std::string CFG_LOGGING_VERBOSE                = "verbose";
+static const string CFG_LOGGING_CRITICAL               = "critical";
+static const string CFG_LOGGING_ERROR                  = "error";
+static const string CFG_LOGGING_WARNING                = "warning";
+static const string CFG_LOGGING_INFO                   = "info";
+static const string CFG_LOGGING_DEBUG                  = "debug";
+static const string CFG_LOGGING_VERBOSE                = "verbose";
 
 // mime types
-static const std::string MIME_APPLICATION_JSON  = "application/json";
-static const std::string MIME_APPLICATION_XML   = "application/xml";
-static const std::string MIME_TEXT_HTML         = "text/html";
-static const std::string MIME_TEXT_PLAIN        = "text/plain";
+static const string MIME_APPLICATION_JSON  = "application/json";
+static const string MIME_APPLICATION_XML   = "application/xml";
+static const string MIME_TEXT_HTML         = "text/html";
+static const string MIME_TEXT_PLAIN        = "text/plain";
 
 // module config values
-static const std::string MODULE_DLL_NAME = "dll";
-static const std::string APP_PREFIX = "app:";
+static const string MODULE_DLL_NAME = "dll";
+static const string APP_PREFIX = "app:";
 
-static const std::size_t APP_PREFIX_LEN = APP_PREFIX.length();
+static const size_t APP_PREFIX_LEN = APP_PREFIX.length();
 
 static const char* LOG_WEEKDAY_NAME[7] = {
    "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"
@@ -189,7 +189,7 @@ bool HttpServer::hasTrueValue(const KeyValuePairs& kvp,
    bool hasTrueValue = false;
    
    if (kvp.hasKey(setting)) {
-      const std::string& settingValue = kvp.getValue(setting);
+      const string& settingValue = kvp.getValue(setting);
       
       if (StrUtils::containsString(CFG_TRUE_SETTING_VALUES, settingValue)) {
          hasTrueValue = true;
@@ -206,7 +206,7 @@ int HttpServer::getIntValue(const KeyValuePairs& kvp,
    int value = -1;
    
    if (kvp.hasKey(setting)) {
-      const std::string& valueAsString = kvp.getValue(setting);
+      const string& valueAsString = kvp.getValue(setting);
       const int intValue = StrUtils::parseInt(valueAsString);
       
       if (intValue > 0) {
@@ -250,8 +250,8 @@ bool HttpServer::init(int port) {
       haveDataSource = true;
    } catch (const BasicException& be) {
       Logger::error("exception retrieving config data: " + be.whatString());
-   } catch (const std::exception& e) {
-      Logger::error("exception retrieving config data: " + std::string(e.what()));
+   } catch (const exception& e) {
+      Logger::error("exception retrieving config data: " + string(e.what()));
    } catch (...) {
       Logger::error("exception retrieving config data");
    }
@@ -275,17 +275,17 @@ bool HttpServer::init(int port) {
           configDataSource->readSection(CFG_SECTION_LOGGING,
                                         kvpLoggingSettings)) {
          if (kvpLoggingSettings.hasKey(CFG_LOGFILE_ACCESS)) {
-            const std::string& accessLog =
+            const string& accessLog =
                kvpLoggingSettings.getValue(CFG_LOGFILE_ACCESS);
 				m_accessLogFile = accessLog;
-            Logger::info(std::string("access log=") + accessLog);
+            Logger::info(string("access log=") + accessLog);
          }
 
          if (kvpLoggingSettings.hasKey(CFG_LOGFILE_ERROR)) {
-            const std::string& errorLog =
+            const string& errorLog =
                kvpLoggingSettings.getValue(CFG_LOGFILE_ERROR);
 				m_errorLogFile = errorLog;
-            Logger::info(std::string("error log=") + errorLog);
+            Logger::info(string("error log=") + errorLog);
          }
       }
 
@@ -305,7 +305,7 @@ bool HttpServer::init(int port) {
                if (isLoggingDebug) {
                   char msg[128];
                   ::snprintf(msg, 128, "port number=%d", port);
-                  Logger::debug(std::string(msg));
+                  Logger::debug(string(msg));
                }
             }
          }
@@ -316,7 +316,7 @@ bool HttpServer::init(int port) {
          m_threadPoolSize = 4;
          
          if (kvpServerSettings.hasKey(CFG_SERVER_THREADING)) {
-            const std::string& threading =
+            const string& threading =
                kvpServerSettings.getValue(CFG_SERVER_THREADING);
             if (!threading.empty()) {
                if ((threading == CFG_THREADING_PTHREADS) ||
@@ -343,7 +343,7 @@ bool HttpServer::init(int port) {
          m_sockets = CFG_SOCKETS_SOCKET_SERVER;
          
          if (kvpServerSettings.hasKey(CFG_SERVER_SOCKETS)) {
-            const std::string& sockets =
+            const string& sockets =
                kvpServerSettings.getValue(CFG_SERVER_SOCKETS);
             if (sockets == CFG_SOCKETS_KERNEL_EVENTS) {
                m_isUsingKernelEventServer = true;
@@ -356,7 +356,7 @@ bool HttpServer::init(int port) {
                kvpServerSettings.getValue(CFG_SERVER_LOG_LEVEL);
             if (!m_logLevel.empty()) {
                StrUtils::toLowerCase(m_logLevel);
-               Logger::info(std::string("log level: ") + m_logLevel);
+               Logger::info(string("log level: ") + m_logLevel);
                Logger* logger = Logger::getLogger();
                
                if (logger != NULL) {
@@ -401,24 +401,24 @@ bool HttpServer::init(int port) {
                                                CFG_SERVER_ALLOW_BUILTIN_HANDLERS);
          
          if (kvpServerSettings.hasKey(CFG_SERVER_STRING)) {
-            const std::string& serverString =
+            const string& serverString =
                kvpServerSettings.getValue(CFG_SERVER_STRING);
             if (!serverString.empty()) {
                m_serverString = serverString;
 
-               const std::string::size_type posDollar =
+               const string::size_type posDollar =
                   serverString.find("$");
-               if (posDollar != std::string::npos) {
+               if (posDollar != string::npos) {
                   KeyValuePairs kvpVars;
                   kvpVars.addPair("$PRODUCT_NAME", SERVER_NAME);
                   kvpVars.addPair("$PRODUCT_VERSION", SERVER_VERSION);
                   kvpVars.addPair("$CFG_SOCKETS", m_sockets);
                   kvpVars.addPair("$CFG_THREADING", m_threading);
                   
-                  const std::string::size_type posDollarOS =
+                  const string::size_type posDollarOS =
                      serverString.find("$OS_");
                   
-                  if (posDollarOS != std::string::npos) {
+                  if (posDollarOS != string::npos) {
                      SystemInfo systemInfo;
                      if (systemInfo.retrievedSystemInfo()) {
                         kvpVars.addPair("$OS_SYSNAME", systemInfo.sysName());
@@ -454,22 +454,22 @@ bool HttpServer::init(int port) {
       KeyValuePairs kvpHandlers;
       if (configDataSource->hasSection(CFG_SECTION_HANDLERS) &&
           configDataSource->readSection(CFG_SECTION_HANDLERS, kvpHandlers)) {
-         std::vector<std::string> vecKeys;
+         vector<string> vecKeys;
          kvpHandlers.getKeys(vecKeys);
 
-         std::vector<std::string>::const_iterator it = vecKeys.begin();
-         const std::vector<std::string>::const_iterator itEnd = vecKeys.end();
+         vector<string>::const_iterator it = vecKeys.begin();
+         const vector<string>::const_iterator itEnd = vecKeys.end();
 
          for ( ; it != itEnd; ++it) {
-            const std::string& path = (*it);
-            const std::string& moduleSection = kvpHandlers.getValue(path);
+            const string& path = (*it);
+            const string& moduleSection = kvpHandlers.getValue(path);
 
             if (isLoggingDebug) {
                Logger::debug("path='" + path + "'");
             }
             
             if (moduleSection.empty()) {
-               Logger::warning(std::string("nothing specified for path ") + path);
+               Logger::warning(string("nothing specified for path ") + path);
                Logger::warning("Not servicing this path");
                continue;
             }
@@ -479,11 +479,11 @@ bool HttpServer::init(int port) {
                if (configDataSource->readSection(moduleSection, kvpModule)) {
                   if (!kvpModule.hasKey(MODULE_DLL_NAME)) {
                      Logger::error(MODULE_DLL_NAME +
-                                   std::string(" not specified for module ") +
+                                   string(" not specified for module ") +
                                    moduleSection);
                   }
 
-                  const std::string& dllName = kvpModule.getValue(MODULE_DLL_NAME);
+                  const string& dllName = kvpModule.getValue(MODULE_DLL_NAME);
                   HttpHandler* pHandler = NULL;
                   
                   if (isLoggingDebug) {
@@ -507,28 +507,28 @@ bool HttpServer::init(int port) {
 
                      PFN_CREATE_HANDLER pfnCreateHandler = (PFN_CREATE_HANDLER) pfn;
                      pHandler = (*pfnCreateHandler)();
-                  } catch (const std::exception& e) {
-                     Logger::error(std::string("exception caught trying to load module library ") +
+                  } catch (const exception& e) {
+                     Logger::error(string("exception caught trying to load module library ") +
                                    dllName);
-                     Logger::error(std::string(e.what()));
+                     Logger::error(string(e.what()));
                   } catch (...) {
-                     Logger::error(std::string("unable to load module library ") +
+                     Logger::error(string("unable to load module library ") +
                                    dllName);
                   }
 
                   // continue loading application specific parameters for the module
-                  std::vector<std::string> vecModuleKeys;
+                  vector<string> vecModuleKeys;
                   kvpModule.getKeys(vecModuleKeys);
 
-                  std::vector<std::string>::const_iterator itMod =
+                  vector<string>::const_iterator itMod =
                      vecModuleKeys.begin();
-                  const std::vector<std::string>::const_iterator itModEnd =
+                  const vector<string>::const_iterator itModEnd =
                      vecModuleKeys.end();
 
                   KeyValuePairs kvpApp;
 
                   for ( ; itMod != itModEnd; ++itMod) {
-                     const std::string& moduleKey = (*itMod);
+                     const string& moduleKey = (*itMod);
 
                      // starts with app prefix?
                      if (StrUtils::startsWith(moduleKey, APP_PREFIX)) {
@@ -551,7 +551,7 @@ bool HttpServer::init(int port) {
                      
                      // register it
                      if (!addPathHandler(path, pHandler)) {
-                        Logger::error(std::string("unable to register handler for path ") +
+                        Logger::error(string("unable to register handler for path ") +
                                       path);
                         
                         if (m_requireAllHandlersForStartup) {
@@ -561,7 +561,7 @@ bool HttpServer::init(int port) {
                         m_mapPathLibraries[path] = dll;
                      }
                   } else {
-                     Logger::error(std::string("unable to initialize handler for path ") +
+                     Logger::error(string("unable to initialize handler for path ") +
                                    path);
                      if (m_requireAllHandlersForStartup) {
                         return false;
@@ -570,10 +570,10 @@ bool HttpServer::init(int port) {
                }
             } else {
                if (!moduleSection.empty()) {
-                  Logger::error(std::string("no configuration for handler ") +
+                  Logger::error(string("no configuration for handler ") +
                                 moduleSection);
                } else {
-                  Logger::error(std::string("no configuration for handler ") +
+                  Logger::error(string("no configuration for handler ") +
                                 path);
                }
 
@@ -592,9 +592,9 @@ bool HttpServer::init(int port) {
    } catch (const BasicException& be) {
       Logger::critical("exception initializing server: " + be.whatString());
       return false;
-   } catch (const std::exception& e) {
+   } catch (const exception& e) {
       Logger::critical("exception initializing server: " +
-                       std::string(e.what()));
+                       string(e.what()));
       return false;
    } catch (...) {
       Logger::critical("unknown exception initializing server");
@@ -608,12 +608,12 @@ bool HttpServer::init(int port) {
             ::snprintf(msg, 128,
                        "creating server socket on port=%d",
                        port);
-            Logger::debug(std::string(msg));
+            Logger::debug(string(msg));
          }
       
          m_serverSocket = new ServerSocket(port);
       } catch (...) {
-         std::string exception = "unable to open server socket port '";
+         string exception = "unable to open server socket port '";
          exception += StrUtils::toString(port);
          exception += "'";
          Logger::critical(exception);
@@ -621,7 +621,7 @@ bool HttpServer::init(int port) {
       }
    }
 
-   std::string concurrencyModel = EMPTY;
+   string concurrencyModel = EMPTY;
 
    if (m_isThreaded) {
       bool isUsingLibDispatch = false;
@@ -649,7 +649,7 @@ bool HttpServer::init(int port) {
 
    m_concurrencyModel = concurrencyModel;
 
-   std::string startupMsg = SERVER_NAME;
+   string startupMsg = SERVER_NAME;
    startupMsg += " ";
    startupMsg += SERVER_VERSION;
    startupMsg += " listening on port ";
@@ -718,7 +718,7 @@ std::string HttpServer::getSystemDateGMT() const {
               timeptr->tm_min,
               timeptr->tm_sec);
    
-   return std::string(dateBuffer);
+   return string(dateBuffer);
 }
 
 //******************************************************************************
@@ -739,7 +739,7 @@ std::string HttpServer::getLocalDateTime() const {
               timeptr->tm_min,
               timeptr->tm_sec);
    
-   return std::string(dateBuffer);
+   return string(dateBuffer);
 }
 
 //******************************************************************************
@@ -912,10 +912,10 @@ int HttpServer::runSocketServer() {
          rc = 1;
          Logger::error("HttpServer runServer exception caught: " +
                        be.whatString());
-      } catch (const std::exception& e) {
+      } catch (const exception& e) {
          rc = 1;
-         Logger::error(std::string("HttpServer runServer exception caught: ") +
-                       std::string(e.what()));
+         Logger::error(string("HttpServer runServer exception caught: ") +
+                       string(e.what()));
       } catch (...) {
          rc = 1;
          Logger::error("HttpServer runServer unknown exception caught");
@@ -963,9 +963,9 @@ int HttpServer::runKernelEventServer() {
          } catch (const BasicException& be) {
             Logger::critical("exception running kernel event server: " +
                              be.whatString());
-         } catch (const std::exception& e) {
+         } catch (const exception& e) {
             Logger::critical("exception running kernel event server: " +
-                             std::string(e.what()));
+                             string(e.what()));
          } catch (...) {
             Logger::critical("unidentified exception running kernel event server");
          }
@@ -1010,7 +1010,7 @@ void HttpServer::logRequest(const std::string& clientIPAddress,
                             const std::string& requestLine,
                             const std::string& responseCode,
                             const std::string& workerThreadId) {
-   const std::string localDateTime = getLocalDateTime();
+   const string localDateTime = getLocalDateTime();
 
    if (!workerThreadId.empty()) {
       ::printf("[%s] [thread=%s] %s, %s, %s\n",
