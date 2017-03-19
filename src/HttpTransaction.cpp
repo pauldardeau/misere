@@ -12,6 +12,7 @@
 #include "InvalidKeyException.h"
 #include "StrUtils.h"
 #include "Logger.h"
+#include "CharBuffer.h"
 
 using namespace std;
 
@@ -185,12 +186,12 @@ bool HttpTransaction::streamFromSocket(Socket& socket) {
             }
 
             char small_buffer[1024];
-            char* large_buffer = NULL;
+            CharBuffer large_buffer;
             char* buffer;
 
             if (contentLength > 1023) {
-               large_buffer = new char[contentLength + 1];
-               buffer = large_buffer;
+               large_buffer.ensureCapacity(contentLength + 1);
+               buffer = large_buffer.data();
             } else {
                buffer = small_buffer;
             }
@@ -209,10 +210,6 @@ bool HttpTransaction::streamFromSocket(Socket& socket) {
                Logger::error(string("HTTPTransaction::streamFromSocket exception caught: ") + string(e.what()));
             } catch (...) {
                Logger::error("HTTPTransaction::streamFromSocket unknown exception caught");
-            }
-
-            if (large_buffer != NULL) {
-               delete [] large_buffer;
             }
 
             done = true;
