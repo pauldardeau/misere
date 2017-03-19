@@ -152,6 +152,8 @@ HttpServer::HttpServer(const std::string& configFilePath) :
    m_compressionEnabled(true),
    m_threadPoolSize(CFG_DEFAULT_THREAD_POOL_SIZE),
    m_serverPort(CFG_DEFAULT_PORT_NUMBER),
+   m_socketSendBufferSize(CFG_DEFAULT_SEND_BUFFER_SIZE),
+   m_socketReceiveBufferSize(CFG_DEFAULT_RECEIVE_BUFFER_SIZE),
    m_minimumCompressionSize(1000) {
 
    Logger::logInstanceCreate("HttpServer");
@@ -260,10 +262,6 @@ bool HttpServer::init(int port) {
       return false;
    }
 
-   // start out with our default settings
-   m_socketSendBufferSize = CFG_DEFAULT_SEND_BUFFER_SIZE;
-   m_socketReceiveBufferSize = CFG_DEFAULT_RECEIVE_BUFFER_SIZE;
-
    try {
       KeyValuePairs kvpServerSettings;
 
@@ -286,8 +284,6 @@ bool HttpServer::init(int port) {
          setupServerString(kvpServerSettings);
       }
 
-      m_startupTime = getLocalDateTime();
-
       // read and process "handlers" section
       if (!setupHandlers(configDataSource.m_object)) {
          return false;
@@ -309,6 +305,8 @@ bool HttpServer::init(int port) {
    }
 
    setupConcurrency();
+   m_startupTime = getLocalDateTime();
+   m_isFullyInitialized = true;
 
    string startupMsg = SERVER_NAME;
    startupMsg += " ";
@@ -321,10 +319,7 @@ bool HttpServer::init(int port) {
    startupMsg += " (sockets: ";
    startupMsg += m_sockets;
    startupMsg += ")";
-
    ::printf("%s\n", startupMsg.c_str());
-
-   m_isFullyInitialized = true;
    
    return true;
 }
