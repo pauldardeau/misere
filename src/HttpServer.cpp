@@ -317,7 +317,7 @@ bool HttpServer::init(int port) {
    startupMsg += " ";
    startupMsg += SERVER_VERSION;
    startupMsg += " listening on port ";
-   startupMsg += StrUtils::toString(port);
+   startupMsg += StrUtils::toString(m_serverPort);
    startupMsg += " (request concurrency: ";
    startupMsg += m_concurrencyModel;
    startupMsg += ")";
