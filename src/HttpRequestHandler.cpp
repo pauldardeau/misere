@@ -168,7 +168,7 @@ void HttpRequestHandler::run() {
          Logger::debug(httpBody);
       }
    
-      std::string::size_type contentLength = 0;
+      int contentLength = 0;
       HttpResponse response;
    
       if ((NULL != pHandler) && handlerAvailable) {
