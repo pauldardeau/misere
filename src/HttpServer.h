@@ -207,6 +207,12 @@ class HttpServer {
        */
       int minimumCompressionSize() const;
 
+      void setupLogFiles(const chaudiere::SectionedConfigDataSource& dataSource);
+      void setupLogLevel(const chaudiere::KeyValuePairs& kvp);
+      void setupSocketBufferSizes(const chaudiere::KeyValuePairs& kvp);
+      void setupServerString(const chaudiere::KeyValuePairs& kvp);
+      bool setupHandlers(const chaudiere::SectionedConfigDataSource* dataSource);
+
    
    protected:
       /**

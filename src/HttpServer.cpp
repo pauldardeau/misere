@@ -249,11 +249,11 @@ bool HttpServer::init(int port) {
       configDataSource.assign(getConfigDataSource());
       haveDataSource = true;
    } catch (const BasicException& be) {
-      Logger::error("exception retrieving config data: " + be.whatString());
+      Logger::error("BasicException retrieving config data: " + be.whatString());
    } catch (const exception& e) {
       Logger::error("exception retrieving config data: " + string(e.what()));
    } catch (...) {
-      Logger::error("exception retrieving config data");
+      Logger::error("unknown exception retrieving config data");
    }
    
    if (!configDataSource.haveObject() || !haveDataSource) {
@@ -271,23 +271,7 @@ bool HttpServer::init(int port) {
       KeyValuePairs kvpHandlerSettings;
 
       // read and process "logging" section
-      if (configDataSource->hasSection(CFG_SECTION_LOGGING) &&
-          configDataSource->readSection(CFG_SECTION_LOGGING,
-                                        kvpLoggingSettings)) {
-         if (kvpLoggingSettings.hasKey(CFG_LOGFILE_ACCESS)) {
-            const string& accessLog =
-               kvpLoggingSettings.getValue(CFG_LOGFILE_ACCESS);
-				m_accessLogFile = accessLog;
-            Logger::info(string("access log=") + accessLog);
-         }
-
-         if (kvpLoggingSettings.hasKey(CFG_LOGFILE_ERROR)) {
-            const string& errorLog =
-               kvpLoggingSettings.getValue(CFG_LOGFILE_ERROR);
-				m_errorLogFile = errorLog;
-            Logger::info(string("error log=") + errorLog);
-         }
-      }
+      setupLogFiles(*configDataSource.m_object);
 
       // read and process "server" section
       if (configDataSource->hasSection(CFG_SECTION_SERVER) &&
@@ -351,92 +335,14 @@ bool HttpServer::init(int port) {
             }
          }
 
-         if (kvpServerSettings.hasKey(CFG_SERVER_LOG_LEVEL)) {
-            m_logLevel =
-               kvpServerSettings.getValue(CFG_SERVER_LOG_LEVEL);
-            if (!m_logLevel.empty()) {
-               StrUtils::toLowerCase(m_logLevel);
-               Logger::info(string("log level: ") + m_logLevel);
-               Logger* logger = Logger::getLogger();
-               
-               if (logger != NULL) {
-                  if (m_logLevel == CFG_LOGGING_CRITICAL) {
-                     logger->setLogLevel(Critical);
-                  } else if (m_logLevel == CFG_LOGGING_ERROR) {
-                     logger->setLogLevel(Error);
-                  } else if (m_logLevel == CFG_LOGGING_WARNING) {
-                     logger->setLogLevel(Warning);
-                  } else if (m_logLevel == CFG_LOGGING_INFO) {
-                     logger->setLogLevel(Info);
-                  } else if (m_logLevel == CFG_LOGGING_DEBUG) {
-                     logger->setLogLevel(Debug);
-                  } else if (m_logLevel == CFG_LOGGING_VERBOSE) {
-                     logger->setLogLevel(Verbose);
-                  } else {
-                     Logger::warning("unrecognized log level: '" + m_logLevel);
-                  }
-               }
-            }
-         }
+         setupLogLevel(kvpServerSettings);
 
-         if (kvpServerSettings.hasKey(CFG_SERVER_SEND_BUFFER_SIZE)) {
-            const int buffSize =
-               getIntValue(kvpServerSettings, CFG_SERVER_SEND_BUFFER_SIZE);
-
-            if (buffSize > 0) {
-               m_socketSendBufferSize = buffSize;
-            }
-         }
-
-         if (kvpServerSettings.hasKey(CFG_SERVER_RECEIVE_BUFFER_SIZE)) {
-            const int buffSize =
-               getIntValue(kvpServerSettings, CFG_SERVER_RECEIVE_BUFFER_SIZE);
-
-            if (buffSize > 0) {
-               m_socketReceiveBufferSize = buffSize;
-            }
-         }
+         setupSocketBufferSizes(kvpServerSettings);
          
          m_allowBuiltInHandlers = hasTrueValue(kvpServerSettings,
                                                CFG_SERVER_ALLOW_BUILTIN_HANDLERS);
-         
-         if (kvpServerSettings.hasKey(CFG_SERVER_STRING)) {
-            const string& serverString =
-               kvpServerSettings.getValue(CFG_SERVER_STRING);
-            if (!serverString.empty()) {
-               m_serverString = serverString;
-
-               const string::size_type posDollar =
-                  serverString.find("$");
-               if (posDollar != string::npos) {
-                  KeyValuePairs kvpVars;
-                  kvpVars.addPair("$PRODUCT_NAME", SERVER_NAME);
-                  kvpVars.addPair("$PRODUCT_VERSION", SERVER_VERSION);
-                  kvpVars.addPair("$CFG_SOCKETS", m_sockets);
-                  kvpVars.addPair("$CFG_THREADING", m_threading);
-                  
-                  const string::size_type posDollarOS =
-                     serverString.find("$OS_");
-                  
-                  if (posDollarOS != string::npos) {
-                     SystemInfo systemInfo;
-                     if (systemInfo.retrievedSystemInfo()) {
-                        kvpVars.addPair("$OS_SYSNAME", systemInfo.sysName());
-                        kvpVars.addPair("$OS_NODENAME", systemInfo.nodeName());
-                        kvpVars.addPair("$OS_RELEASE", systemInfo.release());
-                        kvpVars.addPair("$OS_VERSION", systemInfo.version());
-                        kvpVars.addPair("$OS_MACHINE", systemInfo.machine());
-                     } else {
-                        Logger::warning("unable to retrieve system information to populate server string");
-                     }
-                  }
-                  
-                  replaceVariables(kvpVars, m_serverString);
-               }
-               
-               Logger::info("setting server string: '" + m_serverString + "'");
-            }
-         }
+        
+         setupServerString(kvpServerSettings);
       }
 
       m_startupTime = getLocalDateTime();
@@ -451,146 +357,11 @@ bool HttpServer::init(int port) {
       }
 
       // read and process "handlers" section
-      KeyValuePairs kvpHandlers;
-      if (configDataSource->hasSection(CFG_SECTION_HANDLERS) &&
-          configDataSource->readSection(CFG_SECTION_HANDLERS, kvpHandlers)) {
-         vector<string> vecKeys;
-         kvpHandlers.getKeys(vecKeys);
-
-         vector<string>::const_iterator it = vecKeys.begin();
-         const vector<string>::const_iterator itEnd = vecKeys.end();
-
-         for ( ; it != itEnd; ++it) {
-            const string& path = (*it);
-            const string& moduleSection = kvpHandlers.getValue(path);
-
-            if (isLoggingDebug) {
-               Logger::debug("path='" + path + "'");
-            }
-            
-            if (moduleSection.empty()) {
-               Logger::warning(string("nothing specified for path ") + path);
-               Logger::warning("Not servicing this path");
-               continue;
-            }
-
-            if (configDataSource->hasSection(moduleSection)) {
-               KeyValuePairs kvpModule;
-               if (configDataSource->readSection(moduleSection, kvpModule)) {
-                  if (!kvpModule.hasKey(MODULE_DLL_NAME)) {
-                     Logger::error(MODULE_DLL_NAME +
-                                   string(" not specified for module ") +
-                                   moduleSection);
-                  }
-
-                  const string& dllName = kvpModule.getValue(MODULE_DLL_NAME);
-                  HttpHandler* pHandler = NULL;
-                  
-                  if (isLoggingDebug) {
-                     Logger::debug("trying to load dynamic library='" +
-                                   dllName +
-                                   "'");
-                  }
-                  
-                  DynamicLibrary* dll = new DynamicLibrary(dllName);
-
-                  // load the dll
-                  try {
-                     void* pfn = dll->resolve("CreateHandler");
-                     if (pfn == NULL) {
-                        Logger::error("unable to find module library entry point");
-                     } else {
-                        if (isLoggingDebug) {
-                           Logger::debug("dynamic library loaded");
-                        }
-                     }
-
-                     PFN_CREATE_HANDLER pfnCreateHandler = (PFN_CREATE_HANDLER) pfn;
-                     pHandler = (*pfnCreateHandler)();
-                  } catch (const exception& e) {
-                     Logger::error(string("exception caught trying to load module library ") +
-                                   dllName);
-                     Logger::error(string(e.what()));
-                  } catch (...) {
-                     Logger::error(string("unable to load module library ") +
-                                   dllName);
-                  }
-
-                  // continue loading application specific parameters for the module
-                  vector<string> vecModuleKeys;
-                  kvpModule.getKeys(vecModuleKeys);
-
-                  vector<string>::const_iterator itMod =
-                     vecModuleKeys.begin();
-                  const vector<string>::const_iterator itModEnd =
-                     vecModuleKeys.end();
-
-                  KeyValuePairs kvpApp;
-
-                  for ( ; itMod != itModEnd; ++itMod) {
-                     const string& moduleKey = (*itMod);
-
-                     // starts with app prefix?
-                     if (StrUtils::startsWith(moduleKey, APP_PREFIX)) {
-                        if (moduleKey.length() > APP_PREFIX_LEN) {
-                           kvpApp.addPair(moduleKey.substr(APP_PREFIX_LEN),
-                                          kvpModule.getValue(moduleKey));
-                        }
-                     }
-                  }
-
-                  if (isLoggingDebug) {
-                     Logger::debug("initializing the handler");
-                  }
-
-                  // now initialize the servlet
-                  if (pHandler->init(path, kvpApp)) {
-                     if (isLoggingDebug) {
-                        Logger::debug("initialization succeeded");
-							}
-                     
-                     // register it
-                     if (!addPathHandler(path, pHandler)) {
-                        Logger::error(string("unable to register handler for path ") +
-                                      path);
-                        
-                        if (m_requireAllHandlersForStartup) {
-                           return false;
-                        }
-                     } else {
-                        m_mapPathLibraries[path] = dll;
-                     }
-                  } else {
-                     Logger::error(string("unable to initialize handler for path ") +
-                                   path);
-                     if (m_requireAllHandlersForStartup) {
-                        return false;
-                     }
-                  }
-               }
-            } else {
-               if (!moduleSection.empty()) {
-                  Logger::error(string("no configuration for handler ") +
-                                moduleSection);
-               } else {
-                  Logger::error(string("no configuration for handler ") +
-                                path);
-               }
-
-               if (m_requireAllHandlersForStartup) {
-                  return false;
-               }
-            }
-         }
-
-         // do we have any handlers?
-         if (!m_allowBuiltInHandlers && m_mapPathHandlers.empty()) {
-            Logger::critical("no handlers registered");
-            return false;
-         }
+      if (!setupHandlers(configDataSource.m_object)) {
+         return false;
       }
    } catch (const BasicException& be) {
-      Logger::critical("exception initializing server: " + be.whatString());
+      Logger::critical("BasicException initializing server: " + be.whatString());
       return false;
    } catch (const exception& e) {
       Logger::critical("exception initializing server: " +
@@ -910,7 +681,7 @@ int HttpServer::runSocketServer() {
          }
       } catch (const BasicException& be) {
          rc = 1;
-         Logger::error("HttpServer runServer exception caught: " +
+         Logger::error("HttpServer runServer BasicException caught: " +
                        be.whatString());
       } catch (const exception& e) {
          rc = 1;
@@ -982,6 +753,7 @@ int HttpServer::runKernelEventServer() {
 
 int HttpServer::run() {
    if (!m_isFullyInitialized) {
+      Logger::debug("HttpServer::run m_isFullyInitialized is false");
       Logger::critical("server not initialized");
       return 1;
    } else {
@@ -1026,6 +798,271 @@ void HttpServer::logRequest(const std::string& clientIPAddress,
                requestLine.c_str(),
                responseCode.c_str());
    }
+}
+
+//******************************************************************************
+
+void HttpServer::setupLogFiles(const SectionedConfigDataSource& dataSource) {
+   KeyValuePairs kvpLogFiles;
+   if (dataSource.hasSection(CFG_SECTION_LOGGING) &&
+       dataSource.readSection(CFG_SECTION_LOGGING,
+                              kvpLogFiles)) {
+      if (kvpLogFiles.hasKey(CFG_LOGFILE_ACCESS)) {
+         const string& accessLog =
+            kvpLogFiles.getValue(CFG_LOGFILE_ACCESS);
+         m_accessLogFile = accessLog;
+         Logger::info(string("access log=") + accessLog);
+      }
+
+      if (kvpLogFiles.hasKey(CFG_LOGFILE_ERROR)) {
+         const string& errorLog =
+            kvpLogFiles.getValue(CFG_LOGFILE_ERROR);
+         m_errorLogFile = errorLog;
+         Logger::info(string("error log=") + errorLog);
+      }
+   }
+}
+
+//******************************************************************************
+
+void HttpServer::setupLogLevel(const KeyValuePairs& kvp) {
+   if (kvp.hasKey(CFG_SERVER_LOG_LEVEL)) {
+      m_logLevel = kvp.getValue(CFG_SERVER_LOG_LEVEL);
+      if (!m_logLevel.empty()) {
+         StrUtils::toLowerCase(m_logLevel);
+         Logger::info(string("log level: ") + m_logLevel);
+         Logger* logger = Logger::getLogger();
+
+         if (logger != NULL) {
+            if (m_logLevel == CFG_LOGGING_CRITICAL) {
+               logger->setLogLevel(Critical);
+            } else if (m_logLevel == CFG_LOGGING_ERROR) {
+               logger->setLogLevel(Error);
+            } else if (m_logLevel == CFG_LOGGING_WARNING) {
+               logger->setLogLevel(Warning);
+            } else if (m_logLevel == CFG_LOGGING_INFO) {
+               logger->setLogLevel(Info);
+            } else if (m_logLevel == CFG_LOGGING_DEBUG) {
+               logger->setLogLevel(Debug);
+            } else if (m_logLevel == CFG_LOGGING_VERBOSE) {
+               logger->setLogLevel(Verbose);
+            } else {
+               Logger::warning("unrecognized log level: '" + m_logLevel);
+            }
+         }
+      }
+   }
+}
+
+//******************************************************************************
+
+void HttpServer::setupSocketBufferSizes(const chaudiere::KeyValuePairs& kvp) {
+   if (kvp.hasKey(CFG_SERVER_SEND_BUFFER_SIZE)) {
+      const int buffSize =
+         getIntValue(kvp, CFG_SERVER_SEND_BUFFER_SIZE);
+
+      if (buffSize > 0) {
+         m_socketSendBufferSize = buffSize;
+      }
+   }
+
+   if (kvp.hasKey(CFG_SERVER_RECEIVE_BUFFER_SIZE)) {
+      const int buffSize =
+         getIntValue(kvp, CFG_SERVER_RECEIVE_BUFFER_SIZE);
+
+      if (buffSize > 0) {
+         m_socketReceiveBufferSize = buffSize;
+      }
+   }
+}
+
+//******************************************************************************
+
+void HttpServer::setupServerString(const chaudiere::KeyValuePairs& kvp) {
+   if (kvp.hasKey(CFG_SERVER_STRING)) {
+      const string& serverString =
+         kvp.getValue(CFG_SERVER_STRING);
+      if (!serverString.empty()) {
+         m_serverString = serverString;
+
+         const string::size_type posDollar =
+            serverString.find("$");
+         if (posDollar != string::npos) {
+            KeyValuePairs kvpVars;
+            kvpVars.addPair("$PRODUCT_NAME", SERVER_NAME);
+            kvpVars.addPair("$PRODUCT_VERSION", SERVER_VERSION);
+            kvpVars.addPair("$CFG_SOCKETS", m_sockets);
+            kvpVars.addPair("$CFG_THREADING", m_threading);
+                  
+            const string::size_type posDollarOS =
+               serverString.find("$OS_");
+                  
+            if (posDollarOS != string::npos) {
+               SystemInfo systemInfo;
+               if (systemInfo.retrievedSystemInfo()) {
+                  kvpVars.addPair("$OS_SYSNAME", systemInfo.sysName());
+                  kvpVars.addPair("$OS_NODENAME", systemInfo.nodeName());
+                  kvpVars.addPair("$OS_RELEASE", systemInfo.release());
+                  kvpVars.addPair("$OS_VERSION", systemInfo.version());
+                  kvpVars.addPair("$OS_MACHINE", systemInfo.machine());
+               } else {
+                  Logger::warning("unable to retrieve system information to populate server string");
+               }
+            }
+                  
+            replaceVariables(kvpVars, m_serverString);
+         }
+               
+         Logger::info("setting server string: '" + m_serverString + "'");
+      }
+   }
+}
+
+//******************************************************************************
+
+bool HttpServer::setupHandlers(const chaudiere::SectionedConfigDataSource* dataSource) {
+   KeyValuePairs kvpHandlers;
+   if (dataSource->hasSection(CFG_SECTION_HANDLERS) &&
+       dataSource->readSection(CFG_SECTION_HANDLERS, kvpHandlers)) {
+
+      vector<string> vecKeys;
+      kvpHandlers.getKeys(vecKeys);
+
+      vector<string>::const_iterator it = vecKeys.begin();
+      const vector<string>::const_iterator itEnd = vecKeys.end();
+      const bool isLoggingDebug = Logger::isLogging(Debug);
+
+      for ( ; it != itEnd; ++it) {
+         const string& path = (*it);
+         const string& moduleSection = kvpHandlers.getValue(path);
+
+         if (isLoggingDebug) {
+            Logger::debug("path='" + path + "'");
+         }
+            
+         if (moduleSection.empty()) {
+            Logger::warning(string("nothing specified for path ") + path);
+            Logger::warning("Not servicing this path");
+            continue;
+         }
+
+         if (dataSource->hasSection(moduleSection)) {
+            KeyValuePairs kvpModule;
+            if (dataSource->readSection(moduleSection, kvpModule)) {
+               if (!kvpModule.hasKey(MODULE_DLL_NAME)) {
+                  Logger::error(MODULE_DLL_NAME +
+                                string(" not specified for module ") +
+                                moduleSection);
+               }
+
+               const string& dllName = kvpModule.getValue(MODULE_DLL_NAME);
+               HttpHandler* pHandler = NULL;
+                  
+               if (isLoggingDebug) {
+                  Logger::debug("trying to load dynamic library='" +
+                                dllName +
+                                "'");
+               }
+                  
+               DynamicLibrary* dll = new DynamicLibrary(dllName);
+
+               // load the dll
+               try {
+                  void* pfn = dll->resolve("CreateHandler");
+                  if (pfn == NULL) {
+                     Logger::error("unable to find module library entry point");
+                  } else {
+                     if (isLoggingDebug) {
+                        Logger::debug("dynamic library loaded");
+                     }
+                  }
+
+                  PFN_CREATE_HANDLER pfnCreateHandler = (PFN_CREATE_HANDLER) pfn;
+                  pHandler = (*pfnCreateHandler)();
+               } catch (const exception& e) {
+                  Logger::error(string("exception caught trying to load module library ") +
+                                dllName);
+                  Logger::error(string(e.what()));
+               } catch (...) {
+                  Logger::error(string("unable to load module library ") +
+                                dllName);
+               }
+
+               // continue loading application specific parameters for the module
+               vector<string> vecModuleKeys;
+               kvpModule.getKeys(vecModuleKeys);
+
+               vector<string>::const_iterator itMod =
+                  vecModuleKeys.begin();
+               const vector<string>::const_iterator itModEnd =
+                  vecModuleKeys.end();
+
+               KeyValuePairs kvpApp;
+
+               for ( ; itMod != itModEnd; ++itMod) {
+                  const string& moduleKey = (*itMod);
+
+                  // starts with app prefix?
+                  if (StrUtils::startsWith(moduleKey, APP_PREFIX)) {
+                     if (moduleKey.length() > APP_PREFIX_LEN) {
+                        kvpApp.addPair(moduleKey.substr(APP_PREFIX_LEN),
+                                       kvpModule.getValue(moduleKey));
+                     }
+                  }
+               }
+
+               if (isLoggingDebug) {
+                  Logger::debug("initializing the handler");
+               }
+
+               // now initialize the servlet
+               if (pHandler->init(path, kvpApp)) {
+                  if (isLoggingDebug) {
+                     Logger::debug("initialization succeeded");
+                  }
+                     
+                  // register it
+                  if (!addPathHandler(path, pHandler)) {
+                     Logger::error(string("unable to register handler for path ") +
+                                   path);
+                     
+                     if (m_requireAllHandlersForStartup) {
+                        return false;
+                     }
+                  } else {
+                     m_mapPathLibraries[path] = dll;
+                  }
+               } else {
+                  Logger::error(string("unable to initialize handler for path ") +
+                                path);
+                  if (m_requireAllHandlersForStartup) {
+                     return false;
+                  }
+               }
+            }
+         } else {
+            if (!moduleSection.empty()) {
+               Logger::error(string("no configuration for handler ") +
+                             moduleSection);
+            } else {
+               Logger::error(string("no configuration for handler ") +
+                             path);
+            }
+
+            if (m_requireAllHandlersForStartup) {
+               return false;
+            }
+         }
+      }
+   }
+
+   // do we have any handlers?
+   if (!m_allowBuiltInHandlers && m_mapPathHandlers.empty()) {
+      Logger::critical("no handlers registered");
+      return false;
+   }
+
+   return true;
 }
 
 //******************************************************************************
