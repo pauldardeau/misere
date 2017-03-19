@@ -155,7 +155,6 @@ HttpServer::HttpServer(const std::string& configFilePath) :
    m_socketSendBufferSize(CFG_DEFAULT_SEND_BUFFER_SIZE),
    m_socketReceiveBufferSize(CFG_DEFAULT_RECEIVE_BUFFER_SIZE),
    m_minimumCompressionSize(1000) {
-
    Logger::logInstanceCreate("HttpServer");
    init(CFG_DEFAULT_PORT_NUMBER);
 }
@@ -208,11 +207,16 @@ int HttpServer::getIntValue(const KeyValuePairs& kvp,
    int value = -1;
    
    if (kvp.hasKey(setting)) {
-      const string& valueAsString = kvp.getValue(setting);
-      const int intValue = StrUtils::parseInt(valueAsString);
-      
-      if (intValue > 0) {
-         value = intValue;
+      const string& valueAsString = StrUtils::strip(kvp.getValue(setting));
+      if (!valueAsString.empty()) {
+         const int intValue = StrUtils::parseInt(valueAsString);
+         if (intValue > 0) {
+            value = intValue;
+         }
+      } else {
+         Logger::warning(string("getIntValue has empty string for '") +
+                         setting +
+                         "'");
       }
    }
    
@@ -242,7 +246,7 @@ void HttpServer::replaceVariables(const KeyValuePairs& kvp,
 
 bool HttpServer::init(int port) {
    m_serverPort = port;
-	
+
    AutoPointer<SectionedConfigDataSource*> configDataSource(NULL);
    bool haveDataSource = false;
    
@@ -272,7 +276,6 @@ bool HttpServer::init(int port) {
       if (configDataSource->hasSection(CFG_SECTION_SERVER) &&
           configDataSource->readSection(CFG_SECTION_SERVER,
                                         kvpServerSettings)) {
-        
          setupListeningPort(kvpServerSettings); 
          setupThreading(kvpServerSettings);
          setupSocketHandling(kvpServerSettings);
@@ -282,6 +285,8 @@ bool HttpServer::init(int port) {
             hasTrueValue(kvpServerSettings,
                          CFG_SERVER_ALLOW_BUILTIN_HANDLERS);
          setupServerString(kvpServerSettings);
+      } else {
+         Logger::warning("HttpServer init no server section found");
       }
 
       // read and process "handlers" section
@@ -688,6 +693,7 @@ void HttpServer::logRequest(const std::string& clientIPAddress,
 //******************************************************************************
 
 void HttpServer::setupLogFiles(const SectionedConfigDataSource& dataSource) {
+   Logger::debug("setupLogFiles");
    KeyValuePairs kvpLogFiles;
    if (dataSource.hasSection(CFG_SECTION_LOGGING) &&
        dataSource.readSection(CFG_SECTION_LOGGING,
@@ -711,6 +717,7 @@ void HttpServer::setupLogFiles(const SectionedConfigDataSource& dataSource) {
 //******************************************************************************
 
 void HttpServer::setupLogLevel(const KeyValuePairs& kvp) {
+   Logger::debug("setupLogLevel");
    if (kvp.hasKey(CFG_SERVER_LOG_LEVEL)) {
       m_logLevel = kvp.getValue(CFG_SERVER_LOG_LEVEL);
       if (!m_logLevel.empty()) {
@@ -742,6 +749,7 @@ void HttpServer::setupLogLevel(const KeyValuePairs& kvp) {
 //******************************************************************************
 
 void HttpServer::setupSocketBufferSizes(const chaudiere::KeyValuePairs& kvp) {
+   Logger::debug("setupSocketBufferSizes");
    if (kvp.hasKey(CFG_SERVER_SEND_BUFFER_SIZE)) {
       const int buffSize =
          getIntValue(kvp, CFG_SERVER_SEND_BUFFER_SIZE);
@@ -764,6 +772,7 @@ void HttpServer::setupSocketBufferSizes(const chaudiere::KeyValuePairs& kvp) {
 //******************************************************************************
 
 void HttpServer::setupServerString(const chaudiere::KeyValuePairs& kvp) {
+   Logger::debug("setupServerString");
    if (kvp.hasKey(CFG_SERVER_STRING)) {
       const string& serverString =
          kvp.getValue(CFG_SERVER_STRING);
@@ -806,6 +815,7 @@ void HttpServer::setupServerString(const chaudiere::KeyValuePairs& kvp) {
 //******************************************************************************
 
 bool HttpServer::setupHandlers(const chaudiere::SectionedConfigDataSource* dataSource) {
+   Logger::debug("setupHandlers");
    const bool isLoggingDebug = Logger::isLogging(Debug);
 
    if (m_allowBuiltInHandlers) {
@@ -963,10 +973,11 @@ bool HttpServer::setupHandlers(const chaudiere::SectionedConfigDataSource* dataS
 //******************************************************************************
 
 void HttpServer::setupThreading(const chaudiere::KeyValuePairs& kvp) {
+   Logger::debug("setupThreading");
    m_isThreaded = true;
    m_threading = CFG_THREADING_PTHREADS;
    m_threadPoolSize = 4;
-         
+
    if (kvp.hasKey(CFG_SERVER_THREADING)) {
       const string& threading =
          kvp.getValue(CFG_SERVER_THREADING);
@@ -981,7 +992,7 @@ void HttpServer::setupThreading(const chaudiere::KeyValuePairs& kvp) {
          }
       }
    }
-         
+
    if (kvp.hasKey(CFG_SERVER_THREAD_POOL_SIZE)) {
       const int poolSize =
          getIntValue(kvp, CFG_SERVER_THREAD_POOL_SIZE);
@@ -995,7 +1006,7 @@ void HttpServer::setupThreading(const chaudiere::KeyValuePairs& kvp) {
 //******************************************************************************
 
 void HttpServer::setupSocketHandling(const chaudiere::KeyValuePairs& kvp) {
-   
+   Logger::debug("setupSocketHandling");
    m_sockets = CFG_SOCKETS_SOCKET_SERVER;
    if (kvp.hasKey(CFG_SERVER_SOCKETS)) {
       const string& sockets =
@@ -1010,6 +1021,7 @@ void HttpServer::setupSocketHandling(const chaudiere::KeyValuePairs& kvp) {
 //******************************************************************************
 
 void HttpServer::setupListeningPort(const chaudiere::KeyValuePairs& kvp) {
+   Logger::debug("setupListeningPort");
    if (kvp.hasKey(CFG_SERVER_PORT)) {
       const int portNumber =
          getIntValue(kvp, CFG_SERVER_PORT);
@@ -1027,6 +1039,7 @@ void HttpServer::setupListeningPort(const chaudiere::KeyValuePairs& kvp) {
 //******************************************************************************
 
 void HttpServer::setupConcurrency() {
+   Logger::debug("setupConcurrency");
    string concurrencyModel = EMPTY;
 
    if (m_isThreaded) {
@@ -1059,6 +1072,7 @@ void HttpServer::setupConcurrency() {
 //******************************************************************************
 
 bool HttpServer::setupServerSocket() {
+   Logger::debug("setupServerSocket");
    if (!m_isUsingKernelEventServer) {
       try {
          if (Logger::isLogging(Debug)) {
