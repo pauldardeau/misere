@@ -267,8 +267,6 @@ bool HttpServer::init(int port) {
 
    try {
       KeyValuePairs kvpServerSettings;
-      KeyValuePairs kvpLoggingSettings;
-      KeyValuePairs kvpHandlerSettings;
 
       // read and process "logging" section
       setupLogFiles(*configDataSource.m_object);
@@ -346,15 +344,6 @@ bool HttpServer::init(int port) {
       }
 
       m_startupTime = getLocalDateTime();
-
-      if (m_allowBuiltInHandlers) {
-         Logger::debug("adding built-in handlers");
-         addBuiltInHandlers();
-      }
-      
-      if (isLoggingDebug) {
-         Logger::debug("processing handlers");
-      }
 
       // read and process "handlers" section
       if (!setupHandlers(configDataSource.m_object)) {
@@ -921,6 +910,17 @@ void HttpServer::setupServerString(const chaudiere::KeyValuePairs& kvp) {
 //******************************************************************************
 
 bool HttpServer::setupHandlers(const chaudiere::SectionedConfigDataSource* dataSource) {
+   const bool isLoggingDebug = Logger::isLogging(Debug);
+
+   if (m_allowBuiltInHandlers) {
+      Logger::debug("adding built-in handlers");
+      addBuiltInHandlers();
+   }
+      
+   if (isLoggingDebug) {
+      Logger::debug("processing handlers");
+   }
+
    KeyValuePairs kvpHandlers;
    if (dataSource->hasSection(CFG_SECTION_HANDLERS) &&
        dataSource->readSection(CFG_SECTION_HANDLERS, kvpHandlers)) {
@@ -930,7 +930,6 @@ bool HttpServer::setupHandlers(const chaudiere::SectionedConfigDataSource* dataS
 
       vector<string>::const_iterator it = vecKeys.begin();
       const vector<string>::const_iterator itEnd = vecKeys.end();
-      const bool isLoggingDebug = Logger::isLogging(Debug);
 
       for ( ; it != itEnd; ++it) {
          const string& path = (*it);
