@@ -9,7 +9,7 @@
 
 namespace misere {
 
-class TestHttpException : public TestSuite {
+class TestHttpException : public poivre::TestSuite {
 
 protected:
    void runTests();

@@ -8,7 +8,7 @@
 
 namespace misere {
 
-class TestHttpServer : public TestSuite {
+class TestHttpServer : public poivre::TestSuite {
 
 protected:
    void runTests();

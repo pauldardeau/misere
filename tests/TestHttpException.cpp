@@ -1,8 +1,8 @@
 // Copyright Paul Dardeau, SwampBits LLC 2014
 // BSD License
 
-#include "TestHttpException.h"
 #include "HttpException.h"
+#include "TestHttpException.h"
 
 using namespace misere;
 using namespace chaudiere;

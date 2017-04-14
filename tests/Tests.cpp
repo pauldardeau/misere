@@ -36,3 +36,8 @@ void Tests::run() {
    testHttpTransaction.run();
 }
 
+int main(int argc, char* argv[]) {
+   Tests tests;
+   tests.run();
+}
+
