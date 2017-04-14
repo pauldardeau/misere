@@ -91,6 +91,7 @@ bool HttpTransaction::parseHeaders() {
       m_vecRequestLineValues.push_back(thirdValue);
       size_t numHeaderLines = m_vecHeaderLines.size();
       m_method = m_vecRequestLineValues[0];
+      m_protocol = thirdValue;
       
       for (int i = 1; i < numHeaderLines; ++i) {
          const string& headerLine = m_vecHeaderLines[i];
