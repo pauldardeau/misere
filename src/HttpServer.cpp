@@ -244,6 +244,23 @@ void HttpServer::replaceVariables(const KeyValuePairs& kvp,
 
 //******************************************************************************
 
+void HttpServer::outputStartupMessage() {
+   string startupMsg = SERVER_NAME;
+   startupMsg += " ";
+   startupMsg += SERVER_VERSION;
+   startupMsg += " listening on port ";
+   startupMsg += StrUtils::toString(m_serverPort);
+   startupMsg += " (request concurrency: ";
+   startupMsg += m_concurrencyModel;
+   startupMsg += ")";
+   startupMsg += " (sockets: ";
+   startupMsg += m_sockets;
+   startupMsg += ")";
+   ::printf("%s\n", startupMsg.c_str());
+}
+
+//******************************************************************************
+
 bool HttpServer::init(int port) {
    m_serverPort = port;
 
@@ -312,20 +329,8 @@ bool HttpServer::init(int port) {
    setupConcurrency();
    m_startupTime = getLocalDateTime();
    m_isFullyInitialized = true;
+   outputStartupMessage();
 
-   string startupMsg = SERVER_NAME;
-   startupMsg += " ";
-   startupMsg += SERVER_VERSION;
-   startupMsg += " listening on port ";
-   startupMsg += StrUtils::toString(m_serverPort);
-   startupMsg += " (request concurrency: ";
-   startupMsg += m_concurrencyModel;
-   startupMsg += ")";
-   startupMsg += " (sockets: ";
-   startupMsg += m_sockets;
-   startupMsg += ")";
-   ::printf("%s\n", startupMsg.c_str());
-   
    return true;
 }
 

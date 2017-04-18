@@ -234,6 +234,10 @@ class HttpServer {
        */
       virtual bool addBuiltInHandlers();
 
+      /**
+       */
+      virtual void outputStartupMessage();
+
 
    private:
       chaudiere::ServerSocket* m_serverSocket;
