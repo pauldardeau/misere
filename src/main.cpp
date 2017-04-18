@@ -28,7 +28,7 @@ int main(int argc, char* argv[]) {
       const char* configPath = std::getenv(ENV_VAR_CFG_PATH.c_str());
       
       if (NULL != configPath) {
-         configFilePath = configFilePath;
+         configFilePath = configPath;
          
          if (configFilePath[configFilePath.length()-1] != '/') {
             configFilePath += "/";
