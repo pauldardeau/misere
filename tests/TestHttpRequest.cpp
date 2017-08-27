@@ -68,25 +68,29 @@ void TestHttpRequest::testConstructor() {
 //******************************************************************************
 
 void TestHttpRequest::testCopyConstructor() {
-   TEST_CASE("testCopyConstructor");
+   //TEST_CASE("testCopyConstructor");
+   //TODO: implement testCopyConstructor
 }
 
 //******************************************************************************
 
 void TestHttpRequest::testMoveConstructor() {
-   TEST_CASE("testMoveConstructor");
+   //TEST_CASE("testMoveConstructor");
+   //TODO: implement testMoveConstructor
 }
 
 //******************************************************************************
 
 void TestHttpRequest::testAssignmentCopy() {
-   TEST_CASE("testAssignmentCopy");
+   //TEST_CASE("testAssignmentCopy");
+   //TODO: implement testAssignmentCopy
 }
 
 //******************************************************************************
 
 void TestHttpRequest::testAssignmentMove() {
-   TEST_CASE("testAssignmentMove");
+   //TEST_CASE("testAssignmentMove");
+   //TODO: implement testAssignmentMove
 }
 
 //******************************************************************************
@@ -138,25 +142,29 @@ void TestHttpRequest::testGetPath() {
 //******************************************************************************
 
 void TestHttpRequest::testGetRequestLine() {
-   TEST_CASE("testGetRequestLine");
+   //TEST_CASE("testGetRequestLine");
+   //TODO: implement testGetRequestLine
 }
 
 //******************************************************************************
 
 void TestHttpRequest::testHasArgument() {
-   TEST_CASE("testHasArgument");
+   //TEST_CASE("testHasArgument");
+   //TODO: implement testHasArgument
 }
 
 //******************************************************************************
 
 void TestHttpRequest::testGetArgument() {
-   TEST_CASE("testGetArgument");
+   //TEST_CASE("testGetArgument");
+   //TODO: implement testGetArgument
 }
 
 //******************************************************************************
 
 void TestHttpRequest::testGetArgumentKeys() {
-   TEST_CASE("testGetArgumentKeys");
+   //TEST_CASE("testGetArgumentKeys");
+   //TODO: implement testGetArgumentKeys
 }
 
 //******************************************************************************
