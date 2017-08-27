@@ -39,79 +39,92 @@ void TestHttpTransaction::runTests() {
 //******************************************************************************
 
 void TestHttpTransaction::testConstructor() {
-   TEST_CASE("testConstructor");
+   //TEST_CASE("testConstructor");
+   //TODO: implement testConstructor
 }
 
 //******************************************************************************
 
 void TestHttpTransaction::testCopyConstructor() {
-   TEST_CASE("testCopyConstructor");
+   //TEST_CASE("testCopyConstructor");
+   //TODO: implement testCopyConstructor
 }
 
 //******************************************************************************
 
 void TestHttpTransaction::testMoveConstructor() {
-   TEST_CASE("testMoveConstructor");
+   //TEST_CASE("testMoveConstructor");
+   //TODO: implement testMoveConstructor
 }
 
 //******************************************************************************
 
 void TestHttpTransaction::testAssignmentCopy() {
-   TEST_CASE("testAssignmentCopy");
+   //TEST_CASE("testAssignmentCopy");
+   //TODO: implement testAssignmentCopy
 }
 
 //******************************************************************************
 
 void TestHttpTransaction::testAssignmentMove() {
-   TEST_CASE("testAssignmentMove");
+   //TEST_CASE("testAssignmentMove");
+   //TODO: implement testAssignmentMove
 }
 
 //******************************************************************************
 
 void TestHttpTransaction::testGetRawHeader() {
-   TEST_CASE("testGetRawHeader");
+   //TEST_CASE("testGetRawHeader");
+   //TODO: implement testGetRawHeader
 }
 
 //******************************************************************************
 
 void TestHttpTransaction::testGetBody() {
-   TEST_CASE("testGetBody");
+   //TEST_CASE("testGetBody");
+   //TODO: implement testGetBody
 }
 
 //******************************************************************************
 
 void TestHttpTransaction::testSetBody() {
-   TEST_CASE("testSetBody");
+   //TEST_CASE("testSetBody");
+   //TODO: implement testSetBody
 }
 
 //******************************************************************************
 
 void TestHttpTransaction::testHasHeaderValue() {
-   TEST_CASE("testHasHeaderValue");
+   //TEST_CASE("testHasHeaderValue");
+   //TODO: implement testHasHeaderValue
 }
 
 //******************************************************************************
 
 void TestHttpTransaction::testGetHeaderValue() {
-   TEST_CASE("testGetHeaderValue");
+   //TEST_CASE("testGetHeaderValue");
+   //TODO: implement testGetHeaderValue
 }
 
 //******************************************************************************
 
 void TestHttpTransaction::testGetHeaderValues() {
-   TEST_CASE("testGetHeaderValues");
+   //TEST_CASE("testGetHeaderValues");
+   //TODO: implement testGetHeaderValues
 }
 
 //******************************************************************************
 
 void TestHttpTransaction::testSetHeaderValue() {
-   TEST_CASE("testSetHeaderValue");
+   //TEST_CASE("testSetHeaderValue");
+   //TODO: implement testSetHeaderValue
 }
 
 //******************************************************************************
 
 void TestHttpTransaction::testGetProtocol() {
-   TEST_CASE("testGetProtocol");
+   //TEST_CASE("testGetProtocol");
+   //TODO: implement testGetProtocol
 }
 
 //******************************************************************************

@@ -32,67 +32,78 @@ void TestHttpResponse::runTests() {
 //******************************************************************************
 
 void TestHttpResponse::testConstructor() {
-   TEST_CASE("testConstructor");
+   //TEST_CASE("testConstructor");
+   //TODO: implement testConstructor
 }
 
 //******************************************************************************
 
 void TestHttpResponse::testConstructorWithSocket() {
-   TEST_CASE("testConstructorWithSocket");
+   //TEST_CASE("testConstructorWithSocket");
+   //TODO: implement testConstructorWithSocket
 }
 
 //******************************************************************************
 
 void TestHttpResponse::testCopyConstructor() {
-   TEST_CASE("testCopyConstructor");
+   //TEST_CASE("testCopyConstructor");
+   //TODO: implement testCopyConstructor
 }
 
 //******************************************************************************
 
 void TestHttpResponse::testMoveConstructor() {
-   TEST_CASE("testMoveConstructor");
+   //TEST_CASE("testMoveConstructor");
+   //TODO: implement testMoveConstructor
 }
 
 //******************************************************************************
 
 void TestHttpResponse::testAssignmentCopy() {
-   TEST_CASE("testAssignmentCopy");
+   //TEST_CASE("testAssignmentCopy");
+   //TODO: implement testAssignmentCopy
 }
 
 //******************************************************************************
 
 void TestHttpResponse::testAssignmentMove() {
-   TEST_CASE("testAssignmentMove");
+   //TEST_CASE("testAssignmentMove");
+   //TODO: implement testAssignmentMove
 }
 
 //******************************************************************************
 
 void TestHttpResponse::testStreamFromSocket() {
-   TEST_CASE("testStreamFromSocket");
+   //TEST_CASE("testStreamFromSocket");
+   //TODO: implement testStreamFromSocket
 }
 
 //******************************************************************************
 
 void TestHttpResponse::testGetStatusLine() {
-   TEST_CASE("testGetStatusLine");
+   //TEST_CASE("testGetStatusLine");
+   //TODO: implement testGetStatusLine
 }
 
 //******************************************************************************
 
 void TestHttpResponse::testGetStatusCode() {
-   TEST_CASE("testGetStatusCode");
+   //TEST_CASE("testGetStatusCode");
+   //TODO: implement testGetStatusCode
 }
 
 //******************************************************************************
 
 void TestHttpResponse::testSetStatusCode() {
-   TEST_CASE("testSetStatusCode");
+   //TEST_CASE("testSetStatusCode");
+   //TODO: implement testSetStatusCode
 }
 
 //******************************************************************************
 
 void TestHttpResponse::testGetReasonPhrase() {
-   TEST_CASE("testGetReasonPhrase");
+   //TEST_CASE("testGetReasonPhrase");
+   //TODO: implement testGetReasonPhrase
 }
 
 //******************************************************************************

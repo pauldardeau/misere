@@ -48,7 +48,8 @@ void TestHttpException::testCopyConstructor() {
 //******************************************************************************
 
 void TestHttpException::testMoveConstructor() {
-   TEST_CASE("testMoveConstructor");
+   //TEST_CASE("testMoveConstructor");
+   //TODO: implement testMoveConstructor
 }
 
 //******************************************************************************
@@ -69,7 +70,8 @@ void TestHttpException::testAssignmentCopy() {
 //******************************************************************************
 
 void TestHttpException::testAssignmentMove() {
-   TEST_CASE("testAssignmentMove");
+   //TEST_CASE("testAssignmentMove");
+   //TODO: implement testAssignmentMove
 }
 
 //******************************************************************************
