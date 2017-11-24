@@ -75,6 +75,13 @@ using namespace chaudiere;
 
 //******************************************************************************
 
+HttpRequest* HttpRequest::create(const std::string& url) {
+   //TODO: implement HttpRequest::create
+   return NULL;
+}
+
+//******************************************************************************
+
 HttpRequest::HttpRequest(Socket& socket) :
    m_initialized(false) {
 
@@ -351,3 +358,27 @@ const std::string& HttpRequest::getUserAgent() const {
 
 //******************************************************************************
 
+void HttpRequest::close() {
+   //TODO: implement HttpRequest::close
+}
+
+//******************************************************************************
+void HttpRequest::setMethod(const std::string& method) {
+   //TODO: implement HttpRequest::setMethod
+}
+
+//******************************************************************************
+
+void HttpRequest::setHeaderValue(const std::string& key,
+                                 const std::string& value) {
+   //TODO: implement HttpRequest::setHeaderValue
+}
+
+//******************************************************************************
+
+HttpResponse* HttpRequest::getResponse() {
+   //TODO: implement HttpRequest::getResponse
+   return NULL;
+}
+
+//******************************************************************************

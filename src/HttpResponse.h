@@ -112,6 +112,12 @@ class HttpResponse : public HttpTransaction
        */
       void setContentType(const std::string& contentType);
 
+      void close();
+
+      int getContentLength() const; 
+
+      void setContentLength(int contentLength);
+
 
    private:
       std::string m_statusCode;

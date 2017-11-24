@@ -267,3 +267,30 @@ void HttpResponse::setContentType(const std::string& contentType) {
 
 //******************************************************************************
 
+void HttpResponse::close() {
+   //TODO: implement HttpResponse::close
+}
+
+//******************************************************************************
+
+int HttpResponse::getContentLength() const {
+   int lengthValue = 0;
+
+   if (hasHeaderValue(HTTP::HTTP_CONTENT_LENGTH)) {
+      const std::string& contentLength = getHeaderValue(HTTP::HTTP_CONTENT_LENGTH);
+      lengthValue = atoi(contentLength.c_str());
+   }
+
+   return lengthValue;
+}
+
+//******************************************************************************
+
+void HttpResponse::setContentLength(int contentLength) {
+   char lengthText[40];
+   snprintf(lengthText, 40, "%d", contentLength);
+   setHeaderValue(HTTP::HTTP_CONTENT_LENGTH, std::string(lengthText)); 
+}
+
+//******************************************************************************
+

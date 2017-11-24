@@ -1,11 +1,11 @@
 # Copyright Paul Dardeau, SwampBits LLC 2014
 # BSD License
 
-CC = g++
+CC = c++
 CC_OPTS = -c -Wall -shared -fPIC -O2 -pthread -I../../chaudiere/src
-LINK_CMD = g++
+LINK_CMD = c++
 # remove -ldl for non-linux
-LINK_LIBS = -lpthread -ldl
+LINK_LIBS = -lpthread
 
 EXE_NAME = misere
 SO_NAME = misere.so
@@ -19,6 +19,7 @@ HttpResponse.o \
 HttpServer.o \
 HttpSocketServiceHandler.o \
 HttpTransaction.o \
+HttpConnection.o \
 AbstractHandler.o \
 EchoHandler.o \
 GMTDateTimeHandler.o \

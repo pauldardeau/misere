@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "HttpTransaction.h"
+#include "HttpResponse.h"
 #include "KeyValuePairs.h"
 #include "Socket.h"
 
@@ -21,6 +22,8 @@ namespace misere
 class HttpRequest : public HttpTransaction
 {
    public:
+      static HttpRequest* create(const std::string& url);
+
       /**
        * Constructs and initializes an HttpRequest object from a socket
        * @param socket the socket to read for initializing the object
@@ -182,6 +185,14 @@ class HttpRequest : public HttpTransaction
        * @return the specified HTTP header value
        */
       const std::string& getUserAgent() const;
+
+      void close();
+
+      void setMethod(const std::string& method);
+
+      void setHeaderValue(const std::string& key, const std::string& value);
+
+      HttpResponse* getResponse();
 
    
    protected:

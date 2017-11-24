@@ -1,7 +1,7 @@
 # Copyright Paul Dardeau, SwampBits LLC 2014
 # BSD License
 
-CC = g++
+CC = c++
 CC_OPTS = -c -pthread -I../src -I../../chaudiere/src -I../../poivre
 
 EXE_NAME = test_misere
@@ -24,7 +24,7 @@ clean :
 	rm -f $(EXE_NAME)
 	
 $(EXE_NAME) : $(OBJS)
-	$(CC) $(OBJS) -o $(EXE_NAME) $(LIB_NAMES) -lpthread -ldl
+	$(CC) $(OBJS) -o $(EXE_NAME) $(LIB_NAMES) -lpthread
 
 %.o : %.cpp
 	$(CC) $(CC_OPTS) $< -o $@
