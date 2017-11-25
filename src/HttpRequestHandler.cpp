@@ -182,7 +182,8 @@ void HttpRequestHandler::run() {
                if (request.hasAcceptEncoding()) {
                   const std::string& acceptEncoding =
                      request.getAcceptEncoding();
-                  
+                 
+                  /* 
                   if (StrUtils::containsString(acceptEncoding, GZIP) &&
                       m_server.compressionEnabled() &&
                       m_server.compressResponse(response.getContentType()) &&
@@ -198,6 +199,7 @@ void HttpRequestHandler::run() {
                         Logger::error("unable to compress response");
                      }
                   }
+                  */
                }
             }
          
