@@ -83,7 +83,8 @@ HttpRequest* HttpRequest::create(const std::string& url) {
 //******************************************************************************
 
 HttpRequest::HttpRequest(Socket& socket) :
-   m_initialized(false) {
+   m_initialized(false),
+   m_socket(NULL) {
 
    Logger::logInstanceCreate("HttpRequest");
    m_initialized = streamFromSocket(socket);
@@ -96,7 +97,8 @@ HttpRequest::HttpRequest(const HttpRequest& copy) :
    m_method(copy.m_method),
    m_path(copy.m_path),
    m_arguments(copy.m_arguments),
-   m_initialized(copy.m_initialized) {
+   m_initialized(copy.m_initialized),
+   m_socket(NULL) {
    Logger::logInstanceCreate("HttpRequest");
 }
 
@@ -104,6 +106,10 @@ HttpRequest::HttpRequest(const HttpRequest& copy) :
 
 HttpRequest::~HttpRequest() {
    Logger::logInstanceDestroy("HttpRequest");
+   if (m_socket != NULL) {
+      m_socket->close();
+      delete m_socket;
+   }
 }
 
 //******************************************************************************
@@ -359,26 +365,30 @@ const std::string& HttpRequest::getUserAgent() const {
 //******************************************************************************
 
 void HttpRequest::close() {
-   //TODO: implement HttpRequest::close
+   if (m_socket != NULL) {
+      m_socket->close();
+      m_socket = NULL;
+   }
 }
 
 //******************************************************************************
 void HttpRequest::setMethod(const std::string& method) {
-   //TODO: implement HttpRequest::setMethod
+   m_method = method;
 }
 
 //******************************************************************************
 
 void HttpRequest::setHeaderValue(const std::string& key,
                                  const std::string& value) {
-   //TODO: implement HttpRequest::setHeaderValue
+   m_arguments.addPair(key, value);
 }
 
 //******************************************************************************
 
 HttpResponse* HttpRequest::getResponse() {
+   HttpResponse* response = NULL;
    //TODO: implement HttpRequest::getResponse
-   return NULL;
+   return response;
 }
 
 //******************************************************************************

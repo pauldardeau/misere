@@ -13,14 +13,13 @@
 #include "Socket.h"
 
 
-namespace misere
-{
+namespace misere {
 
 /**
  * HttpRequest is used by an HTTP server for parsing an HTTP request.
  */
-class HttpRequest : public HttpTransaction
-{
+class HttpRequest : public HttpTransaction {
+
    public:
       static HttpRequest* create(const std::string& url);
 
@@ -186,12 +185,28 @@ class HttpRequest : public HttpTransaction
        */
       const std::string& getUserAgent() const;
 
+      /**
+       * Close open connection
+       */
       void close();
 
+      /**
+       * Set the HTTP method
+       * @param method the HTTP method
+       */
       void setMethod(const std::string& method);
 
+      /**
+       * Add/update the specified HTTP header and value
+       * @param key the header identifier to add/update
+       * @param value the value associated with header key
+       */
       void setHeaderValue(const std::string& key, const std::string& value);
 
+      /**
+       * Opens socket with HTTP request and retrieves the response
+       * @return HTTP response
+       */
       HttpResponse* getResponse();
 
    
@@ -208,6 +223,7 @@ class HttpRequest : public HttpTransaction
       std::string m_path;
       chaudiere::KeyValuePairs m_arguments;
       bool m_initialized;
+      chaudiere::Socket* m_socket;
 
 };
 
