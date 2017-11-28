@@ -180,10 +180,10 @@ void HttpRequestHandler::run() {
 
             if ((contentLength > 0) && !response.hasContentEncoding()) {
                if (request.hasAcceptEncoding()) {
+                  /*
                   const std::string& acceptEncoding =
                      request.getAcceptEncoding();
                  
-                  /* 
                   if (StrUtils::containsString(acceptEncoding, GZIP) &&
                       m_server.compressionEnabled() &&
                       m_server.compressResponse(response.getContentType()) &&
