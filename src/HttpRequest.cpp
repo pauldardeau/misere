@@ -77,6 +77,7 @@ using namespace chaudiere;
 
 HttpRequest* HttpRequest::create(const std::string& url) {
    //TODO: implement HttpRequest::create
+   printf("HttpRequest::create called. Unimplemented!!! returning NULL\n");
    return NULL;
 }
 
