@@ -15,6 +15,7 @@ TestHttpRequest.o \
 TestHttpResponse.o \
 TestHttpServer.o \
 TestHttpTransaction.o \
+TestUrl.o \
 Tests.o
 
 all : $(EXE_NAME)

@@ -26,7 +26,8 @@ GMTDateTimeHandler.o \
 ServerDateTimeHandler.o \
 ServerObjectsDebugging.o \
 ServerStatsHandler.o \
-ServerStatusHandler.o
+ServerStatusHandler.o \
+Url.o
 
 MAIN_OBJS = main.o
 

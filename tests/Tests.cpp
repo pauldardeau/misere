@@ -10,6 +10,7 @@
 #include "TestHttpResponse.h"
 #include "TestHttpServer.h"
 #include "TestHttpTransaction.h"
+#include "TestUrl.h"
 
 using namespace misere;
 
@@ -34,6 +35,9 @@ void Tests::run() {
    
    TestHttpTransaction testHttpTransaction;
    testHttpTransaction.run();
+
+   TestUrl testUrl;
+   testUrl.run();
 }
 
 int main(int argc, char* argv[]) {
