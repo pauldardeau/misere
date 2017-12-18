@@ -20,6 +20,7 @@ class Url
       int m_port;
 
    public:
+      Url();
       Url(const std::string& fullText);
       Url(const Url& copy);
       ~Url();

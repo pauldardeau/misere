@@ -10,10 +10,13 @@
 #include "BasicException.h"
 #include "HttpException.h"
 #include "Logger.h"
+#include "StringTokenizer.h"
 #include "StrUtils.h"
+#include "ByteBuffer.h"
 
 static const std::string TEXT_HTML = "text/html";
 
+using namespace std;
 using namespace misere;
 using namespace chaudiere;
 
@@ -38,10 +41,12 @@ HttpResponse::HttpResponse(const HttpResponse& copy) :
 
 //******************************************************************************
 
-HttpResponse::HttpResponse(Socket& socket) {
+HttpResponse::HttpResponse(Socket* socket) :
+   HttpTransaction(socket) {
    Logger::logInstanceCreate("HttpResponse");
 
-   if (!streamFromSocket(socket)) {
+   printf("HttpResponse ctor: calling streamFromSocket\n");
+   if (!streamFromSocket()) {
       throw BasicException("unable to construct HttpResponse from Socket");
    }
 }
@@ -69,15 +74,116 @@ HttpResponse& HttpResponse::operator=(const HttpResponse& copy) {
 
 //******************************************************************************
 
-bool HttpResponse::streamFromSocket(Socket& socket) {
+bool HttpResponse::streamFromSocket2() {
+   std::string sbInput;
+   std::string inputLine;
+   std::string method;
+   int contentLength = -1;  // unknown
+   bool readingHeaders = true;
+   bool onEOL = false;
+   int eolNL = 0;
+   char charRead;
+   int bytes_read;
+   string headers;
+   Socket* s = getSocket();
+
+   while (readingHeaders) {
+      bytes_read = s->readSocket(&charRead, 1);
+      if (bytes_read > 0) {
+         if (charRead == '\r') {
+            onEOL = true;
+         } else {
+            if (charRead == '\n') {
+               if (onEOL) {
+                  eolNL++;
+                  if (eolNL == 2) {
+                     readingHeaders = false;
+                     headers = headers.substr(0, headers.length() - 1);
+                  }
+               }
+            } else {
+               onEOL = false;
+               eolNL = 0;
+            }
+         }
+
+         if (readingHeaders) {
+            headers += charRead;
+         }
+      } else {
+         if (bytes_read == -1) {
+            return false;
+         }
+      }
+   }
+
+   printf("headers received: %s\n", headers.c_str());
+
+   int lineIndex = 0;
+   StringTokenizer st(headers, "\r\n");
+   while (st.hasMoreTokens()) {
+      const string& token = st.nextToken();
+      if (lineIndex == 0) {
+         StringTokenizer stStatus(token, " ");
+         if (stStatus.countTokens() == 3) {
+            stStatus.nextToken();
+            const string& statusCodeAsText = stStatus.nextToken();
+            m_statusCode = statusCodeAsText;
+            m_statusCodeAsInteger = StrUtils::parseInt(m_statusCode);
+         }
+      }
+      if (token.length() > 0) {
+         string::size_type posColon = token.find(":");
+         if (posColon != string::npos) {
+            string key = StrUtils::strip(token.substr(0, posColon));
+            string value = StrUtils::strip(token.substr(posColon+1, token.length() - 1
+));
+            if (key.length() > 0 && value.length() > 0) {
+               StrUtils::toLowerCase(key);
+               addHeader(key, value);
+            }
+         }
+      }
+      lineIndex++;
+   }
+
+   contentLength = getContentLength();
+   printf("HttpRequest::streamFromSocket2 contentLength=%d\n", contentLength);
+
+   if (contentLength > 0) {
+      ByteBuffer* bb = new ByteBuffer(contentLength);
+      int remainingBytes = contentLength;
+      int offset = 0;
+      int bytesToRead = 8192;
+      char buffer[8192];
+      while (remainingBytes > 0) {
+         if (remainingBytes < bytesToRead) {
+            bytesToRead = remainingBytes;
+         }
+         bytes_read = s->readSocket(buffer, bytesToRead);
+         if (bytes_read > 0) {
+            memcpy((void*) (bb->data()+offset), buffer, bytes_read);
+            offset += bytes_read;
+            remainingBytes -= bytes_read;
+         } else {
+            return false;
+         }
+      }
+      setBody(bb);
+   }
+   return true;
+}
+
+bool HttpResponse::streamFromSocket() {
    if (Logger::isLogging(Debug)) {
       Logger::debug("******** start of HttpResponse::streamFromSocket");
    }
    
    bool streamSuccess = false;
+   printf("HttpResponse: calling streamFromSocket2\n");
 
-   if (HttpTransaction::streamFromSocket(socket)) {
-
+   if (streamFromSocket2()) {
+      printf("HttpResponse: streamFromSocket succeeded\n");
       const std::vector<std::string>& vecRequestLineValues =
          getRequestLineValues();
 

@@ -85,7 +85,7 @@ void HttpRequestHandler::run() {
       Logger::debug("starting parse of HttpRequest");
    }
    
-   HttpRequest request(*socket);
+   HttpRequest request(socket);
 
    if (request.isInitialized()) {
       if (isLoggingDebug) {

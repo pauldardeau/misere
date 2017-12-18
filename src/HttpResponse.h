@@ -31,7 +31,7 @@ class HttpResponse : public HttpTransaction
        * @throw BasicException
        * @throw HttpException
        */
-      explicit HttpResponse(chaudiere::Socket& socket);
+      explicit HttpResponse(chaudiere::Socket* socket);
    
       /**
        * Copy constructor
@@ -53,10 +53,10 @@ class HttpResponse : public HttpTransaction
    
       /**
        * Initializes HttpResponse instance by reading data from socket
-       * @param socket the socket to read from for initialization
        * @return boolean indicating whether initialization succeeded
        */
-      virtual bool streamFromSocket(chaudiere::Socket& socket);
+      virtual bool streamFromSocket();
+      bool streamFromSocket2();
 
       /**
        * Retrieves the HTTP status code

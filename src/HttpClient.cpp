@@ -47,6 +47,126 @@ HttpClient::~HttpClient() {
 
 //******************************************************************************
 
+Socket* HttpClient::socketForRequest(const HttpRequest& request)
+{
+   int port = request.port();
+   if (port == 0) {
+      port = 80;
+   }
+   return new Socket(request.host(), port);
+}
+
+HttpResponse* HttpClient::get(HttpRequest& request)
+{
+   HttpResponse* r = NULL;
+   Socket* s = socketForRequest(request);
+   if (s != NULL) {
+      request.setMethod(HTTP::HTTP_METHOD_GET);
+      if (request.write(s)) {
+         r = new HttpResponse(s);
+      }
+   }
+
+   return r;
+}
+
+HttpResponse* HttpClient::head(HttpRequest& request)
+{
+   HttpResponse* r = NULL;
+   Socket* s = socketForRequest(request);
+   if (s != NULL) {
+      request.setMethod(HTTP::HTTP_METHOD_HEAD);
+      if (request.write(s)) {
+         r = new HttpResponse(s);
+      }
+   }
+
+   return r;
+}
+
+HttpResponse* HttpClient::put(HttpRequest& request,
+                              const std::string& buffer)
+{
+   HttpResponse* r = NULL;
+   Socket* s = socketForRequest(request);
+   if (s != NULL) {
+      request.setMethod(HTTP::HTTP_METHOD_PUT);
+      if (request.write(s, buffer.size()) &&
+          s->write(EOL.c_str(), EOL.size()) &&
+          s->write(buffer.c_str(), buffer.size())) {
+         r = new HttpResponse(s);
+      }
+   }
+
+   return r;
+}
+
+HttpResponse* HttpClient::put(HttpRequest& request,
+                              const ByteBuffer& buffer)
+{
+   
+   HttpResponse* r = NULL;
+   Socket* s = socketForRequest(request);
+   if (s != NULL) {
+      request.setMethod(HTTP::HTTP_METHOD_PUT);
+      if (request.write(s, buffer.size()) &&
+          s->write(EOL.c_str(), EOL.size()) &&
+          s->write((const char*) buffer.const_data(), buffer.size())) {
+         r = new HttpResponse(s);
+      }
+   }
+
+   return r;
+}
+
+HttpResponse* HttpClient::post(HttpRequest& request,
+                               const std::string& buffer)
+{
+   HttpResponse* r = NULL;
+   Socket* s = socketForRequest(request);
+   if (s != NULL) {
+      request.setMethod(HTTP::HTTP_METHOD_POST);
+      if (request.write(s, buffer.size()) &&
+          s->write(EOL.c_str(), EOL.size()) &&
+          s->write(buffer.c_str(), buffer.size())) {
+         r = new HttpResponse(s);
+      }
+   }
+
+   return r;
+}
+
+HttpResponse* HttpClient::post(HttpRequest& request,
+                               const ByteBuffer& buffer)
+{
+   HttpResponse* r = NULL;
+   Socket* s = socketForRequest(request);
+   if (s != NULL) {
+      request.setMethod(HTTP::HTTP_METHOD_POST);
+      if (request.write(s, buffer.size()) &&
+          s->write(EOL.c_str(), EOL.size()) &&
+          s->write((const char*) buffer.const_data(), buffer.size())) {
+         r = new HttpResponse(s);
+      }
+   }
+
+   return r;
+}
+
+HttpResponse* HttpClient::do_delete(HttpRequest& request)
+{
+   HttpResponse* response = NULL;
+   Socket* s = socketForRequest(request);
+   if (s != NULL) {
+      request.setMethod(HTTP::HTTP_METHOD_DELETE);
+      if (request.write(s)) {
+         response = new HttpResponse(s);
+      }
+   }
+
+   return response;
+}
+
 void HttpClient::buildHeader(std::string& header,
                              const std::string& address,
                              int port,
@@ -121,7 +241,7 @@ void HttpClient::buildHeader(std::string& header,
 
 //******************************************************************************
 
-std::string HttpClient::post(const std::string& address,
+HttpResponse* HttpClient::post(const std::string& address,
                              int port,
                              const std::string& url,
                              const std::string& postData,
@@ -149,14 +269,14 @@ std::string HttpClient::post(const std::string& address,
 
 //******************************************************************************
 
-std::string HttpClient::sendReceive(const std::string& address,
+HttpResponse* HttpClient::sendReceive(const std::string& address,
                                     int port,
                                     const std::string& sendBuffer) {
-   Socket socket(address.c_str(), port);
-   socket.setTcpNoDelay(true);
-   socket.setSendBufferSize(SOCKET_SEND_BUFFER_SIZE);
-   socket.setReceiveBufferSize(SOCKET_RECV_BUFFER_SIZE);
-   socket.setIncludeMessageSize(false);
+   Socket* socket = new Socket(address.c_str(), port);
+   socket->setTcpNoDelay(true);
+   socket->setSendBufferSize(SOCKET_SEND_BUFFER_SIZE);
+   socket->setReceiveBufferSize(SOCKET_RECV_BUFFER_SIZE);
+   socket->setIncludeMessageSize(false);
    
    if (Logger::isLogging(Debug)) {
       Logger::log(Debug, "*** start of send data ***");
@@ -164,17 +284,9 @@ std::string HttpClient::sendReceive(const std::string& address,
       Logger::log(Debug, "*** end of send data ***");
    }
 
-   socket.write(sendBuffer);
+   socket->write(sendBuffer);
 
-   HttpResponse response(socket);
-
-   if (Logger::isLogging(Debug)) {
-      Logger::log(Debug, "*** start of reply data ***");
-      Logger::log(Debug, response.getBody());
-      Logger::log(Debug, "*** end of reply data ***");
-   }
-
-   return std::string(response.getBody());
+   return new HttpResponse(socket);
 }
 
 //******************************************************************************

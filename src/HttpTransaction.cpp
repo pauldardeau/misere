@@ -3,6 +3,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "HttpTransaction.h"
 #include "HTTP.h"
@@ -12,20 +13,20 @@
 #include "InvalidKeyException.h"
 #include "StrUtils.h"
 #include "Logger.h"
-#include "CharBuffer.h"
+#include "ByteBuffer.h"
 
 using namespace std;
 
 static const std::string COLON  = ":";
-static const std::string EOL_NL = "\n";
 
 using namespace misere;
 using namespace chaudiere;
 
 //******************************************************************************
 
-HttpTransaction::HttpTransaction() :
-   m_contentLength(0) {
+HttpTransaction::HttpTransaction(chaudiere::Socket* socket) :
+   m_contentLength(0),
+   m_socket(socket) {
 }
 
 //******************************************************************************
@@ -39,10 +40,18 @@ HttpTransaction::HttpTransaction(const HttpTransaction& copy) :
    m_requestLine(copy.m_requestLine),
    m_headers(copy.m_headers),
    m_method(copy.m_method),
-   m_contentLength(copy.m_contentLength) {
+   m_contentLength(copy.m_contentLength),
+   m_socket(NULL) {
 }
 
 //******************************************************************************
+
+HttpTransaction::~HttpTransaction() {
+   if (m_socket != NULL) {
+      delete m_socket;
+      m_socket = NULL;
+   }
+}
 
 HttpTransaction& HttpTransaction::operator=(const HttpTransaction& copy) {
    if (this == &copy) {
@@ -58,6 +67,10 @@ HttpTransaction& HttpTransaction::operator=(const HttpTransaction& copy) {
    m_headers = copy.m_headers;
    m_method = copy.m_method;
    m_contentLength = copy.m_contentLength;
+   if (m_socket != NULL) {
+      delete m_socket;
+      m_socket = NULL;
+   }
 
    return *this;
 }
@@ -68,6 +81,7 @@ bool HttpTransaction::parseHeaders() {
    bool parseSuccess = false;
 
    if (m_vecHeaderLines.empty()) {
+      printf("m_vecHeaderLines is empty, parseHeaders returning false\n");
       return false;
    }
    
@@ -121,123 +135,12 @@ bool HttpTransaction::parseHeaders() {
       
       parseSuccess = true;
    }
-   
+
+   printf("method='%s'\n", m_method.c_str());
+   printf("protocol='%s'\n", m_protocol.c_str());  
+   printf("content-length=%d\n", m_contentLength); 
+
    return parseSuccess;
-}
-
-//******************************************************************************
-
-bool HttpTransaction::streamFromSocket(Socket& socket) {
-   const bool isLoggingDebug = Logger::isLogging(Debug);
-   
-   bool streamSuccess = false;
-   bool done = false;
-   bool inHeader = true;
-   bool headersParsed = false;
-
-   std::string sbInput;
-   std::string inputLine;
-   std::string method;
-   int contentLength = -1;  // unknown
-
-   while (!done) {
-      if ((contentLength > -1) && (sbInput.length() >= contentLength)) {
-         m_body = sbInput;
-         done = true;
-         continue;
-      }
-
-      if (inHeader) {
-         if (socket.readLine(inputLine)) {
-            if (!inputLine.empty()) {
-               sbInput += inputLine;
-               sbInput += "\n";
-
-               if (inHeader) {
-                  m_vecHeaderLines.push_back(inputLine);
-               }
-            } else {
-               if (inHeader) {
-                  inHeader = false;
-                  m_header = sbInput;
-                  sbInput.erase();
-                  streamSuccess = parseHeaders();
-                  headersParsed = true;
-               } else {
-                  m_body = sbInput;
-               }
-
-               if (contentLength < 1) {
-                  done = true;
-               }
-            }
-         } else {
-            done = true;
-            m_body = sbInput;
-         }
-      } else {
-         // not in header anymore
-         if (contentLength > 0) {
-            if (isLoggingDebug) {
-               char msg[128];
-               ::snprintf(msg, 128,
-                          "contentLength=%d",
-                          contentLength);
-               Logger::debug(std::string(msg));
-            }
-
-            char small_buffer[1024];
-            CharBuffer large_buffer;
-            char* buffer;
-
-            if (contentLength > 1023) {
-               large_buffer.ensureCapacity(contentLength + 1);
-               buffer = large_buffer.data();
-            } else {
-               buffer = small_buffer;
-            }
-
-            try {
-               if (socket.read(buffer, contentLength)) {
-                  buffer[contentLength] = '\0';
-                  
-                  if (isLoggingDebug) {
-                     Logger::debug(std::string("HttpTransaction (body) socket.read: ") + std::string(buffer));
-                  }
-                  
-                  m_body += buffer;
-               }
-            } catch(const std::exception& e) {
-               Logger::error(string("HTTPTransaction::streamFromSocket exception caught: ") + string(e.what()));
-            } catch (...) {
-               Logger::error("HTTPTransaction::streamFromSocket unknown exception caught");
-            }
-
-            done = true;
-         } else {
-            // I don't think that this code would ever be called
-            if (isLoggingDebug) {
-               Logger::debug("HttpTransaction: no content-length present, calling readLine in loop");
-            }
-
-            done = false;
-
-            while (!done) {
-               if (socket.readLine(inputLine)) {
-                  m_body += inputLine;
-               } else {
-                  done = true;
-               }
-            }
-         }
-      }
-   }
-   
-   if ((m_method.length() == 0) && !headersParsed) {
-      streamSuccess = parseHeaders();
-   }
-   
-   return streamSuccess;
 }
 
 //******************************************************************************
@@ -248,13 +151,13 @@ const std::string& HttpTransaction::getRawHeader() const {
 
 //******************************************************************************
 
-const std::string& HttpTransaction::getBody() const {
+const ByteBuffer* HttpTransaction::getBody() const {
    return m_body;
 }
 
 //******************************************************************************
 
-void HttpTransaction::setBody(const std::string& body) {
+void HttpTransaction::setBody(const ByteBuffer* body) {
    m_body = body;
 }
 
@@ -338,3 +241,41 @@ void HttpTransaction::populateWithHeaders(KeyValuePairs& headers) {
 
 //******************************************************************************
 
+void HttpTransaction::close() {
+   if (m_socket != NULL) {
+      m_socket->close();
+      delete m_socket;
+      m_socket = NULL;
+   }
+}
+
+void HttpTransaction::setSocket(Socket* s) {
+   m_socket = s;
+}
+
+Socket* HttpTransaction::takeSocket() {
+   Socket* s = m_socket;
+   m_socket = NULL;
+   return s;
+}
+
+Socket* HttpTransaction::getSocket() {
+   return m_socket;
+}
+
+void HttpTransaction::addHeader(const std::string& key, const std::string& value) {
+   m_headers.addPair(key, value);
+}
+
+bool HttpTransaction::hasHeader(const std::string& key) const {
+   return m_headers.hasKey(key);
+}
+
+int HttpTransaction::getContentLength() const {
+   if (hasHeader("content-length")) {
+      const string& lengthAsText = m_headers.getValue("content-length");
+      return StrUtils::parseInt(lengthAsText);
+   } else {
+      return -1;
+   }
+}

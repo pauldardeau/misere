@@ -7,7 +7,10 @@
 #include <string>
 
 #include "BasicException.h"
+#include "ByteBuffer.h"
 #include "KeyValuePairs.h"
+#include "HttpRequest.h"
+#include "HttpResponse.h"
 
 
 #define THROW(exceptionType)
@@ -32,6 +35,18 @@ class HttpClient
        */
       ~HttpClient();
 
+      HttpResponse* get(HttpRequest& request);
+      HttpResponse* head(HttpRequest& request);
+      HttpResponse* put(HttpRequest& request,
+                        const chaudiere::ByteBuffer& buffer);
+      HttpResponse* put(HttpRequest& request,
+                        const std::string& buffer);
+      HttpResponse* post(HttpRequest& request,
+                         const chaudiere::ByteBuffer& buffer);
+      HttpResponse* post(HttpRequest& request,
+                         const std::string& buffer);
+      HttpResponse* do_delete(HttpRequest& request);
+
       /**
        * Sends an HTTP post to HTTP server and returns response
        * @param address the server address (IP address or server name)
@@ -45,7 +60,7 @@ class HttpClient
        * @throw BasicException
        * @return the HTTP response as a string
        */
-      std::string post(const std::string& address,
+      HttpResponse* post(const std::string& address,
                        int port,
                        const std::string& url,
                        const std::string& postData,
@@ -61,7 +76,7 @@ class HttpClient
        * @throw BasicException
        * @return the HTTP response as a string
        */
-      std::string sendReceive(const std::string& address,
+      HttpResponse* sendReceive(const std::string& address,
                               int port,
                               const std::string& sendBuffer);
 
@@ -86,6 +101,8 @@ class HttpClient
                        unsigned long contentLength,
                        const chaudiere::KeyValuePairs& kvpAddlHeaders);
 
+protected:
+   chaudiere::Socket* socketForRequest(const HttpRequest& request);
 };
 
 }

@@ -11,6 +11,7 @@
 #include "HttpResponse.h"
 #include "KeyValuePairs.h"
 #include "Socket.h"
+#include "Url.h"
 
 
 namespace misere {
@@ -21,14 +22,18 @@ namespace misere {
 class HttpRequest : public HttpTransaction {
 
    public:
+      static HttpRequest* create(const Url& url);
+
       static HttpRequest* create(const std::string& url);
+
+      explicit HttpRequest(const Url& url);
 
       /**
        * Constructs and initializes an HttpRequest object from a socket
        * @param socket the socket to read for initializing the object
        * @see Socket()
        */
-      explicit HttpRequest(chaudiere::Socket& socket);
+      explicit HttpRequest(chaudiere::Socket* socket);
    
       /**
        * Copy constructor
@@ -50,11 +55,9 @@ class HttpRequest : public HttpTransaction {
    
       /**
        * Initializes HTTP request by reading from socket
-       * @param socket the socket to read from
-       * @see Socket()
        * @return boolean indicating whether reading from the socket succeeded
        */
-      virtual bool streamFromSocket(chaudiere::Socket& socket);
+      virtual bool streamFromSocket();
    
       /**
        * Determines if the request object has been successfully initialized
@@ -186,11 +189,6 @@ class HttpRequest : public HttpTransaction {
       const std::string& getUserAgent() const;
 
       /**
-       * Close open connection
-       */
-      void close();
-
-      /**
        * Set the HTTP method
        * @param method the HTTP method
        */
@@ -209,12 +207,22 @@ class HttpRequest : public HttpTransaction {
        */
       HttpResponse* getResponse();
 
+      int port() const {
+         return m_url.port();
+      }
+
+      const std::string& host() const {
+         return m_url.host();
+      }
+
+      bool write(chaudiere::Socket* s);
+      bool write(chaudiere::Socket* s, long bodyLength);
    
    protected:
       /**
        * Parse the body (if present in the request)
        */
-      void parseBody();
+      //void parseBody();
 
 
 
@@ -223,7 +231,7 @@ class HttpRequest : public HttpTransaction {
       std::string m_path;
       chaudiere::KeyValuePairs m_arguments;
       bool m_initialized;
-      chaudiere::Socket* m_socket;
+      Url m_url;
 
 };
 

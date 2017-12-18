@@ -70,25 +70,64 @@ static const std::string COMMA         = ",";   // ,
 static const std::string SLASH         = "/";   // /
 static const std::string SPACE         = " ";
 
+static const std::string EOL = "\r\n";
+
 using namespace misere;
 using namespace chaudiere;
 
 //******************************************************************************
 
-HttpRequest* HttpRequest::create(const std::string& url) {
-   //TODO: implement HttpRequest::create
-   printf("HttpRequest::create called. Unimplemented!!! returning NULL\n");
-   return NULL;
+HttpRequest* HttpRequest::create(const Url& url) {
+   printf("HttpRequest::create(const Url&)\n");
+   return new HttpRequest(url);
 }
 
 //******************************************************************************
 
-HttpRequest::HttpRequest(Socket& socket) :
+HttpRequest* HttpRequest::create(const std::string& urlText) {
+   printf("HttpRequest::create(const std::string&)\n");
+   printf("HttpRequest: creating Url with '%s'\n", urlText.c_str());
+   Url url(urlText);
+   printf("HttpRequest: calling HttpRequest::create(const Url&)\n");
+   return new HttpRequest(url);
+}
+
+//******************************************************************************
+
+HttpRequest::HttpRequest(const Url& url) :
    m_initialized(false),
-   m_socket(NULL) {
+   m_url(url) {
 
    Logger::logInstanceCreate("HttpRequest");
-   m_initialized = streamFromSocket(socket);
+
+   int port = url.port();
+   if (port == 0) {
+      port = 80;
+   }
+
+   m_path = url.path();
+
+   printf("HttpRequest ctor, create Socket '%s', %d\n", url.host().c_str(), port);
+
+   Socket* s = new Socket(url.host(), port);
+   if (s->isOpen()) {
+      printf("HttpRequest: socket opened\n");
+      setSocket(s);
+   } else {
+      delete s;
+      printf("HttpRequest: unable to open socket\n");
+      //TODO: throw exception
+   }
+}
+
+//******************************************************************************
+
+HttpRequest::HttpRequest(Socket* socket) :
+   HttpTransaction(socket),
+   m_initialized(false) {
+
+   Logger::logInstanceCreate("HttpRequest");
+   m_initialized = streamFromSocket();
 }
 
 //******************************************************************************
@@ -98,8 +137,7 @@ HttpRequest::HttpRequest(const HttpRequest& copy) :
    m_method(copy.m_method),
    m_path(copy.m_path),
    m_arguments(copy.m_arguments),
-   m_initialized(copy.m_initialized),
-   m_socket(NULL) {
+   m_initialized(copy.m_initialized) {
    Logger::logInstanceCreate("HttpRequest");
 }
 
@@ -107,10 +145,6 @@ HttpRequest::HttpRequest(const HttpRequest& copy) :
 
 HttpRequest::~HttpRequest() {
    Logger::logInstanceDestroy("HttpRequest");
-   if (m_socket != NULL) {
-      m_socket->close();
-      delete m_socket;
-   }
 }
 
 //******************************************************************************
@@ -130,7 +164,7 @@ HttpRequest& HttpRequest::operator=(const HttpRequest& copy) {
 
 //******************************************************************************
 
-bool HttpRequest::streamFromSocket(Socket& socket) {
+bool HttpRequest::streamFromSocket() {
    const bool isLoggingDebug = Logger::isLogging(Debug);
    
    if (isLoggingDebug) {
@@ -138,8 +172,9 @@ bool HttpRequest::streamFromSocket(Socket& socket) {
    }
    
    bool streamSuccess = false;
-   
-   if (HttpTransaction::streamFromSocket(socket)) {
+  
+/* 
+   if (HttpTransaction::streamFromSocket()) {
       if (isLoggingDebug) {
          Logger::debug("calling getRequestLineValues");
       }
@@ -152,11 +187,11 @@ bool HttpRequest::streamFromSocket(Socket& socket) {
          m_path = vecRequestLineValues[1];
          setProtocol(vecRequestLineValues[2]);
          
-         if (isLoggingDebug) {
-            Logger::debug("HttpRequest: calling parseBody");
-         }
+         //if (isLoggingDebug) {
+         //   Logger::debug("HttpRequest: calling parseBody");
+         //}
          
-         parseBody();
+         //parseBody();
          streamSuccess = true;
       } else {
          if (Logger::isLogging(Warning)) {
@@ -182,6 +217,7 @@ bool HttpRequest::streamFromSocket(Socket& socket) {
       //throw BasicException("unable to parse headers");
       printf("HttpTransaction::streamFromSocket failed\n");
    }
+   */
    
    return streamSuccess;
 }
@@ -229,7 +265,7 @@ void HttpRequest::getArgumentKeys(std::vector<std::string>& vecKeys) const {
 }
 
 //******************************************************************************
-
+/*
 void HttpRequest::parseBody() {
    const std::string& body = getBody();
    
@@ -278,7 +314,7 @@ void HttpRequest::parseBody() {
       }
    }
 }
-
+*/
 //******************************************************************************
 
 bool HttpRequest::hasAccept() const {
@@ -365,14 +401,6 @@ const std::string& HttpRequest::getUserAgent() const {
 
 //******************************************************************************
 
-void HttpRequest::close() {
-   if (m_socket != NULL) {
-      m_socket->close();
-      m_socket = NULL;
-   }
-}
-
-//******************************************************************************
 void HttpRequest::setMethod(const std::string& method) {
    m_method = method;
 }
@@ -387,9 +415,66 @@ void HttpRequest::setHeaderValue(const std::string& key,
 //******************************************************************************
 
 HttpResponse* HttpRequest::getResponse() {
-   HttpResponse* response = NULL;
-   //TODO: implement HttpRequest::getResponse
-   return response;
+   return new HttpResponse(takeSocket());
 }
 
 //******************************************************************************
+
+bool HttpRequest::write(chaudiere::Socket* s) {
+   return write(s, -1L);
+}
+
+bool HttpRequest::write(chaudiere::Socket* s, long bodyLength) {
+   printf("HttpRequest::write called\n");
+   bool success = false;
+   if (s != NULL) {
+      const std::string& method = getMethod();
+      const std::string& path = getPath();
+      if (method.length() == 0) {
+         printf("error: method missing\n");
+         return false;
+      }
+
+      if (path.length() == 0) {
+         printf("error: path missing\n");
+         return false;
+      }
+
+      if (bodyLength >= 0) {
+         setHeaderValue(HTTP::HTTP_CONTENT_LENGTH,
+                        StrUtils::toString(bodyLength));
+      }
+
+      std::string headers;
+      headers += method;
+      headers += " ";
+      headers += path;
+      headers += " ";
+      headers += "HTTP/1.1";
+      headers += EOL;
+
+      std::vector<std::string> headerKeys;
+      m_arguments.getKeys(headerKeys);
+
+      std::vector<std::string>::iterator it = headerKeys.begin();
+      const std::vector<std::string>::const_iterator itEnd = headerKeys.end();
+      for (; it != itEnd; it++) {
+         const std::string& headerKey = *it;
+         headers += headerKey;
+         headers += ": ";
+         headers += m_arguments.getValue(headerKey);
+         headers += EOL;
+      }
+      
+      headers += EOL;
+
+      printf("%s\n", headers.c_str());
+
+      success = s->write(headers);
+   } else {
+      printf("HttpRequest::write, unable to write (NULL socket)\n");
+   }
+
+   return success;
+}
+

@@ -10,6 +10,7 @@
 
 #include "KeyValuePairs.h"
 #include "Socket.h"
+#include "ByteBuffer.h"
 
 
 namespace misere
@@ -25,7 +26,7 @@ class HttpTransaction
       /**
        * Default constructor
        */
-      HttpTransaction();
+      HttpTransaction(chaudiere::Socket* socket=NULL);
    
       /**
        * Copy constructor
@@ -36,7 +37,7 @@ class HttpTransaction
       /**
        * Destructor
        */
-      virtual ~HttpTransaction() {}
+      virtual ~HttpTransaction();
 
       /**
        * Copy operator
@@ -45,14 +46,6 @@ class HttpTransaction
        */
       HttpTransaction& operator=(const HttpTransaction& copy);
    
-      /**
-       * Initializes object by reading from socket
-       * @param socket the socket to read the HTTP request or response
-       * @see Socket()
-       * @return boolean indicating whether the initialization from socket succeeded
-       */
-      virtual bool streamFromSocket(chaudiere::Socket& socket);
-
       /**
        * Retrieves the full set of HTTP headers as a single string
        * @return HTTP headers (unparsed)
@@ -63,13 +56,13 @@ class HttpTransaction
        * Retrieves the body (content) associated with the request or response
        * @return the body as text (empty string if none was set)
        */
-      const std::string& getBody() const;
+      const chaudiere::ByteBuffer* getBody() const;
    
       /**
        * Sets the body (content) associated with the request or response
        * @param body the content for the request or response
        */
-      void setBody(const std::string& body);
+      void setBody(const chaudiere::ByteBuffer* body);
    
       /**
        * Determines if the specified header key exists
@@ -129,6 +122,7 @@ class HttpTransaction
        */
       void populateWithHeaders(chaudiere::KeyValuePairs& headers);
 
+      void close();
    
    protected:
       /**
@@ -149,17 +143,24 @@ class HttpTransaction
        */
       bool parseHeaders();
 
+      void setSocket(chaudiere::Socket* s);
+      chaudiere::Socket* takeSocket();
+      chaudiere::Socket* getSocket();
+      void addHeader(const std::string& key, const std::string& value);
+      bool hasHeader(const std::string& key) const;
+      int getContentLength() const;
 
    private:
       std::vector<std::string> m_vecHeaderLines;
       std::vector<std::string> m_vecRequestLineValues;
       std::string m_header;
-      std::string m_body;
+      const chaudiere::ByteBuffer* m_body;
       std::string m_protocol;
       std::string m_requestLine;
       chaudiere::KeyValuePairs m_headers;
       std::string m_method;
       int m_contentLength;
+      chaudiere::Socket* m_socket;
 
 };
 

@@ -10,6 +10,11 @@ using namespace chaudiere;
 using namespace misere;
 
 
+Url::Url() :
+   m_port(0)
+{
+}
+
 Url::Url(const std::string& fullText) :
    m_fullText(fullText),
    m_port(0)
