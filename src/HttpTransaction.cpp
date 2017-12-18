@@ -107,7 +107,7 @@ bool HttpTransaction::parseHeaders() {
       m_method = m_vecRequestLineValues[0];
       m_protocol = thirdValue;
       
-      for (int i = 1; i < numHeaderLines; ++i) {
+      for (size_t i = 1; i < numHeaderLines; ++i) {
          const string& headerLine = m_vecHeaderLines[i];
          const string::size_type posColon = headerLine.find(COLON);
          
