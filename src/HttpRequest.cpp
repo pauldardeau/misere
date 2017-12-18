@@ -78,17 +78,13 @@ using namespace chaudiere;
 //******************************************************************************
 
 HttpRequest* HttpRequest::create(const Url& url) {
-   printf("HttpRequest::create(const Url&)\n");
    return new HttpRequest(url);
 }
 
 //******************************************************************************
 
 HttpRequest* HttpRequest::create(const std::string& urlText) {
-   printf("HttpRequest::create(const std::string&)\n");
-   printf("HttpRequest: creating Url with '%s'\n", urlText.c_str());
    Url url(urlText);
-   printf("HttpRequest: calling HttpRequest::create(const Url&)\n");
    return new HttpRequest(url);
 }
 
@@ -107,11 +103,8 @@ HttpRequest::HttpRequest(const Url& url) :
 
    m_path = url.path();
 
-   printf("HttpRequest ctor, create Socket '%s', %d\n", url.host().c_str(), port);
-
    Socket* s = new Socket(url.host(), port);
    if (s->isOpen()) {
-      printf("HttpRequest: socket opened\n");
       setSocket(s);
    } else {
       delete s;
@@ -425,7 +418,6 @@ bool HttpRequest::write(chaudiere::Socket* s) {
 }
 
 bool HttpRequest::write(chaudiere::Socket* s, long bodyLength) {
-   printf("HttpRequest::write called\n");
    bool success = false;
    if (s != NULL) {
       const std::string& method = getMethod();

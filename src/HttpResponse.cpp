@@ -45,7 +45,6 @@ HttpResponse::HttpResponse(Socket* socket) :
    HttpTransaction(socket) {
    Logger::logInstanceCreate("HttpResponse");
 
-   printf("HttpResponse ctor: calling streamFromSocket\n");
    if (!streamFromSocket()) {
       throw BasicException("unable to construct HttpResponse from Socket");
    }
@@ -117,8 +116,6 @@ bool HttpResponse::streamFromSocket2() {
       }
    }
 
-   printf("headers received: %s\n", headers.c_str());
-
    int lineIndex = 0;
    StringTokenizer st(headers, "\r\n");
    while (st.hasMoreTokens()) {
@@ -148,7 +145,6 @@ bool HttpResponse::streamFromSocket2() {
    }
 
    contentLength = getContentLength();
-   printf("HttpRequest::streamFromSocket2 contentLength=%d\n", contentLength);
 
    if (contentLength > 0) {
       ByteBuffer* bb = new ByteBuffer(contentLength);
@@ -180,10 +176,8 @@ bool HttpResponse::streamFromSocket() {
    }
    
    bool streamSuccess = false;
-   printf("HttpResponse: calling streamFromSocket2\n");
 
    if (streamFromSocket2()) {
-      printf("HttpResponse: streamFromSocket succeeded\n");
       const std::vector<std::string>& vecRequestLineValues =
          getRequestLineValues();
 
