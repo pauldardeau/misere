@@ -1,9 +1,9 @@
 // Copyright Paul Dardeau, SwampBits LLC 2017
 // BSD License
 
-#include <exception>
 #include "Url.h"
 #include "StrUtils.h"
+#include "BasicException.h"
 
 using namespace std;
 using namespace chaudiere;
@@ -35,7 +35,7 @@ Url::Url(const std::string& fullText) :
                 m_port = StrUtils::parseInt(portAsText);
                 if (m_port < 0) {
                    // negative values not allowed
-                   throw invalid_argument("negative port values not valid");
+                   throw BasicException("negative port values not valid");
                 }
                 m_host = m_host.substr(0, posPortColon);
             }
@@ -49,23 +49,23 @@ Url::Url(const std::string& fullText) :
    }
 
    if (m_fullText.length() == 0) {
-      throw invalid_argument("no full text");
+      throw BasicException("no full text");
    }
 
    if (m_host.length() == 0) {
-      throw invalid_argument("missing host");
+      throw BasicException("missing host");
    }
 
    if (m_path.length() == 0) {
-      throw invalid_argument("missing path");
+      throw BasicException("missing path");
    }
 
    if (m_protocol.length() == 0) {
-      throw invalid_argument("missing protocol");
+      throw BasicException("missing protocol");
    }
 
    if (m_port < 0) {
-      throw invalid_argument("negative port");
+      throw BasicException("negative port");
    }
 }
 
