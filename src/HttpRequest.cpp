@@ -166,51 +166,34 @@ bool HttpRequest::streamFromSocket() {
    
    bool streamSuccess = false;
   
-/* 
    if (HttpTransaction::streamFromSocket()) {
-      if (isLoggingDebug) {
-         Logger::debug("calling getRequestLineValues");
-      }
-      
-      const std::vector<std::string>& vecRequestLineValues =
-         getRequestLineValues();
-
-      if (3 == vecRequestLineValues.size()) {
-         m_method = vecRequestLineValues[0];
-         m_path = vecRequestLineValues[1];
-         setProtocol(vecRequestLineValues[2]);
-         
-         //if (isLoggingDebug) {
-         //   Logger::debug("HttpRequest: calling parseBody");
-         //}
-         
-         //parseBody();
-         streamSuccess = true;
-      } else {
-         if (Logger::isLogging(Warning)) {
-            char msg[128];
-            ::snprintf(msg, 128,
-                       "number of tokens: %zu",
-                       vecRequestLineValues.size());
-            Logger::warning(std::string(msg));
-
-            const std::vector<std::string>::const_iterator itEnd =
-               vecRequestLineValues.end();
-            std::vector<std::string>::const_iterator it =
-               vecRequestLineValues.begin();
-            for (; it != itEnd; it++) {
-               Logger::warning(*it);
-            }
-         }
-         
-         //throw BasicException("unable to parse request line");
+      printf("HttpTransaction::streamFromSocket success\n");
+      const std::string& firstLine = getFirstHeaderLine(); 
+      StringTokenizer st(firstLine, " ");
+      std::vector<std::string> reqLineValues;
+      if (st.countTokens() != 3) {
+         //throw BasicException("unable to parse headers");
+         printf("HttpTransaction::streamFromSocket failed\n");
+         return false;
       }
 
+      reqLineValues.push_back(st.nextToken());
+      reqLineValues.push_back(st.nextToken());
+      reqLineValues.push_back(st.nextToken());
+
+      m_method = reqLineValues[0];
+      m_path = reqLineValues[1];
+      setProtocol(reqLineValues[2]);
+
+      printf("HttpRequest::streamFromSocket setting request line values\n");
+      setRequestLineValues(reqLineValues);
+
+      printf("HttpRequest: streamFromSocket success\n");
+      streamSuccess = true;
    } else {
       //throw BasicException("unable to parse headers");
       printf("HttpTransaction::streamFromSocket failed\n");
    }
-   */
    
    return streamSuccess;
 }
@@ -224,7 +207,7 @@ bool HttpRequest::isInitialized() const {
 //******************************************************************************
 
 const std::string& HttpRequest::getRequest() const {
-   return getRequestLine();
+   return getFirstHeaderLine();
 }
 
 //******************************************************************************

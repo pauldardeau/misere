@@ -37,7 +37,7 @@ HttpTransaction::HttpTransaction(const HttpTransaction& copy) :
    m_header(copy.m_header),
    m_body(copy.m_body),
    m_protocol(copy.m_protocol),
-   m_requestLine(copy.m_requestLine),
+   m_firstHeaderLine(copy.m_firstHeaderLine),
    m_headers(copy.m_headers),
    m_method(copy.m_method),
    m_contentLength(copy.m_contentLength),
@@ -51,6 +51,11 @@ HttpTransaction::~HttpTransaction() {
       delete m_socket;
       m_socket = NULL;
    }
+
+   if (m_body != NULL) {
+      delete m_body;
+      m_body = NULL;
+   }
 }
 
 HttpTransaction& HttpTransaction::operator=(const HttpTransaction& copy) {
@@ -63,7 +68,7 @@ HttpTransaction& HttpTransaction::operator=(const HttpTransaction& copy) {
    m_header = copy.m_header;
    m_body = copy.m_body;
    m_protocol = copy.m_protocol;
-   m_requestLine = copy.m_requestLine;
+   m_firstHeaderLine = copy.m_firstHeaderLine;
    m_headers = copy.m_headers;
    m_method = copy.m_method;
    m_contentLength = copy.m_contentLength;
@@ -85,8 +90,8 @@ bool HttpTransaction::parseHeaders() {
       return false;
    }
    
-   m_requestLine = m_vecHeaderLines[0];
-   StringTokenizer st(m_requestLine);
+   m_firstHeaderLine = m_vecHeaderLines[0];
+   StringTokenizer st(m_firstHeaderLine);
    const int tokenCount = st.countTokens();
    
    if (3 <= tokenCount) {
@@ -229,8 +234,14 @@ const std::vector<std::string>& HttpTransaction::getRequestLineValues() const {
 
 //******************************************************************************
 
-const std::string& HttpTransaction::getRequestLine() const {
-   return m_requestLine;
+void HttpTransaction::setRequestLineValues(const std::vector<std::string>& requestLineValues) {
+   m_vecRequestLineValues = requestLineValues;
+}
+
+//******************************************************************************
+
+const std::string& HttpTransaction::getFirstHeaderLine() const {
+   return m_firstHeaderLine;
 }
 
 //******************************************************************************
@@ -279,3 +290,92 @@ int HttpTransaction::getContentLength() const {
       return -1;
    }
 }
+
+bool HttpTransaction::streamFromSocket() {
+   int contentLength = -1;  // unknown
+   bool readingHeaders = true;
+   bool onEOL = false;
+   int eolNL = 0;
+   char charRead;
+   int bytes_read;
+   string headers;
+   Socket* s = getSocket();
+
+   while (readingHeaders) {
+      bytes_read = s->readSocket(&charRead, 1);
+      if (bytes_read > 0) {
+         if (charRead == '\r') {
+            onEOL = true;
+         } else {
+            if (charRead == '\n') {
+               if (onEOL) {
+                  eolNL++;
+                  if (eolNL == 2) {
+                     readingHeaders = false;
+                     headers = headers.substr(0, headers.length() - 1);
+                  }
+               }
+            } else {
+               onEOL = false;
+               eolNL = 0;
+            }
+         }
+
+         if (readingHeaders) {
+            headers += charRead;
+         }
+      } else {
+         if (bytes_read == -1) {
+            return false;
+         }
+      }
+   }
+
+   int lineIndex = 0;
+   StringTokenizer st(headers, "\r\n");
+   while (st.hasMoreTokens()) {
+      const string& token = st.nextToken();
+      if (lineIndex == 0) {
+         m_firstHeaderLine = token;
+      }
+      if (token.length() > 0) {
+         string::size_type posColon = token.find(":");
+         if (posColon != string::npos) {
+            string key = StrUtils::strip(token.substr(0, posColon));
+            string value = StrUtils::strip(token.substr(posColon+1, token.length() - 1
+));
+            if (key.length() > 0 && value.length() > 0) {
+               StrUtils::toLowerCase(key);
+               addHeader(key, value);
+            }
+         }
+      }
+      lineIndex++;
+   }
+
+   contentLength = getContentLength();
+
+   if (contentLength > 0) {
+      ByteBuffer* bb = new ByteBuffer(contentLength);
+      int remainingBytes = contentLength;
+      int offset = 0;
+      int bytesToRead = 8192;
+      char buffer[8192];
+      while (remainingBytes > 0) {
+         if (remainingBytes < bytesToRead) {
+            bytesToRead = remainingBytes;
+         }
+         bytes_read = s->readSocket(buffer, bytesToRead);
+         if (bytes_read > 0) {
+            memcpy((void*) (bb->data()+offset), buffer, bytes_read);
+            offset += bytes_read;
+            remainingBytes -= bytes_read;
+         } else {
+            return false;
+         }
+      }
+      setBody(bb);
+   }
+   return true;
+}
+

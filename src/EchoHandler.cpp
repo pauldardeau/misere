@@ -1,10 +1,12 @@
 // Copyright Paul Dardeau, SwampBits LLC 2014
 // BSD License
 
+#include "ByteBuffer.h"
 #include "EchoHandler.h"
 #include "HttpRequest.h"
 #include "HttpResponse.h"
 #include "Logger.h"
+#include "StrUtils.h"
 
 using namespace std;
 using namespace misere;
@@ -55,20 +57,20 @@ void EchoHandler::serviceRequest(const HttpRequest& request,
    }
    
    body += "<br/>";
-   
-   const string& requestBody = request.getBody();
-   
-   if (!requestBody.empty()) {
-      body += requestBody;
+  
+   const ByteBuffer* requestBody = request.getBody();
+   if (requestBody != NULL && requestBody->size() > 0) { 
+      std::string bodyReply = "body bytes: ";
+      bodyReply += StrUtils::toString(requestBody->size());
+      body += bodyReply;
    } else {
       body += "*** no body in request ***<br/>";
    }
 
    body += "<br/>";
-   
    body += "</body></html>";
-   
-   response.setBody(body);
+
+   response.setBody(new ByteBuffer(body));
 }
 
 //******************************************************************************

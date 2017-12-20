@@ -154,7 +154,6 @@ void HttpRequestHandler::run() {
       }
    
       const std::string httpHeader = request.getRawHeader();
-      const std::string httpBody = request.getBody();
    
       if (isLoggingDebug) {
          Logger::debug("HttpServer method: " + method);
@@ -163,9 +162,6 @@ void HttpRequestHandler::run() {
       
          Logger::debug("HttpServer header:");
          Logger::debug(httpHeader);
-      
-         Logger::debug("HttpServer body:");
-         Logger::debug(httpBody);
       }
    
       int contentLength = 0;
@@ -175,8 +171,10 @@ void HttpRequestHandler::run() {
          try {
             pHandler->serviceRequest(request, response);
             responseCode = StrUtils::toString(response.getStatusCode());
-            const std::string& responseBody = response.getBody();
-            contentLength = responseBody.size();
+            const ByteBuffer* responseBody = response.getBody();
+            if (responseBody != NULL) {
+               contentLength = responseBody->size();
+            }
 
             if ((contentLength > 0) && !response.hasContentEncoding()) {
                if (request.hasAcceptEncoding()) {
@@ -229,29 +227,31 @@ void HttpRequestHandler::run() {
       
          if (!runByWorkerThreadId.empty()) {
             m_server.logRequest(clientIPAddress,
-                                request.getRequestLine(),
+                                request.getFirstHeaderLine(),
                                 responseCode,
                                 runByWorkerThreadId);
          } else {
             m_server.logRequest(clientIPAddress,
-                                request.getRequestLine(),
+                                request.getFirstHeaderLine(),
                                 responseCode);
          }
       } else {
          m_server.logRequest(clientIPAddress,
-                             request.getRequestLine(),
+                             request.getFirstHeaderLine(),
                              responseCode);
       }
    
-      std::string responseAsString =
+      std::string headersAsString =
          m_server.buildHeader(responseCode, headers);
+      socket->write(headersAsString);
    
       if (contentLength > 0) {
-         responseAsString += response.getBody();
+         const ByteBuffer* body = response.getBody();
+         if (body != NULL) {
+            socket->write(body->const_data(), body->size());
+         }
       }
 
-      socket->write(responseAsString);
-   
       /*
        if (isLoggingDebug) {
          Logger::debug("response written, calling read so that client can close first");

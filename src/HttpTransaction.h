@@ -114,7 +114,7 @@ class HttpTransaction
        * Returns the first line (request line) of the HTTP request or response
        * @return the request line
        */
-      const std::string& getRequestLine() const;
+      const std::string& getFirstHeaderLine() const;
    
       /**
        * Retrieves the HTTP header key/value pairs
@@ -130,6 +130,8 @@ class HttpTransaction
        * @return list of parsed tokens on request line
        */
       const std::vector<std::string>& getRequestLineValues() const;
+
+      void setRequestLineValues(const std::vector<std::string>& requestLineValues);
    
       /**
        * Sets the protocol (e.g., "HTTP/1.1")
@@ -149,6 +151,7 @@ class HttpTransaction
       void addHeader(const std::string& key, const std::string& value);
       bool hasHeader(const std::string& key) const;
       int getContentLength() const;
+      virtual bool streamFromSocket();
 
    private:
       std::vector<std::string> m_vecHeaderLines;
@@ -156,7 +159,7 @@ class HttpTransaction
       std::string m_header;
       const chaudiere::ByteBuffer* m_body;
       std::string m_protocol;
-      std::string m_requestLine;
+      std::string m_firstHeaderLine;
       chaudiere::KeyValuePairs m_headers;
       std::string m_method;
       int m_contentLength;

@@ -46,7 +46,7 @@ void ServerDateTimeHandler::serviceRequest(const HttpRequest& request,
    
    body += "</body></html>";
    
-   response.setBody(body);
+   response.setBody(new ByteBuffer(body));
 }
 
 //******************************************************************************
