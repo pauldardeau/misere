@@ -25,6 +25,7 @@ using namespace chaudiere;
 //******************************************************************************
 
 HttpTransaction::HttpTransaction(chaudiere::Socket* socket) :
+   m_body(NULL),
    m_contentLength(0),
    m_socket(socket) {
 }
@@ -35,7 +36,7 @@ HttpTransaction::HttpTransaction(const HttpTransaction& copy) :
    m_vecHeaderLines(copy.m_vecHeaderLines),
    m_vecRequestLineValues(copy.m_vecRequestLineValues),
    m_header(copy.m_header),
-   m_body(copy.m_body),
+   m_body(NULL),
    m_protocol(copy.m_protocol),
    m_firstHeaderLine(copy.m_firstHeaderLine),
    m_headers(copy.m_headers),
@@ -66,7 +67,7 @@ HttpTransaction& HttpTransaction::operator=(const HttpTransaction& copy) {
    m_vecHeaderLines = copy.m_vecHeaderLines;
    m_vecRequestLineValues = copy.m_vecRequestLineValues;
    m_header = copy.m_header;
-   m_body = copy.m_body;
+   //m_body = copy.m_body;
    m_protocol = copy.m_protocol;
    m_firstHeaderLine = copy.m_firstHeaderLine;
    m_headers = copy.m_headers;
