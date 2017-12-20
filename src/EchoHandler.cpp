@@ -61,7 +61,7 @@ void EchoHandler::serviceRequest(const HttpRequest& request,
    const ByteBuffer* requestBody = request.getBody();
    if (requestBody != NULL && requestBody->size() > 0) { 
       std::string bodyReply = "body bytes: ";
-      bodyReply += StrUtils::toString(requestBody->size());
+      bodyReply += StrUtils::toString((int)requestBody->size());
       body += bodyReply;
    } else {
       body += "*** no body in request ***<br/>";
