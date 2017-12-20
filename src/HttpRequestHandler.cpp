@@ -71,7 +71,7 @@ HttpRequestHandler::~HttpRequestHandler() {
 void HttpRequestHandler::run() {
    Socket* socket = getSocket();
    
-   if (!socket) {
+   if (NULL == socket) {
       Logger::error("no socket or socket request present in RequestHandler");
       return;
    }
