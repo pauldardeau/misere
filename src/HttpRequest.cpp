@@ -167,7 +167,7 @@ bool HttpRequest::streamFromSocket() {
    bool streamSuccess = false;
   
    if (HttpTransaction::streamFromSocket()) {
-      printf("HttpTransaction::streamFromSocket success\n");
+      //printf("HttpTransaction::streamFromSocket success\n");
       const std::string& firstLine = getFirstHeaderLine(); 
       StringTokenizer st(firstLine, " ");
       std::vector<std::string> reqLineValues;
@@ -185,10 +185,10 @@ bool HttpRequest::streamFromSocket() {
       m_path = reqLineValues[1];
       setProtocol(reqLineValues[2]);
 
-      printf("HttpRequest::streamFromSocket setting request line values\n");
+      //printf("HttpRequest::streamFromSocket setting request line values\n");
       setRequestLineValues(reqLineValues);
 
-      printf("HttpRequest: streamFromSocket success\n");
+      //printf("HttpRequest: streamFromSocket success\n");
       streamSuccess = true;
    } else {
       //throw BasicException("unable to parse headers");
@@ -443,7 +443,7 @@ bool HttpRequest::write(chaudiere::Socket* s, long bodyLength) {
       
       headers += EOL;
 
-      printf("%s\n", headers.c_str());
+      //printf("%s\n", headers.c_str());
 
       success = s->write(headers);
    } else {

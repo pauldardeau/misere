@@ -142,9 +142,9 @@ bool HttpTransaction::parseHeaders() {
       parseSuccess = true;
    }
 
-   printf("method='%s'\n", m_method.c_str());
-   printf("protocol='%s'\n", m_protocol.c_str());  
-   printf("content-length=%d\n", m_contentLength); 
+   //printf("method='%s'\n", m_method.c_str());
+   //printf("protocol='%s'\n", m_protocol.c_str());  
+   //printf("content-length=%d\n", m_contentLength); 
 
    return parseSuccess;
 }
