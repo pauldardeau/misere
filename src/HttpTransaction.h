@@ -54,15 +54,22 @@ class HttpTransaction
    
       /**
        * Retrieves the body (content) associated with the request or response
-       * @return the body as text (empty string if none was set)
+       * @return the body as raw buffer (NULL if none was set)
        */
       const chaudiere::ByteBuffer* getBody() const;
+
+      /**
+       * Retrieves the body (content) associated with the request or response
+       * and relinquishes ownership of the buffer (must be freed by caller)
+       * @return the body buffer (NULL if none was set)
+       */
+      chaudiere::ByteBuffer* takeBody();
    
       /**
        * Sets the body (content) associated with the request or response
        * @param body the content for the request or response
        */
-      void setBody(const chaudiere::ByteBuffer* body);
+      void setBody(chaudiere::ByteBuffer* body);
    
       /**
        * Determines if the specified header key exists
@@ -157,7 +164,7 @@ class HttpTransaction
       std::vector<std::string> m_vecHeaderLines;
       std::vector<std::string> m_vecRequestLineValues;
       std::string m_header;
-      const chaudiere::ByteBuffer* m_body;
+      chaudiere::ByteBuffer* m_body;
       std::string m_protocol;
       std::string m_firstHeaderLine;
       chaudiere::KeyValuePairs m_headers;

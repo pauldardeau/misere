@@ -163,7 +163,15 @@ const ByteBuffer* HttpTransaction::getBody() const {
 
 //******************************************************************************
 
-void HttpTransaction::setBody(const ByteBuffer* body) {
+ByteBuffer* HttpTransaction::takeBody() {
+   ByteBuffer* buffer = m_body;
+   m_body = NULL;
+   return buffer;
+}
+
+//******************************************************************************
+
+void HttpTransaction::setBody(ByteBuffer* body) {
    m_body = body;
 }
 
