@@ -8,7 +8,7 @@ LINK_CMD = c++
 LINK_LIBS = -lpthread
 
 EXE_NAME = misere
-SO_NAME = misere.so
+SO_NAME = libmisere.so
 
 OBJS =  HttpClient.o \
 HTTP.o \
@@ -44,7 +44,7 @@ $(SO_NAME) : $(OBJS)
 
 $(EXE_NAME) : $(SO_NAME) $(MAIN_OBJS)
 	$(CC) -c -Wall -O2 -pthread -I../../chaudiere/src main.cpp -o main.o
-	$(LINK_CMD) $(MAIN_OBJS) -o $(EXE_NAME) ./$(SO_NAME) ../../chaudiere/src/chaudiere.so $(LINK_LIBS)
+	$(LINK_CMD) $(MAIN_OBJS) -o $(EXE_NAME) ./$(SO_NAME) ../../chaudiere/src/libchaudiere.so $(LINK_LIBS) -ldl
 
 %.o : %.cpp
 	$(CC) $(CC_OPTS) $< -o $@
