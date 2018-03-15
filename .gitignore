@@ -3,3 +3,4 @@ docs/
 xcuserdata
 *.o
 src/misere
+*.so
