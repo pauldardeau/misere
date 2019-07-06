@@ -5,7 +5,7 @@ CC = c++
 CC_OPTS = -c -Wall -fPIC -O2 -pthread -I../../chaudiere/src
 LINK_CMD = c++
 # remove -ldl for non-linux
-LINK_LIBS = -lpthread -lsocket -lnsl
+LINK_LIBS = -lpthread
 
 EXE_NAME = misere
 SO_NAME = libmisere.so
@@ -44,7 +44,7 @@ $(SO_NAME) : $(OBJS)
 
 $(EXE_NAME) : $(SO_NAME) $(MAIN_OBJS)
 	$(CC) -c -Wall -O2 -pthread -I../../chaudiere/src main.cpp -o main.o
-	$(LINK_CMD) $(MAIN_OBJS) -o $(EXE_NAME) ./$(SO_NAME) ../../chaudiere/src/libchaudiere.so $(LINK_LIBS) -ldl
+	$(LINK_CMD) $(MAIN_OBJS) -o $(EXE_NAME) ./$(SO_NAME) ../../chaudiere/src/libchaudiere.so $(LINK_LIBS)
 
 %.o : %.cpp
 	$(CC) $(CC_OPTS) $< -o $@
