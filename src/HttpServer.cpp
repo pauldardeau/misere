@@ -569,21 +569,32 @@ int HttpServer::runSocketServer() {
             handler->setThreadPooling(true);
 
             // give it to the thread pool
-            m_threadPool->addRequest(handler);
+            printf("HttpServer::runServer, adding handler to thread pool\n");
+            bool added = m_threadPool->addRequest(handler);
+            printf("HttpServer::runServer, back from adding request to pool\n");
+            if (added) {
+               printf("HttpServer::runServer request successfully added\n");
+            } else {
+               printf("HttpServer::runServer unable to add request\n");
+            }
          } else {
+            printf("HttpServer::runServer not using thread pool, running handler\n");
             HttpRequestHandler handler(*this, socket);
             handler.run();
          }
       } catch (const BasicException& be) {
          rc = 1;
+         printf("HttpServer::runServer BasicException caught\n");
          Logger::error("HttpServer runServer BasicException caught: " +
                        be.whatString());
       } catch (const exception& e) {
          rc = 1;
+         printf("HttpServer::runServer exception caught\n");
          Logger::error(string("HttpServer runServer exception caught: ") +
                        string(e.what()));
       } catch (...) {
          rc = 1;
+         printf("HttpServer::runServer unknown exception caught\n");
          Logger::error("HttpServer runServer unknown exception caught");
       }
    }
