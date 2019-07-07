@@ -82,14 +82,14 @@ void HttpRequestHandler::run() {
 
    const bool isLoggingDebug = Logger::isLogging(Debug);
    if (isLoggingDebug) {
-      Logger::debug("starting parse of HttpRequest");
+      //Logger::debug("starting parse of HttpRequest");
    }
    
    HttpRequest request(socket);
 
    if (request.isInitialized()) {
       if (isLoggingDebug) {
-         Logger::debug("ending parse of HttpRequest");
+         //Logger::debug("ending parse of HttpRequest");
       }
    
       const std::string& method = request.getMethod();

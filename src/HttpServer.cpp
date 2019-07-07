@@ -558,8 +558,8 @@ int HttpServer::runSocketServer() {
       }
 
       if (Logger::isLogging(Debug)) {
-         Logger::debug("*****************************************");
-         Logger::debug("client connected");
+         //Logger::debug("*****************************************");
+         //Logger::debug("client connected");
       }
 
       try {
@@ -569,11 +569,11 @@ int HttpServer::runSocketServer() {
             handler->setThreadPooling(true);
 
             // give it to the thread pool
-            printf("HttpServer::runServer, adding handler to thread pool\n");
+            //printf("HttpServer::runServer, adding handler to thread pool\n");
             bool added = m_threadPool->addRequest(handler);
-            printf("HttpServer::runServer, back from adding request to pool\n");
+            //printf("HttpServer::runServer, back from adding request to pool\n");
             if (added) {
-               printf("HttpServer::runServer request successfully added\n");
+               //printf("HttpServer::runServer request successfully added\n");
             } else {
                printf("HttpServer::runServer unable to add request\n");
             }

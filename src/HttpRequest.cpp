@@ -161,7 +161,7 @@ bool HttpRequest::streamFromSocket() {
    const bool isLoggingDebug = Logger::isLogging(Debug);
    
    if (isLoggingDebug) {
-      Logger::debug("==== start of HttpRequest::streamFromSocket");
+      //Logger::debug("==== start of HttpRequest::streamFromSocket");
    }
    
    bool streamSuccess = false;
