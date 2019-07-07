@@ -92,7 +92,7 @@ void HttpRequestHandler::run() {
          //Logger::debug("ending parse of HttpRequest");
       }
    
-      const std::string& method = request.getMethod();
+      //const std::string& method = request.getMethod();
       const std::string& protocol = request.getProtocol();
       const std::string& path = request.getPath();
       
@@ -153,16 +153,16 @@ void HttpRequestHandler::run() {
          handlerAvailable = true;
       }
    
-      const std::string httpHeader = request.getRawHeader();
+      //const std::string httpHeader = request.getRawHeader();
    
-      if (isLoggingDebug) {
-         Logger::debug("HttpServer method: " + method);
-         Logger::debug("HttpServer path: " + routingPath);
-         Logger::debug("HttpServer protocol: " + protocol);
+      //if (isLoggingDebug) {
+      //   Logger::debug("HttpServer method: " + method);
+      //   Logger::debug("HttpServer path: " + routingPath);
+      //   Logger::debug("HttpServer protocol: " + protocol);
       
-         Logger::debug("HttpServer header:");
-         Logger::debug(httpHeader);
-      }
+      //   Logger::debug("HttpServer header:");
+      //   Logger::debug(httpHeader);
+      //}
    
       int contentLength = 0;
       HttpResponse response;

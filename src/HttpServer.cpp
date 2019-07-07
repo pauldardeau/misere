@@ -765,7 +765,7 @@ void HttpServer::setupLogLevel(const KeyValuePairs& kvp) {
 //******************************************************************************
 
 void HttpServer::setupSocketBufferSizes(const chaudiere::KeyValuePairs& kvp) {
-   Logger::debug("setupSocketBufferSizes");
+   //Logger::debug("setupSocketBufferSizes");
    if (kvp.hasKey(CFG_SERVER_SEND_BUFFER_SIZE)) {
       const int buffSize =
          getIntValue(kvp, CFG_SERVER_SEND_BUFFER_SIZE);
@@ -788,7 +788,7 @@ void HttpServer::setupSocketBufferSizes(const chaudiere::KeyValuePairs& kvp) {
 //******************************************************************************
 
 void HttpServer::setupServerString(const chaudiere::KeyValuePairs& kvp) {
-   Logger::debug("setupServerString");
+   //Logger::debug("setupServerString");
    if (kvp.hasKey(CFG_SERVER_STRING)) {
       const string& serverString =
          kvp.getValue(CFG_SERVER_STRING);
@@ -823,7 +823,7 @@ void HttpServer::setupServerString(const chaudiere::KeyValuePairs& kvp) {
             replaceVariables(kvpVars, m_serverString);
          }
                
-         Logger::info("setting server string: '" + m_serverString + "'");
+         //Logger::info("setting server string: '" + m_serverString + "'");
       }
    }
 }
@@ -831,16 +831,16 @@ void HttpServer::setupServerString(const chaudiere::KeyValuePairs& kvp) {
 //******************************************************************************
 
 bool HttpServer::setupHandlers(const chaudiere::SectionedConfigDataSource* dataSource) {
-   Logger::debug("setupHandlers");
+   //Logger::debug("setupHandlers");
    const bool isLoggingDebug = Logger::isLogging(Debug);
 
    if (m_allowBuiltInHandlers) {
-      Logger::debug("adding built-in handlers");
+      //Logger::debug("adding built-in handlers");
       addBuiltInHandlers();
    }
       
    if (isLoggingDebug) {
-      Logger::debug("processing handlers");
+      //Logger::debug("processing handlers");
    }
 
    KeyValuePairs kvpHandlers;
@@ -933,13 +933,13 @@ bool HttpServer::setupHandlers(const chaudiere::SectionedConfigDataSource* dataS
                }
 
                if (isLoggingDebug) {
-                  Logger::debug("initializing the handler");
+                  //Logger::debug("initializing the handler");
                }
 
                // now initialize the servlet
                if (pHandler->init(path, kvpApp)) {
                   if (isLoggingDebug) {
-                     Logger::debug("initialization succeeded");
+                     //Logger::debug("initialization succeeded");
                   }
                      
                   // register it
@@ -989,7 +989,7 @@ bool HttpServer::setupHandlers(const chaudiere::SectionedConfigDataSource* dataS
 //******************************************************************************
 
 void HttpServer::setupThreading(const chaudiere::KeyValuePairs& kvp) {
-   Logger::debug("setupThreading");
+   //Logger::debug("setupThreading");
    m_isThreaded = true;
    m_threading = CFG_THREADING_PTHREADS;
    m_threadPoolSize = 4;
@@ -1022,7 +1022,7 @@ void HttpServer::setupThreading(const chaudiere::KeyValuePairs& kvp) {
 //******************************************************************************
 
 void HttpServer::setupSocketHandling(const chaudiere::KeyValuePairs& kvp) {
-   Logger::debug("setupSocketHandling");
+   //Logger::debug("setupSocketHandling");
    m_sockets = CFG_SOCKETS_SOCKET_SERVER;
    if (kvp.hasKey(CFG_SERVER_SOCKETS)) {
       const string& sockets =
@@ -1037,7 +1037,7 @@ void HttpServer::setupSocketHandling(const chaudiere::KeyValuePairs& kvp) {
 //******************************************************************************
 
 void HttpServer::setupListeningPort(const chaudiere::KeyValuePairs& kvp) {
-   Logger::debug("setupListeningPort");
+   //Logger::debug("setupListeningPort");
    if (kvp.hasKey(CFG_SERVER_PORT)) {
       const int portNumber =
          getIntValue(kvp, CFG_SERVER_PORT);
@@ -1055,7 +1055,7 @@ void HttpServer::setupListeningPort(const chaudiere::KeyValuePairs& kvp) {
 //******************************************************************************
 
 void HttpServer::setupConcurrency() {
-   Logger::debug("setupConcurrency");
+   //Logger::debug("setupConcurrency");
    string concurrencyModel = EMPTY;
 
    if (m_isThreaded) {
@@ -1088,15 +1088,15 @@ void HttpServer::setupConcurrency() {
 //******************************************************************************
 
 bool HttpServer::setupServerSocket() {
-   Logger::debug("setupServerSocket");
+   //Logger::debug("setupServerSocket");
    if (!m_isUsingKernelEventServer) {
       try {
          if (Logger::isLogging(Debug)) {
-            char msg[128];
-            ::snprintf(msg, 128,
-                       "creating server socket on port=%d",
-                       m_serverPort);
-            Logger::debug(string(msg));
+            //char msg[128];
+            //::snprintf(msg, 128,
+            //           "creating server socket on port=%d",
+            //           m_serverPort);
+            //Logger::debug(string(msg));
          }
 
          m_serverSocket = new ServerSocket(m_serverPort);
