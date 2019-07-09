@@ -130,6 +130,10 @@ class HttpTransaction
       void populateWithHeaders(chaudiere::KeyValuePairs& headers);
 
       void close();
+
+      void setSocketOwned(bool socketOwned);
+
+      bool isSocketOwned() const;
    
    protected:
       /**
@@ -171,6 +175,7 @@ class HttpTransaction
       std::string m_method;
       int m_contentLength;
       chaudiere::Socket* m_socket;
+      bool m_socketOwned;
 
 };
 

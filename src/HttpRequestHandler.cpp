@@ -49,6 +49,9 @@ HttpRequestHandler::HttpRequestHandler(HttpServer& server,
    RequestHandler(socketRequest),
    m_server(server) {
    Logger::logInstanceCreate("HttpRequestHandler");
+   if (NULL != socketRequest) {
+      setSocketOwned(socketRequest->isSocketOwned());
+   }
 }
 
 //******************************************************************************
@@ -86,6 +89,7 @@ void HttpRequestHandler::run() {
    }
    
    HttpRequest request(socket);
+   request.setSocketOwned(isSocketOwned());
 
    if (request.isInitialized()) {
       if (isLoggingDebug) {

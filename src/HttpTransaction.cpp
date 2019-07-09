@@ -27,7 +27,8 @@ using namespace chaudiere;
 HttpTransaction::HttpTransaction(chaudiere::Socket* socket) :
    m_body(NULL),
    m_contentLength(0),
-   m_socket(socket) {
+   m_socket(socket),
+   m_socketOwned(true) {
 }
 
 //******************************************************************************
@@ -42,18 +43,21 @@ HttpTransaction::HttpTransaction(const HttpTransaction& copy) :
    m_headers(copy.m_headers),
    m_method(copy.m_method),
    m_contentLength(copy.m_contentLength),
-   m_socket(NULL) {
+   m_socket(NULL),
+   m_socketOwned(true) {
 }
 
 //******************************************************************************
 
 HttpTransaction::~HttpTransaction() {
-   if (m_socket != NULL) {
+   if ((m_socket != NULL) && m_socketOwned) {
+      //printf("deleting socket\n");
       delete m_socket;
       m_socket = NULL;
    }
 
    if (m_body != NULL) {
+      //printf("deleting body\n");
       delete m_body;
       m_body = NULL;
    }
@@ -388,3 +392,10 @@ bool HttpTransaction::streamFromSocket() {
    return true;
 }
 
+bool HttpTransaction::isSocketOwned() const {
+   return m_socketOwned;
+}
+
+void HttpTransaction::setSocketOwned(bool socketOwned) {
+   m_socketOwned = socketOwned;
+}

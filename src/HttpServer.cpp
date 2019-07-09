@@ -535,7 +535,7 @@ void HttpServer::serviceSocket(SocketRequest* socketRequest) {
       m_threadPool->addRequest(requestHandler);
    } else {
       // no thread pool available -- process it synchronously
-      HttpRequestHandler requestHandler(*this,socketRequest);
+      HttpRequestHandler requestHandler(*this, socketRequest);
       requestHandler.run();
    }
 }
