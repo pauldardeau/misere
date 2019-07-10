@@ -532,6 +532,7 @@ void HttpServer::serviceSocket(SocketRequest* socketRequest) {
       HttpRequestHandler* requestHandler =
          new HttpRequestHandler(*this, socketRequest);
       requestHandler->setThreadPooling(true);
+      requestHandler->setAutoDelete();
       m_threadPool->addRequest(requestHandler);
    } else {
       // no thread pool available -- process it synchronously
@@ -567,6 +568,7 @@ int HttpServer::runSocketServer() {
             HttpRequestHandler* handler =
                new HttpRequestHandler(*this, socket);
             handler->setThreadPooling(true);
+	    handler->setAutoDelete();
 
             // give it to the thread pool
             //printf("HttpServer::runServer, adding handler to thread pool\n");
