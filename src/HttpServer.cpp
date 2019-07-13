@@ -538,6 +538,9 @@ void HttpServer::serviceSocket(SocketRequest* socketRequest) {
       // no thread pool available -- process it synchronously
       HttpRequestHandler requestHandler(*this, socketRequest);
       requestHandler.run();
+      if (socketRequest->isAutoDelete()) {
+         delete socketRequest;
+      }
    }
 }
 
