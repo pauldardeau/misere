@@ -72,13 +72,16 @@ HttpRequestHandler::~HttpRequestHandler() {
 //******************************************************************************
 
 void HttpRequestHandler::run() {
+   //printf("HttpRequestHandler::run invoked\n");
    Socket* socket = getSocket();
    
    if (NULL == socket) {
+      //printf("HttpRequestHandler::run socket is NULL, returning\n");
       Logger::error("no socket or socket request present in RequestHandler");
       return;
    }
-   
+  
+   //printf("HttpRequestHandler::run, setting socket options\n"); 
    socket->setTcpNoDelay(true);
    socket->setSendBufferSize(m_server.getSocketSendBufferSize());
    socket->setReceiveBufferSize(m_server.getSocketReceiveBufferSize());
@@ -87,11 +90,14 @@ void HttpRequestHandler::run() {
    if (isLoggingDebug) {
       //Logger::debug("starting parse of HttpRequest");
    }
-   
+  
+   //printf("HttpRequestHandler::run, creating HttpRequest with socket\n"); 
    HttpRequest request(socket);
    request.setSocketOwned(isSocketOwned());
 
    if (request.isInitialized()) {
+      //printf("HttpRequestHandler::run request is initialized\n");
+
       if (isLoggingDebug) {
          //Logger::debug("ending parse of HttpRequest");
       }
@@ -114,13 +120,12 @@ void HttpRequestHandler::run() {
          }
       }
 
-      Logger::countOccurrence(COUNT_PATH, routingPath);
-
-      
-      if (request.hasHeaderValue(HTTP_USER_AGENT)) {
-         Logger::countOccurrence(COUNT_USER_AGENT,
-                                 request.getHeaderValue(HTTP_USER_AGENT));
-      }
+      //Logger::countOccurrence(COUNT_PATH, routingPath);
+     
+      //if (request.hasHeaderValue(HTTP_USER_AGENT)) {
+      //   Logger::countOccurrence(COUNT_USER_AGENT,
+      //                           request.getHeaderValue(HTTP_USER_AGENT));
+      //}
    
       HttpHandler* pHandler = m_server.getPathHandler(routingPath);
       bool handlerAvailable = false;
@@ -226,6 +231,7 @@ void HttpRequestHandler::run() {
       }
    
       // log the request
+      /*
       if (isThreadPooling()) {
          const std::string& runByWorkerThreadId = getRunByThreadWorkerId();
       
@@ -244,6 +250,7 @@ void HttpRequestHandler::run() {
                              request.getFirstHeaderLine(),
                              responseCode);
       }
+      */
    
       std::string headersAsString =
          m_server.buildHeader(responseCode, headers);
