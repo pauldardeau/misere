@@ -158,11 +158,11 @@ HttpRequest& HttpRequest::operator=(const HttpRequest& copy) {
 //******************************************************************************
 
 bool HttpRequest::streamFromSocket() {
-   const bool isLoggingDebug = Logger::isLogging(Debug);
+   //const bool isLoggingDebug = Logger::isLogging(Debug);
    
-   if (isLoggingDebug) {
-      //Logger::debug("==== start of HttpRequest::streamFromSocket");
-   }
+   //if (isLoggingDebug) {
+   //   Logger::debug("==== start of HttpRequest::streamFromSocket");
+   //}
    
    bool streamSuccess = false;
   
@@ -173,7 +173,7 @@ bool HttpRequest::streamFromSocket() {
       std::vector<std::string> reqLineValues;
       if (st.countTokens() != 3) {
          //throw BasicException("unable to parse headers");
-         printf("HttpTransaction::streamFromSocket failed\n");
+         //printf("HttpTransaction::streamFromSocket failed\n");
          return false;
       }
 
@@ -191,8 +191,8 @@ bool HttpRequest::streamFromSocket() {
       //printf("HttpRequest: streamFromSocket success\n");
       streamSuccess = true;
    } else {
-      //throw BasicException("unable to parse headers");
-      printf("HttpTransaction::streamFromSocket failed\n");
+      throw BasicException("unable to parse headers");
+      //printf("HttpTransaction::streamFromSocket failed\n");
    }
    
    return streamSuccess;
