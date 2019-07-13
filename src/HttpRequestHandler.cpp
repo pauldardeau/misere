@@ -121,7 +121,6 @@ void HttpRequestHandler::run() {
       }
 
       //Logger::countOccurrence(COUNT_PATH, routingPath);
-     
       //if (request.hasHeaderValue(HTTP_USER_AGENT)) {
       //   Logger::countOccurrence(COUNT_USER_AGENT,
       //                           request.getHeaderValue(HTTP_USER_AGENT));
