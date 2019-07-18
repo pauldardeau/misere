@@ -24,11 +24,11 @@ using namespace chaudiere;
 
 //******************************************************************************
 
-HttpTransaction::HttpTransaction(chaudiere::Socket* socket) :
+HttpTransaction::HttpTransaction(chaudiere::Socket* socket, bool socketOwned) :
    m_body(NULL),
    m_contentLength(0),
    m_socket(socket),
-   m_socketOwned(true) {
+   m_socketOwned(socketOwned) {
 }
 
 //******************************************************************************
@@ -44,29 +44,36 @@ HttpTransaction::HttpTransaction(const HttpTransaction& copy) :
    m_method(copy.m_method),
    m_contentLength(copy.m_contentLength),
    m_socket(NULL),
-   m_socketOwned(true) {
+   m_socketOwned(false) {
 }
 
 //******************************************************************************
 
 HttpTransaction::~HttpTransaction() {
    if ((m_socket != NULL) && m_socketOwned) {
-      //printf("deleting socket\n");
+      //printf("HttpTransaction::~HttpTransaction deleting socket\n");
       delete m_socket;
-      m_socket = NULL;
+   } else {
+      //printf("HttpTransaction::~HttpTransaction NOT deleting socket\n");
    }
+   m_socket = NULL;
+   m_socketOwned = false;
 
    if (m_body != NULL) {
-      //printf("deleting body\n");
+      //printf("HttpTransaction::~HttpTransaction deleting body\n");
       delete m_body;
       m_body = NULL;
    }
 }
 
+//*****************************************************************************
+
 HttpTransaction& HttpTransaction::operator=(const HttpTransaction& copy) {
    if (this == &copy) {
       return *this;
    }
+
+   //printf("HttpTransaction::operator=\n");
 
    m_vecHeaderLines = copy.m_vecHeaderLines;
    m_vecRequestLineValues = copy.m_vecRequestLineValues;
@@ -78,8 +85,15 @@ HttpTransaction& HttpTransaction::operator=(const HttpTransaction& copy) {
    m_method = copy.m_method;
    m_contentLength = copy.m_contentLength;
    if (m_socket != NULL) {
-      delete m_socket;
+      //printf("HttpTransaction::operator= deleting socket\n");
+      if (m_socketOwned) {
+         delete m_socket;
+      }
       m_socket = NULL;
+      m_socketOwned = false;
+   }
+   if (!copy.m_socketOwned) {
+      m_socketOwned = false;
    }
 
    return *this;
@@ -91,7 +105,7 @@ bool HttpTransaction::parseHeaders() {
    bool parseSuccess = false;
 
    if (m_vecHeaderLines.empty()) {
-      printf("m_vecHeaderLines is empty, parseHeaders returning false\n");
+      //printf("m_vecHeaderLines is empty, parseHeaders returning false\n");
       return false;
    }
    
@@ -268,32 +282,48 @@ void HttpTransaction::populateWithHeaders(KeyValuePairs& headers) {
 void HttpTransaction::close() {
    if (m_socket != NULL) {
       m_socket->close();
+      //printf("HttpTransaction::close deleting socket\n");
       delete m_socket;
       m_socket = NULL;
+      m_socketOwned = false;
    }
 }
 
-void HttpTransaction::setSocket(Socket* s) {
+//*****************************************************************************
+
+void HttpTransaction::setSocket(Socket* s, bool socketOwned) {
    m_socket = s;
+   m_socketOwned = socketOwned;
 }
+
+//*****************************************************************************
 
 Socket* HttpTransaction::takeSocket() {
    Socket* s = m_socket;
    m_socket = NULL;
+   m_socketOwned = false;
    return s;
 }
+
+//*****************************************************************************
 
 Socket* HttpTransaction::getSocket() {
    return m_socket;
 }
 
+//*****************************************************************************
+
 void HttpTransaction::addHeader(const std::string& key, const std::string& value) {
    m_headers.addPair(key, value);
 }
 
+//*****************************************************************************
+
 bool HttpTransaction::hasHeader(const std::string& key) const {
    return m_headers.hasKey(key);
 }
+
+//*****************************************************************************
 
 int HttpTransaction::getContentLength() const {
    if (hasHeader("content-length")) {
@@ -303,6 +333,8 @@ int HttpTransaction::getContentLength() const {
       return -1;
    }
 }
+
+//*****************************************************************************
 
 bool HttpTransaction::streamFromSocket() {
    int contentLength = -1;  // unknown
@@ -392,10 +424,18 @@ bool HttpTransaction::streamFromSocket() {
    return true;
 }
 
+//*****************************************************************************
+
 bool HttpTransaction::isSocketOwned() const {
    return m_socketOwned;
 }
 
+//*****************************************************************************
+
 void HttpTransaction::setSocketOwned(bool socketOwned) {
+   //printf("HttpTransaction::setSocketOwned %s\n", socketOwned ? "true" : "false");
    m_socketOwned = socketOwned;
 }
+
+//*****************************************************************************
+

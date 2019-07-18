@@ -26,7 +26,7 @@ class HttpTransaction
       /**
        * Default constructor
        */
-      HttpTransaction(chaudiere::Socket* socket=NULL);
+      HttpTransaction(chaudiere::Socket* socket=NULL, bool socketOwned=true);
    
       /**
        * Copy constructor
@@ -156,7 +156,7 @@ class HttpTransaction
        */
       bool parseHeaders();
 
-      void setSocket(chaudiere::Socket* s);
+      void setSocket(chaudiere::Socket* s, bool socketOwned);
       chaudiere::Socket* takeSocket();
       chaudiere::Socket* getSocket();
       void addHeader(const std::string& key, const std::string& value);

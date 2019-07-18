@@ -33,7 +33,7 @@ class HttpRequest : public HttpTransaction {
        * @param socket the socket to read for initializing the object
        * @see Socket()
        */
-      explicit HttpRequest(chaudiere::Socket* socket);
+      explicit HttpRequest(chaudiere::Socket* socket, bool socketOwned=true);
    
       /**
        * Copy constructor

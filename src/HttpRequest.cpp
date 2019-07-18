@@ -105,18 +105,19 @@ HttpRequest::HttpRequest(const Url& url) :
 
    Socket* s = new Socket(url.host(), port);
    if (s->isOpen()) {
-      setSocket(s);
+      setSocket(s, true);
    } else {
+      //printf("HttpRequest::HttpRequest deleting socket\n");
       delete s;
-      printf("HttpRequest: unable to open socket\n");
+      //printf("HttpRequest: unable to open socket\n");
       //TODO: throw exception
    }
 }
 
 //******************************************************************************
 
-HttpRequest::HttpRequest(Socket* socket) :
-   HttpTransaction(socket),
+HttpRequest::HttpRequest(Socket* socket, bool socketOwned) :
+   HttpTransaction(socket, socketOwned),
    m_initialized(false) {
 
    Logger::logInstanceCreate("HttpRequest");

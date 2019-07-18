@@ -50,7 +50,7 @@ HttpRequestHandler::HttpRequestHandler(HttpServer& server,
    m_server(server) {
    Logger::logInstanceCreate("HttpRequestHandler");
    if (NULL != socketRequest) {
-      setSocketOwned(socketRequest->isSocketOwned());
+      setSocketOwned(false);
    }
 }
 
@@ -92,8 +92,7 @@ void HttpRequestHandler::run() {
    }
   
    //printf("HttpRequestHandler::run, creating HttpRequest with socket\n"); 
-   HttpRequest request(socket);
-   request.setSocketOwned(isSocketOwned());
+   HttpRequest request(socket, false);
 
    if (request.isInitialized()) {
       //printf("HttpRequestHandler::run request is initialized\n");
