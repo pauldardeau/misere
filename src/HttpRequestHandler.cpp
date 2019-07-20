@@ -72,16 +72,13 @@ HttpRequestHandler::~HttpRequestHandler() {
 //******************************************************************************
 
 void HttpRequestHandler::run() {
-   //printf("HttpRequestHandler::run invoked\n");
    Socket* socket = getSocket();
    
    if (NULL == socket) {
-      //printf("HttpRequestHandler::run socket is NULL, returning\n");
       Logger::error("no socket or socket request present in RequestHandler");
       return;
    }
   
-   //printf("HttpRequestHandler::run, setting socket options\n"); 
    socket->setTcpNoDelay(true);
    socket->setSendBufferSize(m_server.getSocketSendBufferSize());
    socket->setReceiveBufferSize(m_server.getSocketReceiveBufferSize());
@@ -91,11 +88,9 @@ void HttpRequestHandler::run() {
       //Logger::debug("starting parse of HttpRequest");
    }
   
-   //printf("HttpRequestHandler::run, creating HttpRequest with socket\n"); 
    HttpRequest request(socket, false);
 
    if (request.isInitialized()) {
-      //printf("HttpRequestHandler::run request is initialized\n");
 
       if (isLoggingDebug) {
          //Logger::debug("ending parse of HttpRequest");
@@ -277,8 +272,6 @@ void HttpRequestHandler::run() {
       //   m_socketRequest->requestComplete();
       //}
        */
-   } else {
-      ::printf("error: unable to initialize HttpRequest\n");
    }
 }
 

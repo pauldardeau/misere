@@ -107,9 +107,7 @@ HttpRequest::HttpRequest(const Url& url) :
    if (s->isOpen()) {
       setSocket(s, true);
    } else {
-      //printf("HttpRequest::HttpRequest deleting socket\n");
       delete s;
-      //printf("HttpRequest: unable to open socket\n");
       //TODO: throw exception
    }
 }
@@ -168,13 +166,11 @@ bool HttpRequest::streamFromSocket() {
    bool streamSuccess = false;
   
    if (HttpTransaction::streamFromSocket()) {
-      //printf("HttpTransaction::streamFromSocket success\n");
       const std::string& firstLine = getFirstHeaderLine(); 
       StringTokenizer st(firstLine, " ");
       std::vector<std::string> reqLineValues;
       if (st.countTokens() != 3) {
          //throw BasicException("unable to parse headers");
-         //printf("HttpTransaction::streamFromSocket failed\n");
          return false;
       }
 
@@ -186,14 +182,11 @@ bool HttpRequest::streamFromSocket() {
       m_path = reqLineValues[1];
       setProtocol(reqLineValues[2]);
 
-      //printf("HttpRequest::streamFromSocket setting request line values\n");
       setRequestLineValues(reqLineValues);
 
-      //printf("HttpRequest: streamFromSocket success\n");
       streamSuccess = true;
    } else {
       throw BasicException("unable to parse headers");
-      //printf("HttpTransaction::streamFromSocket failed\n");
    }
    
    return streamSuccess;
@@ -407,12 +400,10 @@ bool HttpRequest::write(chaudiere::Socket* s, long bodyLength) {
       const std::string& method = getMethod();
       const std::string& path = getPath();
       if (method.length() == 0) {
-         printf("error: method missing\n");
          return false;
       }
 
       if (path.length() == 0) {
-         printf("error: path missing\n");
          return false;
       }
 
@@ -444,11 +435,7 @@ bool HttpRequest::write(chaudiere::Socket* s, long bodyLength) {
       
       headers += EOL;
 
-      //printf("%s\n", headers.c_str());
-
       success = s->write(headers);
-   } else {
-      printf("HttpRequest::write, unable to write (NULL socket)\n");
    }
 
    return success;

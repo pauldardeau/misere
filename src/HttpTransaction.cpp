@@ -51,16 +51,12 @@ HttpTransaction::HttpTransaction(const HttpTransaction& copy) :
 
 HttpTransaction::~HttpTransaction() {
    if ((m_socket != NULL) && m_socketOwned) {
-      //printf("HttpTransaction::~HttpTransaction deleting socket\n");
       delete m_socket;
-   } else {
-      //printf("HttpTransaction::~HttpTransaction NOT deleting socket\n");
    }
    m_socket = NULL;
    m_socketOwned = false;
 
    if (m_body != NULL) {
-      //printf("HttpTransaction::~HttpTransaction deleting body\n");
       delete m_body;
       m_body = NULL;
    }
@@ -73,8 +69,6 @@ HttpTransaction& HttpTransaction::operator=(const HttpTransaction& copy) {
       return *this;
    }
 
-   //printf("HttpTransaction::operator=\n");
-
    m_vecHeaderLines = copy.m_vecHeaderLines;
    m_vecRequestLineValues = copy.m_vecRequestLineValues;
    m_header = copy.m_header;
@@ -85,7 +79,6 @@ HttpTransaction& HttpTransaction::operator=(const HttpTransaction& copy) {
    m_method = copy.m_method;
    m_contentLength = copy.m_contentLength;
    if (m_socket != NULL) {
-      //printf("HttpTransaction::operator= deleting socket\n");
       if (m_socketOwned) {
          delete m_socket;
       }
@@ -105,7 +98,6 @@ bool HttpTransaction::parseHeaders() {
    bool parseSuccess = false;
 
    if (m_vecHeaderLines.empty()) {
-      //printf("m_vecHeaderLines is empty, parseHeaders returning false\n");
       return false;
    }
    
@@ -159,10 +151,6 @@ bool HttpTransaction::parseHeaders() {
       
       parseSuccess = true;
    }
-
-   //printf("method='%s'\n", m_method.c_str());
-   //printf("protocol='%s'\n", m_protocol.c_str());  
-   //printf("content-length=%d\n", m_contentLength); 
 
    return parseSuccess;
 }
@@ -282,7 +270,6 @@ void HttpTransaction::populateWithHeaders(KeyValuePairs& headers) {
 void HttpTransaction::close() {
    if (m_socket != NULL) {
       m_socket->close();
-      //printf("HttpTransaction::close deleting socket\n");
       delete m_socket;
       m_socket = NULL;
       m_socketOwned = false;
@@ -433,7 +420,6 @@ bool HttpTransaction::isSocketOwned() const {
 //*****************************************************************************
 
 void HttpTransaction::setSocketOwned(bool socketOwned) {
-   //printf("HttpTransaction::setSocketOwned %s\n", socketOwned ? "true" : "false");
    m_socketOwned = socketOwned;
 }
 
