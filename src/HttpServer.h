@@ -5,7 +5,7 @@
 #define MISERE_HTTPSERVER_H
 
 #include <string>
-#include <map>
+#include <unordered_map>
 
 #include "HttpHandler.h"
 #include "KeyValuePairs.h"
@@ -244,8 +244,8 @@ class HttpServer {
       chaudiere::ThreadPoolDispatcher* m_threadPool;
       chaudiere::ThreadingFactory* m_threadingFactory;
       chaudiere::KeyValuePairs m_properties;
-      std::map<std::string, HttpHandler*> m_mapPathHandlers;
-      std::map<std::string, chaudiere::DynamicLibrary*> m_mapPathLibraries;
+      std::unordered_map<std::string, HttpHandler*> m_mapPathHandlers;
+      std::unordered_map<std::string, chaudiere::DynamicLibrary*> m_mapPathLibraries;
       std::string m_accessLogFile;
       std::string m_errorLogFile;
       std::string m_logLevel;

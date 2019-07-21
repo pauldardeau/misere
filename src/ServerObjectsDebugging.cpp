@@ -101,7 +101,7 @@ void ServerObjectsDebugging::serviceRequest(const HttpRequest& request,
       Logger* pLoggerInstance = logger;
       StdLogger* stdLogger = dynamic_cast<StdLogger*>(pLoggerInstance);
       if (stdLogger) {
-         std::map<std::string, LifecycleStats> mapClassStats;
+         std::unordered_map<std::string, LifecycleStats> mapClassStats;
          stdLogger->populateClassLifecycleStats(mapClassStats);
          
          if (!mapClassStats.empty()) {
@@ -112,9 +112,9 @@ void ServerObjectsDebugging::serviceRequest(const HttpRequest& request,
             long long totalCreated = 0L;
             long long totalDestroyed = 0L;
             long long totalAlive = 0L;
-            map<string, LifecycleStats>::const_iterator it =
+            unordered_map<string, LifecycleStats>::const_iterator it =
                mapClassStats.begin();
-            const map<string, LifecycleStats>::const_iterator itEnd =
+            const unordered_map<string, LifecycleStats>::const_iterator itEnd =
                mapClassStats.end();
          
             for (; it != itEnd; it++) {

@@ -353,9 +353,9 @@ HttpServer::~HttpServer() {
       delete m_threadingFactory;
    }
 
-   map<string,HttpHandler*>::iterator it =
+   unordered_map<string,HttpHandler*>::iterator it =
       m_mapPathHandlers.begin();
-   const map<string,HttpHandler*>::const_iterator itEnd =
+   const unordered_map<string,HttpHandler*>::const_iterator itEnd =
       m_mapPathHandlers.end();
    for (; it != itEnd; it++) {
       delete it->second;
@@ -448,7 +448,7 @@ bool HttpServer::addPathHandler(const std::string& path,
 
 bool HttpServer::removePathHandler(const std::string& path) {
    bool isSuccess = false;
-   map<string,HttpHandler*>::iterator it =
+   unordered_map<string,HttpHandler*>::iterator it =
       m_mapPathHandlers.find(path);
    
    if (it != m_mapPathHandlers.end()) {
@@ -463,7 +463,7 @@ bool HttpServer::removePathHandler(const std::string& path) {
 //******************************************************************************
 
 HttpHandler* HttpServer::getPathHandler(const std::string& path) {
-   map<string,HttpHandler*>::iterator it = m_mapPathHandlers.find(path);
+   unordered_map<string,HttpHandler*>::iterator it = m_mapPathHandlers.find(path);
    if (it != m_mapPathHandlers.end()) {
       return (*it).second;
    }

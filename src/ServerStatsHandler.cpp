@@ -66,7 +66,7 @@ void ServerStatsHandler::serviceRequest(const HttpRequest& request,
       Logger* pLoggerInstance = logger;
       StdLogger* stdLogger = dynamic_cast<StdLogger*>(pLoggerInstance);
       if (stdLogger) {
-         map<string, map<string, long long> > mapOccurrenceTypes;
+         unordered_map<string, unordered_map<string, long long> > mapOccurrenceTypes;
          stdLogger->populateOccurrences(mapOccurrenceTypes);
          
          if (!mapOccurrenceTypes.empty()) {
@@ -75,17 +75,17 @@ void ServerStatsHandler::serviceRequest(const HttpRequest& request,
             body += "<tr><th align=\"left\">Type</th><th align=\"left\">Name</th><th>Occurrences</th></tr>";
             
             long long totalForType = 0L;
-            map<string, map<string, long long> >::const_iterator it =
+            unordered_map<string, unordered_map<string, long long> >::const_iterator it =
                mapOccurrenceTypes.begin();
-            const map<string, map<string, long long> >::const_iterator itEnd =
+            const unordered_map<string, unordered_map<string, long long> >::const_iterator itEnd =
                mapOccurrenceTypes.end();
             
             for (; it != itEnd; it++) {
                const string& occurrenceType = (*it).first;
-               const map<string, long long>& mapOccurrences = (*it).second;
-               map<string, long long>::const_iterator itOcc =
+               const unordered_map<string, long long>& mapOccurrences = (*it).second;
+               unordered_map<string, long long>::const_iterator itOcc =
                   mapOccurrences.begin();
-               const map<string, long long>::const_iterator itEndOcc =
+               const unordered_map<string, long long>::const_iterator itEndOcc =
                   mapOccurrences.end();
 
                for (; itOcc != itEndOcc; itOcc++) {
