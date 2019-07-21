@@ -17,13 +17,13 @@ using namespace chaudiere;
 //******************************************************************************
 
 ServerStatsHandler::ServerStatsHandler() {
-   Logger::logInstanceCreate("ServerStatsHandler");
+   LOG_INSTANCE_CREATE("ServerStatsHandler")
 }
 
 //******************************************************************************
 
 ServerStatsHandler::~ServerStatsHandler() {
-   Logger::logInstanceDestroy("ServerStatsHandler");
+   LOG_INSTANCE_DESTROY("ServerStatsHandler")
 }
 
 //******************************************************************************

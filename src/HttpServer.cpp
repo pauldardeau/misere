@@ -155,7 +155,7 @@ HttpServer::HttpServer(const std::string& configFilePath) :
    m_socketSendBufferSize(CFG_DEFAULT_SEND_BUFFER_SIZE),
    m_socketReceiveBufferSize(CFG_DEFAULT_RECEIVE_BUFFER_SIZE),
    m_minimumCompressionSize(1000) {
-   Logger::logInstanceCreate("HttpServer");
+   LOG_INSTANCE_CREATE("HttpServer")
    init(CFG_DEFAULT_PORT_NUMBER);
 }
 
@@ -214,9 +214,9 @@ int HttpServer::getIntValue(const KeyValuePairs& kvp,
             value = intValue;
          }
       } else {
-         Logger::warning(string("getIntValue has empty string for '") +
-                         setting +
-                         "'");
+         LOG_WARNING(string("getIntValue has empty string for '") +
+                     setting +
+                     "'")
       }
    }
    
@@ -271,15 +271,15 @@ bool HttpServer::init(int port) {
       configDataSource.assign(getConfigDataSource());
       haveDataSource = true;
    } catch (const BasicException& be) {
-      Logger::error("BasicException retrieving config data: " + be.whatString());
+      LOG_ERROR("BasicException retrieving config data: " + be.whatString())
    } catch (const exception& e) {
-      Logger::error("exception retrieving config data: " + string(e.what()));
+      LOG_ERROR("exception retrieving config data: " + string(e.what()))
    } catch (...) {
-      Logger::error("unknown exception retrieving config data");
+      LOG_ERROR("unknown exception retrieving config data")
    }
    
    if (!configDataSource.haveObject() || !haveDataSource) {
-      Logger::error("unable to retrieve config data");
+      LOG_ERROR("unable to retrieve config data")
       return false;
    }
 
@@ -303,7 +303,7 @@ bool HttpServer::init(int port) {
                          CFG_SERVER_ALLOW_BUILTIN_HANDLERS);
          setupServerString(kvpServerSettings);
       } else {
-         Logger::warning("HttpServer init no server section found");
+         LOG_WARNING("HttpServer init no server section found")
       }
 
       // read and process "handlers" section
@@ -311,14 +311,14 @@ bool HttpServer::init(int port) {
          return false;
       }
    } catch (const BasicException& be) {
-      Logger::critical("BasicException initializing server: " + be.whatString());
+      LOG_CRITICAL("BasicException initializing server: " + be.whatString())
       return false;
    } catch (const exception& e) {
-      Logger::critical("exception initializing server: " +
-                       string(e.what()));
+      LOG_CRITICAL("exception initializing server: " +
+                   string(e.what()))
       return false;
    } catch (...) {
-      Logger::critical("unknown exception initializing server");
+      LOG_CRITICAL("unknown exception initializing server")
       return false;
    }
 
@@ -337,7 +337,7 @@ bool HttpServer::init(int port) {
 //******************************************************************************
 
 HttpServer::~HttpServer() {
-   Logger::logInstanceDestroy("HttpServer");
+   LOG_INSTANCE_DESTROY("HttpServer")
 
    if (m_serverSocket) {
       m_serverSocket->close();
@@ -550,7 +550,7 @@ int HttpServer::runSocketServer() {
    int rc = 0;
    
    if (!m_serverSocket) {
-      Logger::critical("runSocketServer called with null serverSocket");
+      LOG_CRITICAL("runSocketServer called with null serverSocket")
       return 1;
    }
    
@@ -561,10 +561,10 @@ int HttpServer::runSocketServer() {
          continue;
       }
 
-      if (Logger::isLogging(Debug)) {
-         //Logger::debug("*****************************************");
-         //Logger::debug("client connected");
-      }
+      //if (Logger::isLogging(Debug)) {
+         //LOG_DEBUG("*****************************************")
+         //LOG_DEBUG("client connected")
+      //}
 
       try {
          if (m_isThreaded && (NULL != m_threadPool)) {
@@ -584,15 +584,15 @@ int HttpServer::runSocketServer() {
          }
       } catch (const BasicException& be) {
          rc = 1;
-         Logger::error("HttpServer runServer BasicException caught: " +
-                       be.whatString());
+         LOG_ERROR("HttpServer runServer BasicException caught: " +
+                   be.whatString())
       } catch (const exception& e) {
          rc = 1;
-         Logger::error(string("HttpServer runServer exception caught: ") +
-                       string(e.what()));
+         LOG_ERROR(string("HttpServer runServer exception caught: ") +
+                   string(e.what()))
       } catch (...) {
          rc = 1;
-         Logger::error("HttpServer runServer unknown exception caught");
+         LOG_ERROR("HttpServer runServer unknown exception caught")
       }
    }
    
@@ -618,7 +618,7 @@ int HttpServer::runKernelEventServer() {
          kernelEventServer.assign(
             new EpollServer(*mutexFD, *mutexHWMConnections));
       } else {
-         Logger::critical("no kernel event server available for platform");
+         LOG_CRITICAL("no kernel event server available for platform")
          rc = 1;
       }
       
@@ -635,17 +635,17 @@ int HttpServer::runKernelEventServer() {
                rc = 1;
             }
          } catch (const BasicException& be) {
-            Logger::critical("exception running kernel event server: " +
-                             be.whatString());
+            LOG_CRITICAL("exception running kernel event server: " +
+                         be.whatString())
          } catch (const exception& e) {
-            Logger::critical("exception running kernel event server: " +
-                             string(e.what()));
+            LOG_CRITICAL("exception running kernel event server: " +
+                         string(e.what()))
          } catch (...) {
-            Logger::critical("unidentified exception running kernel event server");
+            LOG_CRITICAL("unidentified exception running kernel event server")
          }
       }
    } else {
-      Logger::critical("no threading factory configured");
+      LOG_CRITICAL("no threading factory configured")
       rc = 1;
    }
    
@@ -656,8 +656,8 @@ int HttpServer::runKernelEventServer() {
 
 int HttpServer::run() {
    if (!m_isFullyInitialized) {
-      Logger::debug("HttpServer::run m_isFullyInitialized is false");
-      Logger::critical("server not initialized");
+      LOG_DEBUG("HttpServer::run m_isFullyInitialized is false")
+      LOG_CRITICAL("server not initialized")
       return 1;
    } else {
       if (m_isUsingKernelEventServer) {
@@ -706,7 +706,7 @@ void HttpServer::logRequest(const std::string& clientIPAddress,
 //******************************************************************************
 
 void HttpServer::setupLogFiles(const SectionedConfigDataSource& dataSource) {
-   Logger::debug("setupLogFiles");
+   LOG_DEBUG("setupLogFiles")
    KeyValuePairs kvpLogFiles;
    if (dataSource.hasSection(CFG_SECTION_LOGGING) &&
        dataSource.readSection(CFG_SECTION_LOGGING,
@@ -715,14 +715,14 @@ void HttpServer::setupLogFiles(const SectionedConfigDataSource& dataSource) {
          const string& accessLog =
             kvpLogFiles.getValue(CFG_LOGFILE_ACCESS);
          m_accessLogFile = accessLog;
-         Logger::info(string("access log=") + accessLog);
+         LOG_INFO(string("access log=") + accessLog)
       }
 
       if (kvpLogFiles.hasKey(CFG_LOGFILE_ERROR)) {
          const string& errorLog =
             kvpLogFiles.getValue(CFG_LOGFILE_ERROR);
          m_errorLogFile = errorLog;
-         Logger::info(string("error log=") + errorLog);
+         LOG_INFO(string("error log=") + errorLog)
       }
    }
 }
@@ -730,12 +730,12 @@ void HttpServer::setupLogFiles(const SectionedConfigDataSource& dataSource) {
 //******************************************************************************
 
 void HttpServer::setupLogLevel(const KeyValuePairs& kvp) {
-   Logger::debug("setupLogLevel");
+   LOG_DEBUG("setupLogLevel")
    if (kvp.hasKey(CFG_SERVER_LOG_LEVEL)) {
       m_logLevel = kvp.getValue(CFG_SERVER_LOG_LEVEL);
       if (!m_logLevel.empty()) {
          StrUtils::toLowerCase(m_logLevel);
-         Logger::info(string("log level: ") + m_logLevel);
+         LOG_INFO(string("log level: ") + m_logLevel)
          Logger* logger = Logger::getLogger();
 
          if (logger != NULL) {
@@ -752,7 +752,7 @@ void HttpServer::setupLogLevel(const KeyValuePairs& kvp) {
             } else if (m_logLevel == CFG_LOGGING_VERBOSE) {
                logger->setLogLevel(Verbose);
             } else {
-               Logger::warning("unrecognized log level: '" + m_logLevel);
+               LOG_WARNING("unrecognized log level: '" + m_logLevel)
             }
          }
       }
@@ -762,7 +762,7 @@ void HttpServer::setupLogLevel(const KeyValuePairs& kvp) {
 //******************************************************************************
 
 void HttpServer::setupSocketBufferSizes(const chaudiere::KeyValuePairs& kvp) {
-   //Logger::debug("setupSocketBufferSizes");
+   //LOG_DEBUG("setupSocketBufferSizes")
    if (kvp.hasKey(CFG_SERVER_SEND_BUFFER_SIZE)) {
       const int buffSize =
          getIntValue(kvp, CFG_SERVER_SEND_BUFFER_SIZE);
@@ -785,7 +785,7 @@ void HttpServer::setupSocketBufferSizes(const chaudiere::KeyValuePairs& kvp) {
 //******************************************************************************
 
 void HttpServer::setupServerString(const chaudiere::KeyValuePairs& kvp) {
-   //Logger::debug("setupServerString");
+   //LOG_DEBUG("setupServerString")
    if (kvp.hasKey(CFG_SERVER_STRING)) {
       const string& serverString =
          kvp.getValue(CFG_SERVER_STRING);
@@ -813,14 +813,14 @@ void HttpServer::setupServerString(const chaudiere::KeyValuePairs& kvp) {
                   kvpVars.addPair("$OS_VERSION", systemInfo.version());
                   kvpVars.addPair("$OS_MACHINE", systemInfo.machine());
                } else {
-                  Logger::warning("unable to retrieve system information to populate server string");
+                  LOG_WARNING("unable to retrieve system information to populate server string")
                }
             }
                   
             replaceVariables(kvpVars, m_serverString);
          }
                
-         //Logger::info("setting server string: '" + m_serverString + "'");
+         //LOG_INFO("setting server string: '" + m_serverString + "'")
       }
    }
 }
@@ -828,16 +828,16 @@ void HttpServer::setupServerString(const chaudiere::KeyValuePairs& kvp) {
 //******************************************************************************
 
 bool HttpServer::setupHandlers(const chaudiere::SectionedConfigDataSource* dataSource) {
-   //Logger::debug("setupHandlers");
+   //LOG_DEBUG("setupHandlers")
    const bool isLoggingDebug = Logger::isLogging(Debug);
 
    if (m_allowBuiltInHandlers) {
-      //Logger::debug("adding built-in handlers");
+      //LOG_DEBUG("adding built-in handlers")
       addBuiltInHandlers();
    }
       
    if (isLoggingDebug) {
-      //Logger::debug("processing handlers");
+      //LOG_DEBUG("processing handlers")
    }
 
    KeyValuePairs kvpHandlers;
@@ -855,12 +855,12 @@ bool HttpServer::setupHandlers(const chaudiere::SectionedConfigDataSource* dataS
          const string& moduleSection = kvpHandlers.getValue(path);
 
          if (isLoggingDebug) {
-            Logger::debug("path='" + path + "'");
+            LOG_DEBUG("path='" + path + "'")
          }
             
          if (moduleSection.empty()) {
-            Logger::warning(string("nothing specified for path ") + path);
-            Logger::warning("Not servicing this path");
+            LOG_WARNING(string("nothing specified for path ") + path)
+            LOG_WARNING("Not servicing this path")
             continue;
          }
 
@@ -868,18 +868,18 @@ bool HttpServer::setupHandlers(const chaudiere::SectionedConfigDataSource* dataS
             KeyValuePairs kvpModule;
             if (dataSource->readSection(moduleSection, kvpModule)) {
                if (!kvpModule.hasKey(MODULE_DLL_NAME)) {
-                  Logger::error(MODULE_DLL_NAME +
-                                string(" not specified for module ") +
-                                moduleSection);
+                  LOG_ERROR(MODULE_DLL_NAME +
+                            string(" not specified for module ") +
+                            moduleSection)
                }
 
                const string& dllName = kvpModule.getValue(MODULE_DLL_NAME);
                HttpHandler* pHandler = NULL;
                   
                if (isLoggingDebug) {
-                  Logger::debug("trying to load dynamic library='" +
-                                dllName +
-                                "'");
+                  LOG_DEBUG("trying to load dynamic library='" +
+                            dllName +
+                            "'")
                }
                   
                DynamicLibrary* dll = new DynamicLibrary(dllName);
@@ -888,22 +888,22 @@ bool HttpServer::setupHandlers(const chaudiere::SectionedConfigDataSource* dataS
                try {
                   void* pfn = dll->resolve("CreateHandler");
                   if (pfn == NULL) {
-                     Logger::error("unable to find module library entry point");
+                     LOG_ERROR("unable to find module library entry point")
                   } else {
                      if (isLoggingDebug) {
-                        Logger::debug("dynamic library loaded");
+                        LOG_DEBUG("dynamic library loaded")
                      }
                   }
 
                   PFN_CREATE_HANDLER pfnCreateHandler = (PFN_CREATE_HANDLER) pfn;
                   pHandler = (*pfnCreateHandler)();
                } catch (const exception& e) {
-                  Logger::error(string("exception caught trying to load module library ") +
-                                dllName);
-                  Logger::error(string(e.what()));
+                  LOG_ERROR(string("exception caught trying to load module library ") +
+                            dllName)
+                  LOG_ERROR(e.what())
                } catch (...) {
-                  Logger::error(string("unable to load module library ") +
-                                dllName);
+                  LOG_ERROR(string("unable to load module library ") +
+                            dllName)
                }
 
                // continue loading application specific parameters for the module
@@ -930,19 +930,19 @@ bool HttpServer::setupHandlers(const chaudiere::SectionedConfigDataSource* dataS
                }
 
                if (isLoggingDebug) {
-                  //Logger::debug("initializing the handler");
+                  //LOG_DEBUG("initializing the handler")
                }
 
                // now initialize the servlet
                if (pHandler->init(path, kvpApp)) {
                   if (isLoggingDebug) {
-                     //Logger::debug("initialization succeeded");
+                     //LOG_DEBUG("initialization succeeded")
                   }
                      
                   // register it
                   if (!addPathHandler(path, pHandler)) {
-                     Logger::error(string("unable to register handler for path ") +
-                                   path);
+                     LOG_ERROR(string("unable to register handler for path ") +
+                               path)
                      
                      if (m_requireAllHandlersForStartup) {
                         return false;
@@ -951,8 +951,8 @@ bool HttpServer::setupHandlers(const chaudiere::SectionedConfigDataSource* dataS
                      m_mapPathLibraries[path] = dll;
                   }
                } else {
-                  Logger::error(string("unable to initialize handler for path ") +
-                                path);
+                  LOG_ERROR(string("unable to initialize handler for path ") +
+                            path)
                   if (m_requireAllHandlersForStartup) {
                      return false;
                   }
@@ -960,11 +960,11 @@ bool HttpServer::setupHandlers(const chaudiere::SectionedConfigDataSource* dataS
             }
          } else {
             if (!moduleSection.empty()) {
-               Logger::error(string("no configuration for handler ") +
-                             moduleSection);
+               LOG_ERROR(string("no configuration for handler ") +
+                         moduleSection)
             } else {
-               Logger::error(string("no configuration for handler ") +
-                             path);
+               LOG_ERROR(string("no configuration for handler ") +
+                         path)
             }
 
             if (m_requireAllHandlersForStartup) {
@@ -976,7 +976,7 @@ bool HttpServer::setupHandlers(const chaudiere::SectionedConfigDataSource* dataS
 
    // do we have any handlers?
    if (!m_allowBuiltInHandlers && m_mapPathHandlers.empty()) {
-      Logger::critical("no handlers registered");
+      LOG_CRITICAL("no handlers registered")
       return false;
    }
 
@@ -986,7 +986,7 @@ bool HttpServer::setupHandlers(const chaudiere::SectionedConfigDataSource* dataS
 //******************************************************************************
 
 void HttpServer::setupThreading(const chaudiere::KeyValuePairs& kvp) {
-   //Logger::debug("setupThreading");
+   //LOG_DEBUG("setupThreading")
    m_isThreaded = true;
    m_threading = CFG_THREADING_PTHREADS;
    m_threadPoolSize = 4;
@@ -1019,7 +1019,7 @@ void HttpServer::setupThreading(const chaudiere::KeyValuePairs& kvp) {
 //******************************************************************************
 
 void HttpServer::setupSocketHandling(const chaudiere::KeyValuePairs& kvp) {
-   //Logger::debug("setupSocketHandling");
+   //LOG_DEBUG("setupSocketHandling")
    m_sockets = CFG_SOCKETS_SOCKET_SERVER;
    if (kvp.hasKey(CFG_SERVER_SOCKETS)) {
       const string& sockets =
@@ -1034,16 +1034,16 @@ void HttpServer::setupSocketHandling(const chaudiere::KeyValuePairs& kvp) {
 //******************************************************************************
 
 void HttpServer::setupListeningPort(const chaudiere::KeyValuePairs& kvp) {
-   //Logger::debug("setupListeningPort");
+   //LOG_DEBUG("setupListeningPort")
    if (kvp.hasKey(CFG_SERVER_PORT)) {
       const int portNumber =
          getIntValue(kvp, CFG_SERVER_PORT);
       if (portNumber > 0) {
          m_serverPort = portNumber;
-         if (Logger::isLogging(Debug)) {
+         if (Logger::isLogging(LogLevel::Debug)) {
             char msg[128];
             ::snprintf(msg, 128, "port number=%d", m_serverPort);
-            Logger::debug(string(msg));
+            LOG_DEBUG(msg)
          }
       }
    }
@@ -1052,7 +1052,7 @@ void HttpServer::setupListeningPort(const chaudiere::KeyValuePairs& kvp) {
 //******************************************************************************
 
 void HttpServer::setupConcurrency() {
-   //Logger::debug("setupConcurrency");
+   //LOG_DEBUG("setupConcurrency")
    string concurrencyModel = EMPTY;
 
    if (m_isThreaded) {
@@ -1085,15 +1085,15 @@ void HttpServer::setupConcurrency() {
 //******************************************************************************
 
 bool HttpServer::setupServerSocket() {
-   //Logger::debug("setupServerSocket");
+   //LOG_DEBUG("setupServerSocket")
    if (!m_isUsingKernelEventServer) {
       try {
-         if (Logger::isLogging(Debug)) {
+         if (Logger::isLogging(LogLevel::Debug)) {
             //char msg[128];
             //::snprintf(msg, 128,
             //           "creating server socket on port=%d",
             //           m_serverPort);
-            //Logger::debug(string(msg));
+            //LOG_DEBUG(string(msg))
          }
 
          m_serverSocket = new ServerSocket(m_serverPort);
@@ -1101,7 +1101,7 @@ bool HttpServer::setupServerSocket() {
          string exception = "unable to open server socket port '";
          exception += StrUtils::toString(m_serverPort);
          exception += "'";
-         Logger::critical(exception);
+         LOG_CRITICAL(exception)
          return false;
       }
    }

@@ -15,13 +15,13 @@ using namespace chaudiere;
 
 HttpSocketServiceHandler::HttpSocketServiceHandler(HttpServer& httpServer) :
    m_httpServer(httpServer) {
-   Logger::logInstanceCreate("HttpSocketServiceHandler");
+   LOG_INSTANCE_CREATE("HttpSocketServiceHandler")
 }
 
 //******************************************************************************
 
 HttpSocketServiceHandler::~HttpSocketServiceHandler() {
-   Logger::logInstanceDestroy("HttpSocketServiceHandler");
+   LOG_INSTANCE_DESTROY("HttpSocketServiceHandler")
 }
 
 //******************************************************************************

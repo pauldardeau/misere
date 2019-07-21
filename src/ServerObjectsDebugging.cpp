@@ -17,13 +17,13 @@ using namespace chaudiere;
 //******************************************************************************
 
 ServerObjectsDebugging::ServerObjectsDebugging() {
-   Logger::logInstanceCreate("ServerObjectsDebugging");
+   LOG_INSTANCE_CREATE("ServerObjectsDebugging")
 }
 
 //******************************************************************************
 
 ServerObjectsDebugging::~ServerObjectsDebugging() {
-   Logger::logInstanceDestroy("ServerObjectsDebugging");
+   LOG_INSTANCE_DESTROY("ServerObjectsDebugging")
 }
 
 //******************************************************************************

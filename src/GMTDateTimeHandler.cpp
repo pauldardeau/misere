@@ -16,13 +16,13 @@ using namespace chaudiere;
 //******************************************************************************
 
 GMTDateTimeHandler::GMTDateTimeHandler() {
-   Logger::logInstanceCreate("GMTDateTimeHandler");
+   LOG_INSTANCE_CREATE("GMTDateTimeHandler")
 }
 
 //******************************************************************************
 
 GMTDateTimeHandler::~GMTDateTimeHandler() {
-   Logger::logInstanceDestroy("GMTDateTimeHandler");
+   LOG_INSTANCE_DESTROY("GMTDateTimeHandler")
 }
 
 //******************************************************************************

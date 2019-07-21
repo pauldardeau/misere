@@ -36,13 +36,13 @@ using namespace chaudiere;
 //******************************************************************************
 
 HttpClient::HttpClient() {
-   Logger::logInstanceCreate("HttpClient");
+   LOG_INSTANCE_CREATE("HttpClient")
 }
 
 //******************************************************************************
 
 HttpClient::~HttpClient() {
-   Logger::logInstanceDestroy("HttpClient");
+   LOG_INSTANCE_DESTROY("HttpClient")
 }
 
 //******************************************************************************
@@ -278,10 +278,10 @@ HttpResponse* HttpClient::sendReceive(const std::string& address,
    socket->setReceiveBufferSize(SOCKET_RECV_BUFFER_SIZE);
    socket->setIncludeMessageSize(false);
    
-   if (Logger::isLogging(Debug)) {
-      Logger::log(Debug, "*** start of send data ***");
-      Logger::log(Debug, sendBuffer);
-      Logger::log(Debug, "*** end of send data ***");
+   if (Logger::isLogging(LogLevel::Debug)) {
+      LOG_DEBUG("*** start of send data ***")
+      LOG_DEBUG(sendBuffer)
+      LOG_DEBUG("*** end of send data ***")
    }
 
    socket->write(sendBuffer);

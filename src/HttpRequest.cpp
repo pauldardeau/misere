@@ -94,7 +94,7 @@ HttpRequest::HttpRequest(const Url& url) :
    m_initialized(false),
    m_url(url) {
 
-   Logger::logInstanceCreate("HttpRequest");
+   LOG_INSTANCE_CREATE("HttpRequest")
 
    int port = url.port();
    if (port == 0) {
@@ -118,7 +118,7 @@ HttpRequest::HttpRequest(Socket* socket, bool socketOwned) :
    HttpTransaction(socket, socketOwned),
    m_initialized(false) {
 
-   Logger::logInstanceCreate("HttpRequest");
+   LOG_INSTANCE_CREATE("HttpRequest")
    m_initialized = streamFromSocket();
 }
 
@@ -130,13 +130,13 @@ HttpRequest::HttpRequest(const HttpRequest& copy) :
    m_path(copy.m_path),
    m_arguments(copy.m_arguments),
    m_initialized(copy.m_initialized) {
-   Logger::logInstanceCreate("HttpRequest");
+   LOG_INSTANCE_CREATE("HttpRequest")
 }
 
 //******************************************************************************
 
 HttpRequest::~HttpRequest() {
-   Logger::logInstanceDestroy("HttpRequest");
+   LOG_INSTANCE_DESTROY("HttpRequest")
 }
 
 //******************************************************************************
@@ -157,12 +157,6 @@ HttpRequest& HttpRequest::operator=(const HttpRequest& copy) {
 //******************************************************************************
 
 bool HttpRequest::streamFromSocket() {
-   //const bool isLoggingDebug = Logger::isLogging(Debug);
-   
-   //if (isLoggingDebug) {
-   //   Logger::debug("==== start of HttpRequest::streamFromSocket");
-   //}
-   
    bool streamSuccess = false;
   
    if (HttpTransaction::streamFromSocket()) {
@@ -394,6 +388,8 @@ bool HttpRequest::write(chaudiere::Socket* s) {
    return write(s, -1L);
 }
 
+//******************************************************************************
+
 bool HttpRequest::write(chaudiere::Socket* s, long bodyLength) {
    bool success = false;
    if (s != NULL) {
@@ -441,3 +437,4 @@ bool HttpRequest::write(chaudiere::Socket* s, long bodyLength) {
    return success;
 }
 
+//******************************************************************************

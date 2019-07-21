@@ -16,13 +16,13 @@ using namespace chaudiere;
 //******************************************************************************
 
 EchoHandler::EchoHandler() {
-   Logger::logInstanceCreate("EchoHandler");
+   LOG_INSTANCE_CREATE("EchoHandler")
 }
 
 //******************************************************************************
 
 EchoHandler::~EchoHandler() {
-   Logger::logInstanceDestroy("EchoHandler");
+   LOG_INSTANCE_DESTROY("EchoHandler")
 }
 
 //******************************************************************************

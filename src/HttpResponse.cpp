@@ -25,7 +25,7 @@ using namespace chaudiere;
 HttpResponse::HttpResponse() :
    m_statusCodeAsInteger(200) {
 
-   Logger::logInstanceCreate("HttpResponse");
+   LOG_INSTANCE_CREATE("HttpResponse")
    setContentType(TEXT_HTML);
 }
 
@@ -36,14 +36,14 @@ HttpResponse::HttpResponse(const HttpResponse& copy) :
    m_statusCode(copy.m_statusCode),
    m_reasonPhrase(copy.m_reasonPhrase),
    m_statusCodeAsInteger(copy.m_statusCodeAsInteger) {
-   Logger::logInstanceCreate("HttpResponse");
+   LOG_INSTANCE_CREATE("HttpResponse")
 }
 
 //******************************************************************************
 
 HttpResponse::HttpResponse(Socket* socket) :
    HttpTransaction(socket) {
-   Logger::logInstanceCreate("HttpResponse");
+   LOG_INSTANCE_CREATE("HttpResponse")
 
    if (!streamFromSocket()) {
       throw BasicException("unable to construct HttpResponse from Socket");
@@ -53,7 +53,7 @@ HttpResponse::HttpResponse(Socket* socket) :
 //******************************************************************************
 
 HttpResponse::~HttpResponse() {
-   Logger::logInstanceDestroy("HttpResponse");
+   LOG_INSTANCE_DESTROY("HttpResponse")
 }
 
 //******************************************************************************
@@ -171,8 +171,8 @@ bool HttpResponse::streamFromSocket2() {
 }
 
 bool HttpResponse::streamFromSocket() {
-   if (Logger::isLogging(Debug)) {
-      Logger::debug("******** start of HttpResponse::streamFromSocket");
+   if (Logger::isLogging(LogLevel::Debug)) {
+      LOG_DEBUG("******** start of HttpResponse::streamFromSocket")
    }
    
    bool streamSuccess = false;
@@ -188,7 +188,7 @@ bool HttpResponse::streamFromSocket() {
          m_statusCodeAsInteger = StrUtils::parseInt(m_statusCode);
 
          if (0 == m_statusCodeAsInteger) {
-            Logger::error("unable to parse status code");
+            LOG_ERROR("unable to parse status code")
             return false;
          } else if (m_statusCodeAsInteger >= 500) {
             std::string reasonPhrase;
@@ -305,7 +305,7 @@ bool HttpResponse::streamFromSocket() {
       
       streamSuccess = true;
    } else {
-      Logger::error("unable to parse headers");
+      LOG_ERROR("unable to parse headers")
    }
    
    return streamSuccess;

@@ -15,13 +15,13 @@ using namespace chaudiere;
 //******************************************************************************
 
 ServerDateTimeHandler::ServerDateTimeHandler() {
-   Logger::logInstanceCreate("ServerDateTimeHandler");
+   LOG_INSTANCE_CREATE("ServerDateTimeHandler")
 }
 
 //******************************************************************************
 
 ServerDateTimeHandler::~ServerDateTimeHandler() {
-   Logger::logInstanceDestroy("ServerDateTimeHandler");
+   LOG_INSTANCE_DESTROY("ServerDateTimeHandler")
 }
 
 //******************************************************************************

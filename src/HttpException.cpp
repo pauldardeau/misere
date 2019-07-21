@@ -13,7 +13,7 @@ HttpException::HttpException(int statusCode,
                              const std::string& reasonPhrase) :
    BasicException(reasonPhrase),
    m_statusCode(statusCode) {
-   Logger::logInstanceCreate("HttpException");
+   LOG_INSTANCE_CREATE("HttpException")
 }
 
 //******************************************************************************
@@ -21,13 +21,13 @@ HttpException::HttpException(int statusCode,
 HttpException::HttpException(const HttpException& copy) :
    BasicException(copy),
    m_statusCode(copy.m_statusCode) {
-   Logger::logInstanceCreate("HttpException");
+   LOG_INSTANCE_CREATE("HttpException")
 }
 
 //******************************************************************************
 
 HttpException::~HttpException() throw () {
-   Logger::logInstanceDestroy("HttpException");
+   LOG_INSTANCE_DESTROY("HttpException")
 }
 
 //******************************************************************************

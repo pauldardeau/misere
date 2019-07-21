@@ -48,7 +48,7 @@ HttpRequestHandler::HttpRequestHandler(HttpServer& server,
                                        SocketRequest* socketRequest) :
    RequestHandler(socketRequest),
    m_server(server) {
-   Logger::logInstanceCreate("HttpRequestHandler");
+   LOG_INSTANCE_CREATE("HttpRequestHandler")
    if (NULL != socketRequest) {
       setSocketOwned(false);
    }
@@ -60,13 +60,13 @@ HttpRequestHandler::HttpRequestHandler(HttpServer& server,
                                        Socket* socket) :
    RequestHandler(socket),
    m_server(server) {
-   Logger::logInstanceCreate("HttpRequestHandler");
+   LOG_INSTANCE_CREATE("HttpRequestHandler")
 }
 
 //******************************************************************************
 
 HttpRequestHandler::~HttpRequestHandler() {
-   Logger::logInstanceDestroy("HttpRequestHandler");
+   LOG_INSTANCE_DESTROY("HttpRequestHandler")
 }
 
 //******************************************************************************
@@ -75,7 +75,7 @@ void HttpRequestHandler::run() {
    Socket* socket = getSocket();
    
    if (NULL == socket) {
-      Logger::error("no socket or socket request present in RequestHandler");
+      LOG_ERROR("no socket or socket request present in RequestHandler")
       return;
    }
   
@@ -85,7 +85,7 @@ void HttpRequestHandler::run() {
 
    const bool isLoggingDebug = Logger::isLogging(Debug);
    if (isLoggingDebug) {
-      //Logger::debug("starting parse of HttpRequest");
+      //LOG_DEBUG("starting parse of HttpRequest")
    }
   
    HttpRequest request(socket, false);
@@ -93,7 +93,7 @@ void HttpRequestHandler::run() {
    if (request.isInitialized()) {
 
       if (isLoggingDebug) {
-         //Logger::debug("ending parse of HttpRequest");
+         //LOG_DEBUG("ending parse of HttpRequest")
       }
    
       //const std::string& method = request.getMethod();
@@ -114,17 +114,17 @@ void HttpRequestHandler::run() {
          }
       }
 
-      //Logger::countOccurrence(COUNT_PATH, routingPath);
+      //LOG_COUNT_OCCURRENCE(COUNT_PATH, routingPath)
       //if (request.hasHeaderValue(HTTP_USER_AGENT)) {
-      //   Logger::countOccurrence(COUNT_USER_AGENT,
-      //                           request.getHeaderValue(HTTP_USER_AGENT));
+      //   LOG_COUNT_OCCURRENCE(COUNT_USER_AGENT,
+      //                        request.getHeaderValue(HTTP_USER_AGENT))
       //}
    
       HttpHandler* pHandler = m_server.getPathHandler(routingPath);
       bool handlerAvailable = false;
    
       if (pHandler == NULL) {
-         Logger::info("no handler for request: " + routingPath);
+         LOG_INFO("no handler for request: " + routingPath)
       }
    
       // assume the worst
@@ -144,13 +144,13 @@ void HttpRequestHandler::run() {
       if ((HTTP::HTTP_PROTOCOL1_0 != protocol) &&
           (HTTP::HTTP_PROTOCOL1_1 != protocol)) {
          responseCode = HTTP::HTTP_RESP_SERV_ERR_HTTP_VERSION_UNSUPPORTED;
-         Logger::warning("unsupported protocol: " + protocol);
+         LOG_WARNING("unsupported protocol: " + protocol)
       } else if (NULL == pHandler) { // path recognized?
          responseCode = HTTP::HTTP_RESP_CLIENT_ERR_NOT_FOUND;
-         //Logger::warning("bad request: " + path);
+         LOG_WARNING("bad request: " + path)
       } else if (!pHandler->isAvailable()) { // is our handler available?
          responseCode = HTTP::HTTP_RESP_SERV_ERR_SERVICE_UNAVAILABLE;
-         Logger::warning("handler not available: " + routingPath);
+         LOG_WARNING("handler not available: " + routingPath)
       } else {
          handlerAvailable = true;
       }
@@ -158,12 +158,12 @@ void HttpRequestHandler::run() {
       //const std::string httpHeader = request.getRawHeader();
    
       //if (isLoggingDebug) {
-      //   Logger::debug("HttpServer method: " + method);
-      //   Logger::debug("HttpServer path: " + routingPath);
-      //   Logger::debug("HttpServer protocol: " + protocol);
+      //   LOG_DEBUG("HttpServer method: " + method)
+      //   LOG_DEBUG("HttpServer path: " + routingPath)
+      //   LOG_DEBUG("HttpServer protocol: " + protocol)
       
-      //   Logger::debug("HttpServer header:");
-      //   Logger::debug(httpHeader);
+      //   LOG_DEBUG("HttpServer header:")
+      //   LOG_DEBUG(httpHeader)
       //}
    
       int contentLength = 0;
@@ -196,7 +196,7 @@ void HttpRequestHandler::run() {
                         response.setBody(compressedResponseBody);
                         response.setContentEncoding(GZIP);
                      } catch (const std::exception& e) {
-                        Logger::error("unable to compress response");
+                        LOG_ERROR("unable to compress response")
                      }
                   }
                   */
@@ -206,13 +206,13 @@ void HttpRequestHandler::run() {
             response.populateWithHeaders(headers);
          } catch (const BasicException& be) {
             responseCode = HTTP::HTTP_RESP_SERV_ERR_INTERNAL_ERROR;
-            Logger::error("exception handling request: " + be.whatString());
+            LOG_ERROR("exception handling request: " + be.whatString())
          } catch (const std::exception& e) {
             responseCode = HTTP::HTTP_RESP_SERV_ERR_INTERNAL_ERROR;
-            Logger::error("exception handling request: " + std::string(e.what()));
+            LOG_ERROR("exception handling request: " + std::string(e.what()))
          } catch (...) {
             responseCode = HTTP::HTTP_RESP_SERV_ERR_INTERNAL_ERROR;
-            Logger::error("unknown exception handling request");
+            LOG_ERROR("unknown exception handling request")
          }
       }
 
@@ -258,7 +258,7 @@ void HttpRequestHandler::run() {
 
       /*
        if (isLoggingDebug) {
-         Logger::debug("response written, calling read so that client can close first");
+         LOG_DEBUG("response written, calling read so that client can close first")
        }
    
        // invoke a read to give the client the chance to close the socket
