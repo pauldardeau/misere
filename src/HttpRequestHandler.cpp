@@ -49,7 +49,7 @@ HttpRequestHandler::HttpRequestHandler(HttpServer& server,
    RequestHandler(socketRequest),
    m_server(server) {
    LOG_INSTANCE_CREATE("HttpRequestHandler")
-   if (NULL != socketRequest) {
+   if (nullptr != socketRequest) {
       setSocketOwned(false);
    }
 }
@@ -74,7 +74,7 @@ HttpRequestHandler::~HttpRequestHandler() {
 void HttpRequestHandler::run() {
    Socket* socket = getSocket();
    
-   if (NULL == socket) {
+   if (nullptr == socket) {
       LOG_ERROR("no socket or socket request present in RequestHandler")
       return;
    }
@@ -123,7 +123,7 @@ void HttpRequestHandler::run() {
       HttpHandler* pHandler = m_server.getPathHandler(routingPath);
       bool handlerAvailable = false;
    
-      if (pHandler == NULL) {
+      if (pHandler == nullptr) {
          LOG_INFO("no handler for request: " + routingPath)
       }
    
@@ -145,7 +145,7 @@ void HttpRequestHandler::run() {
           (HTTP::HTTP_PROTOCOL1_1 != protocol)) {
          responseCode = HTTP::HTTP_RESP_SERV_ERR_HTTP_VERSION_UNSUPPORTED;
          LOG_WARNING("unsupported protocol: " + protocol)
-      } else if (NULL == pHandler) { // path recognized?
+      } else if (nullptr == pHandler) { // path recognized?
          responseCode = HTTP::HTTP_RESP_CLIENT_ERR_NOT_FOUND;
          LOG_WARNING("bad request: " + path)
       } else if (!pHandler->isAvailable()) { // is our handler available?
@@ -169,12 +169,12 @@ void HttpRequestHandler::run() {
       int contentLength = 0;
       HttpResponse response;
    
-      if ((NULL != pHandler) && handlerAvailable) {
+      if ((nullptr != pHandler) && handlerAvailable) {
          try {
             pHandler->serviceRequest(request, response);
             responseCode = StrUtils::toString(response.getStatusCode());
             const ByteBuffer* responseBody = response.getBody();
-            if (responseBody != NULL) {
+            if (responseBody != nullptr) {
                contentLength = responseBody->size();
             }
 
@@ -251,7 +251,7 @@ void HttpRequestHandler::run() {
    
       if (contentLength > 0) {
          const ByteBuffer* body = response.getBody();
-         if (body != NULL) {
+         if (body != nullptr) {
             socket->write(body->const_data(), body->size());
          }
       }
@@ -268,7 +268,7 @@ void HttpRequestHandler::run() {
        char readBuffer[5];
        socket->read(readBuffer, 4);
    
-      //if (m_socketRequest != NULL) {
+      //if (m_socketRequest != nullptr) {
       //   m_socketRequest->requestComplete();
       //}
        */

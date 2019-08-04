@@ -11,66 +11,68 @@
 #include "Logger.h"
 #include "HTTP.h"
 
-static const std::string ENC_DOUBLE_QUOTE  = "%22";   // "
-static const std::string ENC_SINGLE_QUOTE  = "%27";   // '
-static const std::string ENC_AMPERSAND     = "%26";   // &
-static const std::string ENC_PERCENT       = "%25";   // %
-static const std::string ENC_ATSIGN        = "%40";   // @
-static const std::string ENC_DOLLAR        = "%24";   // $
-static const std::string ENC_POUND         = "%23";   // #
-static const std::string ENC_EXCLAMATION   = "%21";   // !
-static const std::string ENC_TILDE         = "%7E";   // ~
-static const std::string ENC_CARET         = "%5E";   // ^
-static const std::string ENC_OPEN_PAREN    = "%28";   // (
-static const std::string ENC_CLOSE_PAREN   = "%29";   // )
-static const std::string ENC_PLUS          = "%2B";   // +
-static const std::string ENC_BACKTICK      = "%60";   // `
-static const std::string ENC_EQUAL         = "%3D";   // =
-static const std::string ENC_OPEN_BRACE    = "%7B";   // {
-static const std::string ENC_CLOSE_BRACE   = "%7D";   // }
-static const std::string ENC_VERT_BAR      = "%7C";   // |
-static const std::string ENC_OPEN_BRACKET  = "%5B";   // [
-static const std::string ENC_CLOSE_BRACKET = "%5D";   // ]
-static const std::string ENC_BACKSLASH     = "%5C";   //
-static const std::string ENC_COLON         = "%3A";   // :
-static const std::string ENC_SEMICOLON     = "%3B";   // ;
-static const std::string ENC_LESS_THAN     = "%3C";   // <
-static const std::string ENC_GREATER_THAN  = "%3E";   // >
-static const std::string ENC_QUESTION      = "%3F";   // ?
-static const std::string ENC_COMMA         = "%2C";   // ,
-static const std::string ENC_SLASH         = "%2F";   // /
+using namespace std;
 
-static const std::string DOUBLE_QUOTE  = "\"";
-static const std::string SINGLE_QUOTE  = "'";
-static const std::string AMPERSAND     = "&";
-static const std::string PERCENT       = "%";
-static const std::string ATSIGN        = "@";
-static const std::string DOLLAR        = "$";
-static const std::string POUND         = "#";
-static const std::string EXCLAMATION   = "!";
-static const std::string TILDE         = "~";
-static const std::string CARET         = "^";
-static const std::string OPEN_PAREN    = "(";
-static const std::string CLOSE_PAREN   = ")";
-static const std::string PLUS          = "+";
-static const std::string BACKTICK      = "`";
-static const std::string EQUAL         = "=";   // =
-static const std::string OPEN_BRACE    = "{";   // {
-static const std::string CLOSE_BRACE   = "}";   // }
-static const std::string VERT_BAR      = "|";   // |
-static const std::string OPEN_BRACKET  = "[";   // [
-static const std::string CLOSE_BRACKET = "]";   // ]
-static const std::string BACKSLASH     = "\\";   //
-static const std::string COLON         = ":";   // :
-static const std::string SEMICOLON     = ";";   // ;
-static const std::string LESS_THAN     = "<";   // <
-static const std::string GREATER_THAN  = ">";   // >
-static const std::string QUESTION      = "?";   // ?
-static const std::string COMMA         = ",";   // ,
-static const std::string SLASH         = "/";   // /
-static const std::string SPACE         = " ";
+static const string ENC_DOUBLE_QUOTE  = "%22";   // "
+static const string ENC_SINGLE_QUOTE  = "%27";   // '
+static const string ENC_AMPERSAND     = "%26";   // &
+static const string ENC_PERCENT       = "%25";   // %
+static const string ENC_ATSIGN        = "%40";   // @
+static const string ENC_DOLLAR        = "%24";   // $
+static const string ENC_POUND         = "%23";   // #
+static const string ENC_EXCLAMATION   = "%21";   // !
+static const string ENC_TILDE         = "%7E";   // ~
+static const string ENC_CARET         = "%5E";   // ^
+static const string ENC_OPEN_PAREN    = "%28";   // (
+static const string ENC_CLOSE_PAREN   = "%29";   // )
+static const string ENC_PLUS          = "%2B";   // +
+static const string ENC_BACKTICK      = "%60";   // `
+static const string ENC_EQUAL         = "%3D";   // =
+static const string ENC_OPEN_BRACE    = "%7B";   // {
+static const string ENC_CLOSE_BRACE   = "%7D";   // }
+static const string ENC_VERT_BAR      = "%7C";   // |
+static const string ENC_OPEN_BRACKET  = "%5B";   // [
+static const string ENC_CLOSE_BRACKET = "%5D";   // ]
+static const string ENC_BACKSLASH     = "%5C";   //
+static const string ENC_COLON         = "%3A";   // :
+static const string ENC_SEMICOLON     = "%3B";   // ;
+static const string ENC_LESS_THAN     = "%3C";   // <
+static const string ENC_GREATER_THAN  = "%3E";   // >
+static const string ENC_QUESTION      = "%3F";   // ?
+static const string ENC_COMMA         = "%2C";   // ,
+static const string ENC_SLASH         = "%2F";   // /
 
-static const std::string EOL = "\r\n";
+static const string DOUBLE_QUOTE  = "\"";
+static const string SINGLE_QUOTE  = "'";
+static const string AMPERSAND     = "&";
+static const string PERCENT       = "%";
+static const string ATSIGN        = "@";
+static const string DOLLAR        = "$";
+static const string POUND         = "#";
+static const string EXCLAMATION   = "!";
+static const string TILDE         = "~";
+static const string CARET         = "^";
+static const string OPEN_PAREN    = "(";
+static const string CLOSE_PAREN   = ")";
+static const string PLUS          = "+";
+static const string BACKTICK      = "`";
+static const string EQUAL         = "=";   // =
+static const string OPEN_BRACE    = "{";   // {
+static const string CLOSE_BRACE   = "}";   // }
+static const string VERT_BAR      = "|";   // |
+static const string OPEN_BRACKET  = "[";   // [
+static const string CLOSE_BRACKET = "]";   // ]
+static const string BACKSLASH     = "\\";   //
+static const string COLON         = ":";   // :
+static const string SEMICOLON     = ";";   // ;
+static const string LESS_THAN     = "<";   // <
+static const string GREATER_THAN  = ">";   // >
+static const string QUESTION      = "?";   // ?
+static const string COMMA         = ",";   // ,
+static const string SLASH         = "/";   // /
+static const string SPACE         = " ";
+
+static const string EOL = "\r\n";
 
 using namespace misere;
 using namespace chaudiere;
@@ -83,7 +85,7 @@ HttpRequest* HttpRequest::create(const Url& url) {
 
 //******************************************************************************
 
-HttpRequest* HttpRequest::create(const std::string& urlText) {
+HttpRequest* HttpRequest::create(const string& urlText) {
    Url url(urlText);
    return new HttpRequest(url);
 }
@@ -160,9 +162,9 @@ bool HttpRequest::streamFromSocket() {
    bool streamSuccess = false;
   
    if (HttpTransaction::streamFromSocket()) {
-      const std::string& firstLine = getFirstHeaderLine(); 
+      const string& firstLine = getFirstHeaderLine(); 
       StringTokenizer st(firstLine, " ");
-      std::vector<std::string> reqLineValues;
+      vector<string> reqLineValues;
       if (st.countTokens() != 3) {
          //throw BasicException("unable to parse headers");
          return false;
@@ -194,50 +196,50 @@ bool HttpRequest::isInitialized() const {
 
 //******************************************************************************
 
-const std::string& HttpRequest::getRequest() const {
+const string& HttpRequest::getRequest() const {
    return getFirstHeaderLine();
 }
 
 //******************************************************************************
 
-const std::string& HttpRequest::getMethod() const {
+const string& HttpRequest::getMethod() const {
    return m_method;
 }
 
 //******************************************************************************
 
-const std::string& HttpRequest::getPath() const {
+const string& HttpRequest::getPath() const {
    return m_path;
 }
 
 //******************************************************************************
 
-bool HttpRequest::hasArgument(const std::string& key) const {
+bool HttpRequest::hasArgument(const string& key) const {
    return m_arguments.hasKey(key);
 }
 
 //******************************************************************************
 
-const std::string& HttpRequest::getArgument(const std::string& key) const {
+const string& HttpRequest::getArgument(const string& key) const {
    return m_arguments.getValue(key);
 }
 
 //******************************************************************************
 
-void HttpRequest::getArgumentKeys(std::vector<std::string>& vecKeys) const {
+void HttpRequest::getArgumentKeys(vector<string>& vecKeys) const {
    m_arguments.getKeys(vecKeys);
 }
 
 //******************************************************************************
 /*
 void HttpRequest::parseBody() {
-   const std::string& body = getBody();
+   const string& body = getBody();
    
    if (!body.empty() && StrUtils::containsString(body, AMPERSAND)) {
       StringTokenizer st1(body, AMPERSAND);
 
       while (st1.hasMoreTokens()) {
-         std::string pair(st1.nextToken());
+         string pair(st1.nextToken());
 
          StrUtils::replaceAll(pair, PLUS, SPACE);
          StrUtils::replaceAll(pair, ENC_DOUBLE_QUOTE, DOUBLE_QUOTE);
@@ -268,10 +270,10 @@ void HttpRequest::parseBody() {
          StrUtils::replaceAll(pair, ENC_COMMA, COMMA);
          StrUtils::replaceAll(pair, ENC_SLASH, SLASH);
 
-         const std::string::size_type posEqual = pair.find('=');
-         if (posEqual != std::string::npos) {
-            const std::string& key = pair.substr(0, posEqual);
-            std::string value(pair.substr(posEqual + 1));
+         const string::size_type posEqual = pair.find('=');
+         if (posEqual != string::npos) {
+            const string& key = pair.substr(0, posEqual);
+            string value(pair.substr(posEqual + 1));
             StrUtils::replaceAll(value, ENC_EQUAL, EQUAL);
             m_arguments.addPair(key, value);
          }
@@ -323,56 +325,56 @@ bool HttpRequest::hasUserAgent() const {
 
 //******************************************************************************
 
-const std::string& HttpRequest::getAccept() const {
+const string& HttpRequest::getAccept() const {
    return getHeaderValue(HTTP::HTTP_ACCEPT);
 }
 
 //******************************************************************************
 
-const std::string& HttpRequest::getAcceptEncoding() const {
+const string& HttpRequest::getAcceptEncoding() const {
    return getHeaderValue(HTTP::HTTP_ACCEPT_ENCODING);
 }
 
 //******************************************************************************
 
-const std::string& HttpRequest::getAcceptLanguage() const {
+const string& HttpRequest::getAcceptLanguage() const {
    return getHeaderValue(HTTP::HTTP_ACCEPT_LANGUAGE);
 }
 
 //******************************************************************************
 
-const std::string& HttpRequest::getConnection() const {
+const string& HttpRequest::getConnection() const {
    return getHeaderValue(HTTP::HTTP_CONNECTION);
 }
 
 //******************************************************************************
 
-const std::string& HttpRequest::getDNT() const {
+const string& HttpRequest::getDNT() const {
    return getHeaderValue("dnt");
 }
 
 //******************************************************************************
 
-const std::string& HttpRequest::getHost() const {
+const string& HttpRequest::getHost() const {
    return getHeaderValue(HTTP::HTTP_HOST);
 }
 
 //******************************************************************************
 
-const std::string& HttpRequest::getUserAgent() const {
+const string& HttpRequest::getUserAgent() const {
    return getHeaderValue(HTTP::HTTP_USER_AGENT);
 }
 
 //******************************************************************************
 
-void HttpRequest::setMethod(const std::string& method) {
+void HttpRequest::setMethod(const string& method) {
    m_method = method;
 }
 
 //******************************************************************************
 
-void HttpRequest::setHeaderValue(const std::string& key,
-                                 const std::string& value) {
+void HttpRequest::setHeaderValue(const string& key,
+                                 const string& value) {
    m_arguments.addPair(key, value);
 }
 
@@ -392,9 +394,9 @@ bool HttpRequest::write(chaudiere::Socket* s) {
 
 bool HttpRequest::write(chaudiere::Socket* s, long bodyLength) {
    bool success = false;
-   if (s != NULL) {
-      const std::string& method = getMethod();
-      const std::string& path = getPath();
+   if (s != nullptr) {
+      const string& method = getMethod();
+      const string& path = getPath();
       if (method.length() == 0) {
          return false;
       }
@@ -408,7 +410,7 @@ bool HttpRequest::write(chaudiere::Socket* s, long bodyLength) {
                         StrUtils::toString(bodyLength));
       }
 
-      std::string headers;
+      string headers;
       headers += method;
       headers += " ";
       headers += path;
@@ -416,13 +418,10 @@ bool HttpRequest::write(chaudiere::Socket* s, long bodyLength) {
       headers += "HTTP/1.1";
       headers += EOL;
 
-      std::vector<std::string> headerKeys;
+      vector<string> headerKeys;
       m_arguments.getKeys(headerKeys);
 
-      std::vector<std::string>::iterator it = headerKeys.begin();
-      const std::vector<std::string>::const_iterator itEnd = headerKeys.end();
-      for (; it != itEnd; it++) {
-         const std::string& headerKey = *it;
+      for (const string& headerKey : headerKeys) {
          headers += headerKey;
          headers += ": ";
          headers += m_arguments.getValue(headerKey);

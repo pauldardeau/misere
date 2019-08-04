@@ -25,7 +25,7 @@ using namespace chaudiere;
 //******************************************************************************
 
 HttpTransaction::HttpTransaction(chaudiere::Socket* socket, bool socketOwned) :
-   m_body(NULL),
+   m_body(nullptr),
    m_contentLength(0),
    m_socket(socket),
    m_socketOwned(socketOwned) {
@@ -37,28 +37,28 @@ HttpTransaction::HttpTransaction(const HttpTransaction& copy) :
    m_vecHeaderLines(copy.m_vecHeaderLines),
    m_vecRequestLineValues(copy.m_vecRequestLineValues),
    m_header(copy.m_header),
-   m_body(NULL),
+   m_body(nullptr),
    m_protocol(copy.m_protocol),
    m_firstHeaderLine(copy.m_firstHeaderLine),
    m_headers(copy.m_headers),
    m_method(copy.m_method),
    m_contentLength(copy.m_contentLength),
-   m_socket(NULL),
+   m_socket(nullptr),
    m_socketOwned(false) {
 }
 
 //******************************************************************************
 
 HttpTransaction::~HttpTransaction() {
-   if ((m_socket != NULL) && m_socketOwned) {
+   if ((m_socket != nullptr) && m_socketOwned) {
       delete m_socket;
    }
-   m_socket = NULL;
+   m_socket = nullptr;
    m_socketOwned = false;
 
-   if (m_body != NULL) {
+   if (m_body != nullptr) {
       delete m_body;
-      m_body = NULL;
+      m_body = nullptr;
    }
 }
 
@@ -78,11 +78,11 @@ HttpTransaction& HttpTransaction::operator=(const HttpTransaction& copy) {
    m_headers = copy.m_headers;
    m_method = copy.m_method;
    m_contentLength = copy.m_contentLength;
-   if (m_socket != NULL) {
+   if (m_socket != nullptr) {
       if (m_socketOwned) {
          delete m_socket;
       }
-      m_socket = NULL;
+      m_socket = nullptr;
       m_socketOwned = false;
    }
    if (!copy.m_socketOwned) {
@@ -171,7 +171,7 @@ const ByteBuffer* HttpTransaction::getBody() const {
 
 ByteBuffer* HttpTransaction::takeBody() {
    ByteBuffer* buffer = m_body;
-   m_body = NULL;
+   m_body = nullptr;
    return buffer;
 }
 
@@ -268,10 +268,10 @@ void HttpTransaction::populateWithHeaders(KeyValuePairs& headers) {
 //******************************************************************************
 
 void HttpTransaction::close() {
-   if (m_socket != NULL) {
+   if (m_socket != nullptr) {
       m_socket->close();
       delete m_socket;
-      m_socket = NULL;
+      m_socket = nullptr;
       m_socketOwned = false;
    }
 }
@@ -287,7 +287,7 @@ void HttpTransaction::setSocket(Socket* s, bool socketOwned) {
 
 Socket* HttpTransaction::takeSocket() {
    Socket* s = m_socket;
-   m_socket = NULL;
+   m_socket = nullptr;
    m_socketOwned = false;
    return s;
 }

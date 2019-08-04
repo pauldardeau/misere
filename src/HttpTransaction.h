@@ -26,7 +26,7 @@ class HttpTransaction
       /**
        * Default constructor
        */
-      HttpTransaction(chaudiere::Socket* socket=NULL, bool socketOwned=true);
+      HttpTransaction(chaudiere::Socket* socket=nullptr, bool socketOwned=true);
    
       /**
        * Copy constructor
@@ -54,14 +54,14 @@ class HttpTransaction
    
       /**
        * Retrieves the body (content) associated with the request or response
-       * @return the body as raw buffer (NULL if none was set)
+       * @return the body as raw buffer (nullptr if none was set)
        */
       const chaudiere::ByteBuffer* getBody() const;
 
       /**
        * Retrieves the body (content) associated with the request or response
        * and relinquishes ownership of the buffer (must be freed by caller)
-       * @return the body buffer (NULL if none was set)
+       * @return the body buffer (nullptr if none was set)
        */
       chaudiere::ByteBuffer* takeBody();
    

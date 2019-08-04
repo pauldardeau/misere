@@ -129,6 +129,7 @@ static const char* LOG_MONTH_NAME[12] = {
    "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
 };
 
+using namespace std;
 using namespace misere;
 using namespace chaudiere;
 
@@ -138,10 +139,10 @@ typedef HttpHandler* (*PFN_CREATE_HANDLER)();
 //******************************************************************************
 //******************************************************************************
 
-HttpServer::HttpServer(const std::string& configFilePath) :
-   m_serverSocket(NULL),
-   m_threadPool(NULL),
-   m_threadingFactory(NULL),
+HttpServer::HttpServer(const string& configFilePath) :
+   m_serverSocket(nullptr),
+   m_threadPool(nullptr),
+   m_threadingFactory(nullptr),
    m_configFilePath(configFilePath),
    m_isDone(false),
    m_isThreaded(true),
@@ -179,14 +180,14 @@ int HttpServer::getSocketReceiveBufferSize() const {
 
 //******************************************************************************
 
-const std::string& HttpServer::getServerId() const {
+const string& HttpServer::getServerId() const {
    return m_serverString;
 }
 
 //******************************************************************************
 
 bool HttpServer::hasTrueValue(const KeyValuePairs& kvp,
-                              const std::string& setting) const {
+                              const string& setting) const {
    bool hasTrueValue = false;
    
    if (kvp.hasKey(setting)) {
@@ -203,7 +204,7 @@ bool HttpServer::hasTrueValue(const KeyValuePairs& kvp,
 //******************************************************************************
 
 int HttpServer::getIntValue(const KeyValuePairs& kvp,
-                            const std::string& setting) const {
+                            const string& setting) const {
    int value = -1;
    
    if (kvp.hasKey(setting)) {
@@ -226,15 +227,12 @@ int HttpServer::getIntValue(const KeyValuePairs& kvp,
 //******************************************************************************
 
 void HttpServer::replaceVariables(const KeyValuePairs& kvp,
-                                  std::string& s) const {
+                                  string& s) const {
    if (!s.empty()) {
       vector<string> keys;
       kvp.getKeys(keys);
-      vector<string>::const_iterator it = keys.begin();
-      const vector<string>::const_iterator itEnd = keys.end();
       
-      for (; it != itEnd; it++) {
-         const string& key = *it;
+      for (const string& key : keys) {
          if (StrUtils::containsString(s, key)) {
             StrUtils::replaceAll(s, key, kvp.getValue(key));
          }
@@ -264,7 +262,7 @@ void HttpServer::outputStartupMessage() {
 bool HttpServer::init(int port) {
    m_serverPort = port;
 
-   AutoPointer<SectionedConfigDataSource*> configDataSource(NULL);
+   AutoPointer<SectionedConfigDataSource*> configDataSource(nullptr);
    bool haveDataSource = false;
    
    try {
@@ -349,16 +347,12 @@ HttpServer::~HttpServer() {
       delete m_threadPool;
    }
 
-   if (m_threadingFactory != NULL) {
+   if (m_threadingFactory != nullptr) {
       delete m_threadingFactory;
    }
 
-   unordered_map<string,HttpHandler*>::iterator it =
-      m_mapPathHandlers.begin();
-   const unordered_map<string,HttpHandler*>::const_iterator itEnd =
-      m_mapPathHandlers.end();
-   for (; it != itEnd; it++) {
-      delete it->second;
+   for (auto& kv : m_mapPathHandlers) {
+      delete kv.second;
    }
 
    m_mapPathHandlers.erase(m_mapPathHandlers.begin(),
@@ -367,7 +361,7 @@ HttpServer::~HttpServer() {
 
 //******************************************************************************
 
-std::string HttpServer::getSystemDateGMT() const {
+string HttpServer::getSystemDateGMT() const {
    time_t currentGMT;
    ::time(&currentGMT);
    
@@ -389,7 +383,7 @@ std::string HttpServer::getSystemDateGMT() const {
 
 //******************************************************************************
 
-std::string HttpServer::getLocalDateTime() const {
+string HttpServer::getLocalDateTime() const {
    time_t currentTime;
    ::time(&currentTime);
    
@@ -410,7 +404,7 @@ std::string HttpServer::getLocalDateTime() const {
 
 //******************************************************************************
 
-bool HttpServer::compressResponse(const std::string& mimeType) const {
+bool HttpServer::compressResponse(const string& mimeType) const {
    //TODO: make this configurable through config file
    return (mimeType == MIME_TEXT_HTML) ||
           (mimeType == MIME_TEXT_PLAIN) ||
@@ -432,11 +426,11 @@ int HttpServer::minimumCompressionSize() const {
 
 //******************************************************************************
 
-bool HttpServer::addPathHandler(const std::string& path,
+bool HttpServer::addPathHandler(const string& path,
                                 HttpHandler* pHandler) {
    bool isSuccess = false;
 
-   if (!path.empty() && (NULL != pHandler)) {
+   if (!path.empty() && (nullptr != pHandler)) {
       m_mapPathHandlers[path] = pHandler;
       isSuccess = true;
    }
@@ -446,7 +440,7 @@ bool HttpServer::addPathHandler(const std::string& path,
 
 //******************************************************************************
 
-bool HttpServer::removePathHandler(const std::string& path) {
+bool HttpServer::removePathHandler(const string& path) {
    bool isSuccess = false;
    unordered_map<string,HttpHandler*>::iterator it =
       m_mapPathHandlers.find(path);
@@ -462,18 +456,18 @@ bool HttpServer::removePathHandler(const std::string& path) {
 
 //******************************************************************************
 
-HttpHandler* HttpServer::getPathHandler(const std::string& path) {
+HttpHandler* HttpServer::getPathHandler(const string& path) {
    unordered_map<string,HttpHandler*>::iterator it = m_mapPathHandlers.find(path);
    if (it != m_mapPathHandlers.end()) {
       return (*it).second;
    }
 
-   return NULL;
+   return nullptr;
 }
 
 //******************************************************************************
 
-std::string HttpServer::buildHeader(const std::string& responseCode,
+string HttpServer::buildHeader(const string& responseCode,
                                     const chaudiere::KeyValuePairs& headers) const {
    string sb;
    if (!responseCode.empty()) {
@@ -485,11 +479,8 @@ std::string HttpServer::buildHeader(const std::string& responseCode,
 
    vector<string> keys;
    headers.getKeys(keys);
-   const vector<string>::const_iterator itEnd = keys.end();
-   vector<string>::const_iterator it = keys.begin();
 
-   for ( ; it != itEnd; ++it) {
-      const string& headerKey = *it;
+   for (const string& headerKey : keys) {
       sb += headerKey;  // header key
       
       if (!StrUtils::endsWith(headerKey, COLON)) {
@@ -527,7 +518,7 @@ int HttpServer::platformPointerSizeBits() const {
 //******************************************************************************
 
 void HttpServer::serviceSocket(SocketRequest* socketRequest) {
-   if (NULL != m_threadPool) {
+   if (nullptr != m_threadPool) {
       // Hand off the request to the thread pool for asynchronous processing
       HttpRequestHandler* requestHandler =
          new HttpRequestHandler(*this, socketRequest);
@@ -557,7 +548,7 @@ int HttpServer::runSocketServer() {
    while (!m_isDone) {
       Socket* socket = m_serverSocket->accept();
 
-      if (NULL == socket) {
+      if (nullptr == socket) {
          continue;
       }
 
@@ -567,7 +558,7 @@ int HttpServer::runSocketServer() {
       //}
 
       try {
-         if (m_isThreaded && (NULL != m_threadPool)) {
+         if (m_isThreaded && (nullptr != m_threadPool)) {
             HttpRequestHandler* handler =
                new HttpRequestHandler(*this, socket);
             handler->setThreadPooling(true);
@@ -605,11 +596,11 @@ int HttpServer::runKernelEventServer() {
    const int MAX_CON = 1200;
    int rc = 0;
    
-   if (m_threadingFactory != NULL) {
+   if (m_threadingFactory != nullptr) {
       Mutex* mutexFD = m_threadingFactory->createMutex("fdMutex");
       Mutex* mutexHWMConnections =
          m_threadingFactory->createMutex("hwmConnectionsMutex");
-      AutoPointer<KernelEventServer*> kernelEventServer(NULL);
+      AutoPointer<KernelEventServer*> kernelEventServer(nullptr);
       
       if (KqueueServer::isSupportedPlatform()) {
          kernelEventServer.assign(
@@ -670,9 +661,9 @@ int HttpServer::run() {
 
 //******************************************************************************
 
-void HttpServer::logRequest(const std::string& clientIPAddress,
-                            const std::string& requestLine,
-                            const std::string& responseCode) {
+void HttpServer::logRequest(const string& clientIPAddress,
+                            const string& requestLine,
+                            const string& responseCode) {
    logRequest(clientIPAddress,
               requestLine,
               responseCode,
@@ -681,10 +672,10 @@ void HttpServer::logRequest(const std::string& clientIPAddress,
 
 //******************************************************************************
 
-void HttpServer::logRequest(const std::string& clientIPAddress,
-                            const std::string& requestLine,
-                            const std::string& responseCode,
-                            const std::string& workerThreadId) {
+void HttpServer::logRequest(const string& clientIPAddress,
+                            const string& requestLine,
+                            const string& responseCode,
+                            const string& workerThreadId) {
    const string localDateTime = getLocalDateTime();
 
    if (!workerThreadId.empty()) {
@@ -738,7 +729,7 @@ void HttpServer::setupLogLevel(const KeyValuePairs& kvp) {
          LOG_INFO(string("log level: ") + m_logLevel)
          Logger* logger = Logger::getLogger();
 
-         if (logger != NULL) {
+         if (logger != nullptr) {
             if (m_logLevel == CFG_LOGGING_CRITICAL) {
                logger->setLogLevel(Critical);
             } else if (m_logLevel == CFG_LOGGING_ERROR) {
@@ -847,11 +838,7 @@ bool HttpServer::setupHandlers(const chaudiere::SectionedConfigDataSource* dataS
       vector<string> vecKeys;
       kvpHandlers.getKeys(vecKeys);
 
-      vector<string>::const_iterator it = vecKeys.begin();
-      const vector<string>::const_iterator itEnd = vecKeys.end();
-
-      for ( ; it != itEnd; ++it) {
-         const string& path = (*it);
+      for (const string& path : vecKeys) {
          const string& moduleSection = kvpHandlers.getValue(path);
 
          if (isLoggingDebug) {
@@ -874,7 +861,7 @@ bool HttpServer::setupHandlers(const chaudiere::SectionedConfigDataSource* dataS
                }
 
                const string& dllName = kvpModule.getValue(MODULE_DLL_NAME);
-               HttpHandler* pHandler = NULL;
+               HttpHandler* pHandler = nullptr;
                   
                if (isLoggingDebug) {
                   LOG_DEBUG("trying to load dynamic library='" +
@@ -887,7 +874,7 @@ bool HttpServer::setupHandlers(const chaudiere::SectionedConfigDataSource* dataS
                // load the dll
                try {
                   void* pfn = dll->resolve("CreateHandler");
-                  if (pfn == NULL) {
+                  if (pfn == nullptr) {
                      LOG_ERROR("unable to find module library entry point")
                   } else {
                      if (isLoggingDebug) {
@@ -910,16 +897,9 @@ bool HttpServer::setupHandlers(const chaudiere::SectionedConfigDataSource* dataS
                vector<string> vecModuleKeys;
                kvpModule.getKeys(vecModuleKeys);
 
-               vector<string>::const_iterator itMod =
-                  vecModuleKeys.begin();
-               const vector<string>::const_iterator itModEnd =
-                  vecModuleKeys.end();
-
                KeyValuePairs kvpApp;
 
-               for ( ; itMod != itModEnd; ++itMod) {
-                  const string& moduleKey = (*itMod);
-
+               for (const string& moduleKey : vecModuleKeys) {
                   // starts with app prefix?
                   if (StrUtils::startsWith(moduleKey, APP_PREFIX)) {
                      if (moduleKey.length() > APP_PREFIX_LEN) {

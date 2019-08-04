@@ -28,11 +28,11 @@ ServerObjectsDebugging::~ServerObjectsDebugging() {
 
 //******************************************************************************
 
-std::string ServerObjectsDebugging::constructRow(const std::string& className,
+string ServerObjectsDebugging::constructRow(const string& className,
                                                  long long created,
                                                  long long destroyed,
                                                  long long alive) const {
-   std::string row;
+   string row;
    char buffer[128];
    
    bool isAlive = false;
@@ -56,7 +56,7 @@ std::string ServerObjectsDebugging::constructRow(const std::string& className,
    if (isAlive) {
       row += "<b>";
    }
-   row += std::string(buffer);
+   row += string(buffer);
    if (isAlive) {
       row += "</b>";
    }
@@ -67,7 +67,7 @@ std::string ServerObjectsDebugging::constructRow(const std::string& className,
    if (isAlive) {
       row += "<b>";
    }
-   row += std::string(buffer);
+   row += string(buffer);
    if (isAlive) {
       row += "</b>";
    }
@@ -78,7 +78,7 @@ std::string ServerObjectsDebugging::constructRow(const std::string& className,
    if (isAlive) {
       row += "<b>";
    }
-   row += std::string(buffer);
+   row += string(buffer);
    if (isAlive) {
       row += "</b>";
    }
@@ -93,7 +93,7 @@ std::string ServerObjectsDebugging::constructRow(const std::string& className,
 
 void ServerObjectsDebugging::serviceRequest(const HttpRequest& request,
                                             HttpResponse& response) {
-   std::string body = "<html><body>";
+   string body = "<html><body>";
    
    Logger* logger = Logger::getLogger();
    
@@ -101,7 +101,7 @@ void ServerObjectsDebugging::serviceRequest(const HttpRequest& request,
       Logger* pLoggerInstance = logger;
       StdLogger* stdLogger = dynamic_cast<StdLogger*>(pLoggerInstance);
       if (stdLogger) {
-         std::unordered_map<std::string, LifecycleStats> mapClassStats;
+         unordered_map<string, LifecycleStats> mapClassStats;
          stdLogger->populateClassLifecycleStats(mapClassStats);
          
          if (!mapClassStats.empty()) {
@@ -112,14 +112,10 @@ void ServerObjectsDebugging::serviceRequest(const HttpRequest& request,
             long long totalCreated = 0L;
             long long totalDestroyed = 0L;
             long long totalAlive = 0L;
-            unordered_map<string, LifecycleStats>::const_iterator it =
-               mapClassStats.begin();
-            const unordered_map<string, LifecycleStats>::const_iterator itEnd =
-               mapClassStats.end();
          
-            for (; it != itEnd; it++) {
-               const std::string& className = (*it).first;
-               const LifecycleStats& stats = (*it).second;
+            for (auto& kv : mapClassStats) {
+               const string& className = kv.first;
+               const LifecycleStats& stats = kv.second;
                const long long created = stats.m_instancesCreated;
                const long long destroyed = stats.m_instancesDestroyed;
                const long long alive = created - destroyed;

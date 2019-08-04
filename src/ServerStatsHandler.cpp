@@ -75,22 +75,14 @@ void ServerStatsHandler::serviceRequest(const HttpRequest& request,
             body += "<tr><th align=\"left\">Type</th><th align=\"left\">Name</th><th>Occurrences</th></tr>";
             
             long long totalForType = 0L;
-            unordered_map<string, unordered_map<string, long long> >::const_iterator it =
-               mapOccurrenceTypes.begin();
-            const unordered_map<string, unordered_map<string, long long> >::const_iterator itEnd =
-               mapOccurrenceTypes.end();
             
-            for (; it != itEnd; it++) {
-               const string& occurrenceType = (*it).first;
-               const unordered_map<string, long long>& mapOccurrences = (*it).second;
-               unordered_map<string, long long>::const_iterator itOcc =
-                  mapOccurrences.begin();
-               const unordered_map<string, long long>::const_iterator itEndOcc =
-                  mapOccurrences.end();
+            for (auto& kv : mapOccurrenceTypes) {
+               const string& occurrenceType = kv.first;
+               const unordered_map<string, long long>& mapOccurrences = kv.second;
 
-               for (; itOcc != itEndOcc; itOcc++) {
-                  const string& occurrenceName = (*itOcc).first;
-                  const long long numOccurrences = (*itOcc).second;
+               for (auto& kvOcc : mapOccurrences) {
+                  const string& occurrenceName = kvOcc.first;
+                  const long long numOccurrences = kvOcc.second;
                   
                   totalForType += numOccurrences;
                   

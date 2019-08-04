@@ -17,18 +17,19 @@
 static const int SOCKET_SEND_BUFFER_SIZE = 8192;
 static const int SOCKET_RECV_BUFFER_SIZE = 8192;
 
+using namespace std;
 
-static const std::string SPACE = " ";
-static const std::string EOL   = "\r\n";
-static const std::string COLON = ":";
+static const string SPACE = " ";
+static const string EOL   = "\r\n";
+static const string COLON = ":";
 
 // header keys
-static const std::string HOST             = "Host: ";
-static const std::string CONTENT_LENGTH   = "Content-Length: ";
-static const std::string CONTENT_TYPE     = "Content-Type: ";
-static const std::string CONNECTION       = "Connection: ";
+static const string HOST             = "Host: ";
+static const string CONTENT_LENGTH   = "Content-Length: ";
+static const string CONTENT_TYPE     = "Content-Type: ";
+static const string CONNECTION       = "Connection: ";
 
-static const std::string CONNECTION_CLOSE = "Connection: close";
+static const string CONNECTION_CLOSE = "Connection: close";
 
 using namespace misere;
 using namespace chaudiere;
@@ -58,9 +59,9 @@ Socket* HttpClient::socketForRequest(const HttpRequest& request)
 
 HttpResponse* HttpClient::get(HttpRequest& request)
 {
-   HttpResponse* r = NULL;
+   HttpResponse* r = nullptr;
    Socket* s = socketForRequest(request);
-   if (s != NULL) {
+   if (s != nullptr) {
       request.setMethod(HTTP::HTTP_METHOD_GET);
       if (request.write(s)) {
          r = new HttpResponse(s);
@@ -72,9 +73,9 @@ HttpResponse* HttpClient::get(HttpRequest& request)
 
 HttpResponse* HttpClient::head(HttpRequest& request)
 {
-   HttpResponse* r = NULL;
+   HttpResponse* r = nullptr;
    Socket* s = socketForRequest(request);
-   if (s != NULL) {
+   if (s != nullptr) {
       request.setMethod(HTTP::HTTP_METHOD_HEAD);
       if (request.write(s)) {
          r = new HttpResponse(s);
@@ -85,11 +86,11 @@ HttpResponse* HttpClient::head(HttpRequest& request)
 }
 
 HttpResponse* HttpClient::put(HttpRequest& request,
-                              const std::string& buffer)
+                              const string& buffer)
 {
-   HttpResponse* r = NULL;
+   HttpResponse* r = nullptr;
    Socket* s = socketForRequest(request);
-   if (s != NULL) {
+   if (s != nullptr) {
       request.setMethod(HTTP::HTTP_METHOD_PUT);
       if (request.write(s, buffer.size()) &&
           s->write(EOL.c_str(), EOL.size()) &&
@@ -105,9 +106,9 @@ HttpResponse* HttpClient::put(HttpRequest& request,
                               const ByteBuffer& buffer)
 {
    
-   HttpResponse* r = NULL;
+   HttpResponse* r = nullptr;
    Socket* s = socketForRequest(request);
-   if (s != NULL) {
+   if (s != nullptr) {
       request.setMethod(HTTP::HTTP_METHOD_PUT);
       if (request.write(s, buffer.size()) &&
           s->write(EOL.c_str(), EOL.size()) &&
@@ -120,11 +121,11 @@ HttpResponse* HttpClient::put(HttpRequest& request,
 }
 
 HttpResponse* HttpClient::post(HttpRequest& request,
-                               const std::string& buffer)
+                               const string& buffer)
 {
-   HttpResponse* r = NULL;
+   HttpResponse* r = nullptr;
    Socket* s = socketForRequest(request);
-   if (s != NULL) {
+   if (s != nullptr) {
       request.setMethod(HTTP::HTTP_METHOD_POST);
       if (request.write(s, buffer.size()) &&
           s->write(EOL.c_str(), EOL.size()) &&
@@ -139,9 +140,9 @@ HttpResponse* HttpClient::post(HttpRequest& request,
 HttpResponse* HttpClient::post(HttpRequest& request,
                                const ByteBuffer& buffer)
 {
-   HttpResponse* r = NULL;
+   HttpResponse* r = nullptr;
    Socket* s = socketForRequest(request);
-   if (s != NULL) {
+   if (s != nullptr) {
       request.setMethod(HTTP::HTTP_METHOD_POST);
       if (request.write(s, buffer.size()) &&
           s->write(EOL.c_str(), EOL.size()) &&
@@ -155,9 +156,9 @@ HttpResponse* HttpClient::post(HttpRequest& request,
 
 HttpResponse* HttpClient::do_delete(HttpRequest& request)
 {
-   HttpResponse* response = NULL;
+   HttpResponse* response = nullptr;
    Socket* s = socketForRequest(request);
-   if (s != NULL) {
+   if (s != nullptr) {
       request.setMethod(HTTP::HTTP_METHOD_DELETE);
       if (request.write(s)) {
          response = new HttpResponse(s);
@@ -167,12 +168,12 @@ HttpResponse* HttpClient::do_delete(HttpRequest& request)
    return response;
 }
 
-void HttpClient::buildHeader(std::string& header,
-                             const std::string& address,
+void HttpClient::buildHeader(string& header,
+                             const string& address,
                              int port,
-                             const std::string& url,
-                             const std::string& method,
-                             const std::string& contentType,
+                             const string& url,
+                             const string& method,
+                             const string& contentType,
                              unsigned long contentLength,
                              const KeyValuePairs& kvpAddlHeaders) {
    bool haveContent = false;  // assume we don't
@@ -196,7 +197,7 @@ void HttpClient::buildHeader(std::string& header,
    if (80 == port) {
       header += address;
    } else {
-      std::string host = address;
+      string host = address;
       host += COLON;
       host += StrUtils::toString(port);
       header += host;
@@ -220,14 +221,11 @@ void HttpClient::buildHeader(std::string& header,
       header += EOL;
    }
 
-   std::vector<std::string> vecKeys;
+   vector<string> vecKeys;
    kvpAddlHeaders.getKeys(vecKeys);
-   const std::vector<std::string>::const_iterator itEnd = vecKeys.end();
-   std::vector<std::string>::const_iterator it = vecKeys.begin();
 
-   for (; it != itEnd; it++) {
-      const std::string& key = *it;
-      const std::string& value = kvpAddlHeaders.getValue(key);
+   for (const string& key : vecKeys) {
+      const string& value = kvpAddlHeaders.getValue(key);
 
       header += key;
       header += COLON;
@@ -241,15 +239,15 @@ void HttpClient::buildHeader(std::string& header,
 
 //******************************************************************************
 
-HttpResponse* HttpClient::post(const std::string& address,
+HttpResponse* HttpClient::post(const string& address,
                              int port,
-                             const std::string& url,
-                             const std::string& postData,
-                             const std::string& contentType,
+                             const string& url,
+                             const string& postData,
+                             const string& contentType,
                              const KeyValuePairs& kvpAddlHeaders) {
-   const std::size_t postDataLength = postData.length();
+   const size_t postDataLength = postData.length();
 
-   std::string requestPayload;
+   string requestPayload;
 
    buildHeader(requestPayload,
                address,
@@ -269,9 +267,9 @@ HttpResponse* HttpClient::post(const std::string& address,
 
 //******************************************************************************
 
-HttpResponse* HttpClient::sendReceive(const std::string& address,
+HttpResponse* HttpClient::sendReceive(const string& address,
                                     int port,
-                                    const std::string& sendBuffer) {
+                                    const string& sendBuffer) {
    Socket* socket = new Socket(address.c_str(), port);
    socket->setTcpNoDelay(true);
    socket->setSendBufferSize(SOCKET_SEND_BUFFER_SIZE);

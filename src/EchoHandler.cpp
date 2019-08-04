@@ -42,10 +42,7 @@ void EchoHandler::serviceRequest(const HttpRequest& request,
    request.getHeaderKeys(headerKeys);
    
    if (!headerKeys.empty()) {
-      vector<string>::const_iterator it = headerKeys.begin();
-      const vector<string>::const_iterator itEnd = headerKeys.end();
-      for (; it != itEnd; it++) {
-         const std::string& headerKey = *it;
+      for (auto headerKey : headerKeys) {
          const std::string& headerValue = request.getHeaderValue(headerKey);
          body += headerKey;
          body += ": ";
@@ -59,7 +56,7 @@ void EchoHandler::serviceRequest(const HttpRequest& request,
    body += "<br/>";
   
    const ByteBuffer* requestBody = request.getBody();
-   if (requestBody != NULL && !requestBody->empty()) { 
+   if (requestBody != nullptr && !requestBody->empty()) { 
       std::string bodyReply = "body bytes: ";
       bodyReply += StrUtils::toString((int)requestBody->size());
       body += bodyReply;
