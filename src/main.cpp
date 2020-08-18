@@ -38,7 +38,7 @@ int main(int argc, char* argv[]) {
       }
    }
 
-   StdLogger* logger = new StdLogger(Warning);
+   StdLogger* logger = new StdLogger(LogLevel::Warning);
    logger->setLogInstanceLifecycles(true);
    Logger::setLogger(logger);
 

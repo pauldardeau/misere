@@ -2,10 +2,10 @@
 # BSD License
 
 CC = c++
-CC_OPTS = -c -Wall -fPIC -O2 -pthread -I../../chaudiere/src
+CC_OPTS = -c -Wall -std=c++14 -fPIC -O2 -pthread -I../../chaudiere/src
 LINK_CMD = c++
 # remove -ldl for non-linux
-LINK_LIBS = -lpthread
+LINK_LIBS = -lpthread -ldl
 
 EXE_NAME = misere
 SO_NAME = libmisere.so

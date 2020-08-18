@@ -54,11 +54,8 @@ public:
     */
    void run();
    
-  
-private: 
-   // disallow copies
-   HttpRequestHandler(const HttpRequestHandler&);
-   HttpRequestHandler& operator=(const HttpRequestHandler&);
+   HttpRequestHandler(const HttpRequestHandler&) = delete;
+   HttpRequestHandler& operator=(const HttpRequestHandler&) = delete;
    
 };
 

@@ -83,7 +83,7 @@ void HttpRequestHandler::run() {
    socket->setSendBufferSize(m_server.getSocketSendBufferSize());
    socket->setReceiveBufferSize(m_server.getSocketReceiveBufferSize());
 
-   const bool isLoggingDebug = Logger::isLogging(Debug);
+   const bool isLoggingDebug = Logger::isLogging(LogLevel::Debug);
    if (isLoggingDebug) {
       //LOG_DEBUG("starting parse of HttpRequest")
    }
