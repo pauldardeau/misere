@@ -139,9 +139,9 @@ typedef HttpHandler* (*PFN_CREATE_HANDLER)();
 //******************************************************************************
 
 HttpServer::HttpServer(const std::string& configFilePath) :
-   m_serverSocket(NULL),
-   m_threadPool(NULL),
-   m_threadingFactory(NULL),
+   m_serverSocket(nullptr),
+   m_threadPool(nullptr),
+   m_threadingFactory(nullptr),
    m_configFilePath(configFilePath),
    m_isDone(false),
    m_isThreaded(true),
@@ -264,7 +264,7 @@ void HttpServer::outputStartupMessage() {
 bool HttpServer::init(int port) {
    m_serverPort = port;
 
-   AutoPointer<SectionedConfigDataSource*> configDataSource(NULL);
+   AutoPointer<SectionedConfigDataSource*> configDataSource(nullptr);
    bool haveDataSource = false;
    
    try {
@@ -349,7 +349,7 @@ HttpServer::~HttpServer() {
       delete m_threadPool;
    }
 
-   if (m_threadingFactory != NULL) {
+   if (m_threadingFactory != nullptr) {
       delete m_threadingFactory;
    }
 
@@ -436,7 +436,7 @@ bool HttpServer::addPathHandler(const std::string& path,
                                 HttpHandler* pHandler) {
    bool isSuccess = false;
 
-   if (!path.empty() && (NULL != pHandler)) {
+   if (!path.empty() && (nullptr != pHandler)) {
       m_mapPathHandlers[path] = pHandler;
       isSuccess = true;
    }
@@ -468,7 +468,7 @@ HttpHandler* HttpServer::getPathHandler(const std::string& path) {
       return (*it).second;
    }
 
-   return NULL;
+   return nullptr;
 }
 
 //******************************************************************************
@@ -527,7 +527,7 @@ int HttpServer::platformPointerSizeBits() const {
 //******************************************************************************
 
 void HttpServer::serviceSocket(SocketRequest* socketRequest) {
-   if (NULL != m_threadPool) {
+   if (nullptr != m_threadPool) {
       // Hand off the request to the thread pool for asynchronous processing
       HttpRequestHandler* requestHandler =
          new HttpRequestHandler(*this, socketRequest);
@@ -557,17 +557,17 @@ int HttpServer::runSocketServer() {
    while (!m_isDone) {
       Socket* socket = m_serverSocket->accept();
 
-      if (NULL == socket) {
+      if (nullptr == socket) {
          continue;
       }
 
-      //if (Logger::isLogging(Debug)) {
+      //if (Logger::isLogging(LogLevel::Debug)) {
          //LOG_DEBUG("*****************************************")
          //LOG_DEBUG("client connected")
       //}
 
       try {
-         if (m_isThreaded && (NULL != m_threadPool)) {
+         if (m_isThreaded && (nullptr != m_threadPool)) {
             HttpRequestHandler* handler =
                new HttpRequestHandler(*this, socket);
             handler->setThreadPooling(true);
@@ -605,11 +605,11 @@ int HttpServer::runKernelEventServer() {
    const int MAX_CON = 1200;
    int rc = 0;
    
-   if (m_threadingFactory != NULL) {
+   if (m_threadingFactory != nullptr) {
       Mutex* mutexFD = m_threadingFactory->createMutex("fdMutex");
       Mutex* mutexHWMConnections =
          m_threadingFactory->createMutex("hwmConnectionsMutex");
-      AutoPointer<KernelEventServer*> kernelEventServer(NULL);
+      AutoPointer<KernelEventServer*> kernelEventServer(nullptr);
       
       if (KqueueServer::isSupportedPlatform()) {
          kernelEventServer.assign(
@@ -738,7 +738,7 @@ void HttpServer::setupLogLevel(const KeyValuePairs& kvp) {
          LOG_INFO(string("log level: ") + m_logLevel)
          Logger* logger = Logger::getLogger();
 
-         if (logger != NULL) {
+         if (logger != nullptr) {
             if (m_logLevel == CFG_LOGGING_CRITICAL) {
                logger->setLogLevel(LogLevel::Critical);
             } else if (m_logLevel == CFG_LOGGING_ERROR) {
@@ -874,7 +874,7 @@ bool HttpServer::setupHandlers(const chaudiere::SectionedConfigDataSource* dataS
                }
 
                const string& dllName = kvpModule.getValue(MODULE_DLL_NAME);
-               HttpHandler* pHandler = NULL;
+               HttpHandler* pHandler = nullptr;
                   
                if (isLoggingDebug) {
                   LOG_DEBUG("trying to load dynamic library='" +
@@ -887,7 +887,7 @@ bool HttpServer::setupHandlers(const chaudiere::SectionedConfigDataSource* dataS
                // load the dll
                try {
                   void* pfn = dll->resolve("CreateHandler");
-                  if (pfn == NULL) {
+                  if (pfn == nullptr) {
                      LOG_ERROR("unable to find module library entry point")
                   } else {
                      if (isLoggingDebug) {

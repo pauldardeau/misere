@@ -26,7 +26,7 @@ class HttpTransaction
       /**
        * Default constructor
        */
-      HttpTransaction(chaudiere::Socket* socket=NULL, bool socketOwned=true);
+      HttpTransaction(chaudiere::Socket* socket=nullptr, bool socketOwned=true);
    
       /**
        * Copy constructor

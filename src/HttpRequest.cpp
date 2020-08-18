@@ -392,7 +392,7 @@ bool HttpRequest::write(chaudiere::Socket* s) {
 
 bool HttpRequest::write(chaudiere::Socket* s, long bodyLength) {
    bool success = false;
-   if (s != NULL) {
+   if (s != nullptr) {
       const std::string& method = getMethod();
       const std::string& path = getPath();
       if (method.length() == 0) {

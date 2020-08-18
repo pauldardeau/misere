@@ -31,7 +31,7 @@ void GMTDateTimeHandler::serviceRequest(const HttpRequest& request,
                                         HttpResponse& response) {
    std::string body = "<html><body>";
    
-   time_t currentTime = time(NULL);
+   time_t currentTime = time(nullptr);
    
    if (currentTime == (time_t)-1) {
       body += "Unavailable";

@@ -58,9 +58,9 @@ Socket* HttpClient::socketForRequest(const HttpRequest& request)
 
 HttpResponse* HttpClient::get(HttpRequest& request)
 {
-   HttpResponse* r = NULL;
+   HttpResponse* r = nullptr;
    Socket* s = socketForRequest(request);
-   if (s != NULL) {
+   if (s != nullptr) {
       request.setMethod(HTTP::HTTP_METHOD_GET);
       if (request.write(s)) {
          r = new HttpResponse(s);
@@ -72,9 +72,9 @@ HttpResponse* HttpClient::get(HttpRequest& request)
 
 HttpResponse* HttpClient::head(HttpRequest& request)
 {
-   HttpResponse* r = NULL;
+   HttpResponse* r = nullptr;
    Socket* s = socketForRequest(request);
-   if (s != NULL) {
+   if (s != nullptr) {
       request.setMethod(HTTP::HTTP_METHOD_HEAD);
       if (request.write(s)) {
          r = new HttpResponse(s);
@@ -87,9 +87,9 @@ HttpResponse* HttpClient::head(HttpRequest& request)
 HttpResponse* HttpClient::put(HttpRequest& request,
                               const std::string& buffer)
 {
-   HttpResponse* r = NULL;
+   HttpResponse* r = nullptr;
    Socket* s = socketForRequest(request);
-   if (s != NULL) {
+   if (s != nullptr) {
       request.setMethod(HTTP::HTTP_METHOD_PUT);
       if (request.write(s, buffer.size()) &&
           s->write(EOL.c_str(), EOL.size()) &&
@@ -105,9 +105,9 @@ HttpResponse* HttpClient::put(HttpRequest& request,
                               const ByteBuffer& buffer)
 {
    
-   HttpResponse* r = NULL;
+   HttpResponse* r = nullptr;
    Socket* s = socketForRequest(request);
-   if (s != NULL) {
+   if (s != nullptr) {
       request.setMethod(HTTP::HTTP_METHOD_PUT);
       if (request.write(s, buffer.size()) &&
           s->write(EOL.c_str(), EOL.size()) &&
@@ -122,9 +122,9 @@ HttpResponse* HttpClient::put(HttpRequest& request,
 HttpResponse* HttpClient::post(HttpRequest& request,
                                const std::string& buffer)
 {
-   HttpResponse* r = NULL;
+   HttpResponse* r = nullptr;
    Socket* s = socketForRequest(request);
-   if (s != NULL) {
+   if (s != nullptr) {
       request.setMethod(HTTP::HTTP_METHOD_POST);
       if (request.write(s, buffer.size()) &&
           s->write(EOL.c_str(), EOL.size()) &&
@@ -139,9 +139,9 @@ HttpResponse* HttpClient::post(HttpRequest& request,
 HttpResponse* HttpClient::post(HttpRequest& request,
                                const ByteBuffer& buffer)
 {
-   HttpResponse* r = NULL;
+   HttpResponse* r = nullptr;
    Socket* s = socketForRequest(request);
-   if (s != NULL) {
+   if (s != nullptr) {
       request.setMethod(HTTP::HTTP_METHOD_POST);
       if (request.write(s, buffer.size()) &&
           s->write(EOL.c_str(), EOL.size()) &&
@@ -155,9 +155,9 @@ HttpResponse* HttpClient::post(HttpRequest& request,
 
 HttpResponse* HttpClient::do_delete(HttpRequest& request)
 {
-   HttpResponse* response = NULL;
+   HttpResponse* response = nullptr;
    Socket* s = socketForRequest(request);
-   if (s != NULL) {
+   if (s != nullptr) {
       request.setMethod(HTTP::HTTP_METHOD_DELETE);
       if (request.write(s)) {
          response = new HttpResponse(s);
