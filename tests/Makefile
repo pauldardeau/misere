@@ -2,7 +2,7 @@
 # BSD License
 
 CC = c++
-CC_OPTS = -c -pthread -I../src -I../../chaudiere/src -I../../poivre
+CC_OPTS = -c -std=c++14 -pthread -I../src -I../../chaudiere/src -I../../poivre
 
 EXE_NAME = test_misere
 LIB_NAMES = ../src/misere.so ../../poivre/poivre.so ../../chaudiere/src/chaudiere.so
