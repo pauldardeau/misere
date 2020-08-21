@@ -23,8 +23,10 @@ class Url
       Url();
       Url(const std::string& fullText);
       Url(const Url& copy);
+      Url(Url&& other);
       ~Url();
       Url& operator=(const Url& copy);
+      Url& operator=(Url&& other);
       bool operator==(const Url& compare) const;
       bool operator!=(const Url& compare) const;
       const std::string& protocol() const;

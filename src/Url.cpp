@@ -1,6 +1,8 @@
 // Copyright Paul Dardeau, SwampBits LLC 2017
 // BSD License
 
+#include <memory>
+
 #include "Url.h"
 #include "StrUtils.h"
 #include "BasicException.h"
@@ -78,6 +80,14 @@ Url::Url(const Url& copy) :
 {
 }
 
+Url::Url(Url&& other) :
+   m_protocol(std::move(other.m_protocol)),
+   m_fullText(std::move(other.m_fullText)),
+   m_host(std::move(other.m_host)),
+   m_path(std::move(other.m_path)),
+   m_port(std::exchange(other.m_port, 0)) {
+}
+
 Url::~Url()
 {
 }
@@ -93,6 +103,20 @@ Url& Url::operator=(const Url& copy)
    m_host = copy.m_host;
    m_path = copy.m_path;
    m_port = copy.m_port;
+
+   return *this;
+}
+
+Url& Url::operator=(Url&& other) {
+   if (this == &other) {
+      return *this;
+   }
+
+   m_protocol = std::move(other.m_protocol);
+   m_fullText = std::move(other.m_fullText);
+   m_host = std::move(other.m_host);
+   m_path = std::move(other.m_path);
+   m_port = std::exchange(other.m_port, 0);
 
    return *this;
 }
