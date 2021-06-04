@@ -31,6 +31,12 @@ class HttpServer {
        * @param configFilePath the file name/path for configuration settings
        */
       explicit HttpServer(const std::string& configFilePath);
+
+      /**
+       * Constructs an HttpServer for embedded use and without a config file
+       * @param port the port number to listen on
+       */
+      explicit HttpServer(int port);
    
       /**
        * Destructor
@@ -71,7 +77,7 @@ class HttpServer {
       /**
        * Removes the handler for the specified path
        * @param path the path whose associated handler should be removed (deregistered)
-       * @return boolean indicating if a path was deregistered for the path
+       * @return boolean indicating if a handler was deregistered for the path
        */
       bool removePathHandler(const std::string& path);
    
@@ -262,6 +268,7 @@ class HttpServer {
       bool m_allowBuiltInHandlers;
       bool m_requireAllHandlersForStartup;
       bool m_compressionEnabled;
+      bool m_usingConfigFile;
       int m_threadPoolSize;
       int m_serverPort;
       int m_socketSendBufferSize;

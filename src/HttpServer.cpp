@@ -150,6 +150,7 @@ HttpServer::HttpServer(const std::string& configFilePath) :
    m_allowBuiltInHandlers(false),
    m_requireAllHandlersForStartup(false),
    m_compressionEnabled(true),
+   m_usingConfigFile(false),
    m_threadPoolSize(CFG_DEFAULT_THREAD_POOL_SIZE),
    m_serverPort(CFG_DEFAULT_PORT_NUMBER),
    m_socketSendBufferSize(CFG_DEFAULT_SEND_BUFFER_SIZE),
@@ -157,6 +158,30 @@ HttpServer::HttpServer(const std::string& configFilePath) :
    m_minimumCompressionSize(1000) {
    LOG_INSTANCE_CREATE("HttpServer")
    init(CFG_DEFAULT_PORT_NUMBER);
+}
+
+//******************************************************************************
+
+HttpServer::HttpServer(int port) :
+   m_serverSocket(NULL),
+   m_threadPool(NULL),
+   m_threadingFactory(NULL),
+   m_configFilePath(""),
+   m_isDone(false),
+   m_isThreaded(true),
+   m_isUsingKernelEventServer(false),
+   m_isFullyInitialized(false),
+   m_allowBuiltInHandlers(false),
+   m_requireAllHandlersForStartup(false),
+   m_compressionEnabled(false),
+   m_usingConfigFile(false),
+   m_threadPoolSize(CFG_DEFAULT_THREAD_POOL_SIZE),
+   m_serverPort(CFG_DEFAULT_PORT_NUMBER),
+   m_socketSendBufferSize(CFG_DEFAULT_SEND_BUFFER_SIZE),
+   m_socketReceiveBufferSize(CFG_DEFAULT_RECEIVE_BUFFER_SIZE),
+   m_minimumCompressionSize(1000) {
+   LOG_INSTANCE_CREATE("HttpServer")
+   init(port);
 }
 
 //******************************************************************************
@@ -264,62 +289,64 @@ void HttpServer::outputStartupMessage() {
 bool HttpServer::init(int port) {
    m_serverPort = port;
 
-   AutoPointer<SectionedConfigDataSource*> configDataSource(NULL);
-   bool haveDataSource = false;
+   if (m_usingConfigFile) {
+      AutoPointer<SectionedConfigDataSource*> configDataSource(NULL);
+      bool haveDataSource = false;
    
-   try {
-      configDataSource.assign(getConfigDataSource());
-      haveDataSource = true;
-   } catch (const BasicException& be) {
-      LOG_ERROR("BasicException retrieving config data: " + be.whatString())
-   } catch (const exception& e) {
-      LOG_ERROR("exception retrieving config data: " + string(e.what()))
-   } catch (...) {
-      LOG_ERROR("unknown exception retrieving config data")
-   }
-   
-   if (!configDataSource.haveObject() || !haveDataSource) {
-      LOG_ERROR("unable to retrieve config data")
-      return false;
-   }
-
-   try {
-      KeyValuePairs kvpServerSettings;
-
-      // read and process "logging" section
-      setupLogFiles(*configDataSource.m_object);
-
-      // read and process "server" section
-      if (configDataSource->hasSection(CFG_SECTION_SERVER) &&
-          configDataSource->readSection(CFG_SECTION_SERVER,
-                                        kvpServerSettings)) {
-         setupListeningPort(kvpServerSettings); 
-         setupThreading(kvpServerSettings);
-         setupSocketHandling(kvpServerSettings);
-         setupLogLevel(kvpServerSettings);
-         setupSocketBufferSizes(kvpServerSettings);
-         m_allowBuiltInHandlers =
-            hasTrueValue(kvpServerSettings,
-                         CFG_SERVER_ALLOW_BUILTIN_HANDLERS);
-         setupServerString(kvpServerSettings);
-      } else {
-         LOG_WARNING("HttpServer init no server section found")
+      try {
+         configDataSource.assign(getConfigDataSource());
+         haveDataSource = true;
+      } catch (const BasicException& be) {
+         LOG_ERROR("BasicException retrieving config data: " + be.whatString())
+      } catch (const exception& e) {
+         LOG_ERROR("exception retrieving config data: " + string(e.what()))
+      } catch (...) {
+         LOG_ERROR("unknown exception retrieving config data")
       }
-
-      // read and process "handlers" section
-      if (!setupHandlers(configDataSource.m_object)) {
+   
+      if (!configDataSource.haveObject() || !haveDataSource) {
+         LOG_ERROR("unable to retrieve config data")
          return false;
       }
-   } catch (const BasicException& be) {
-      LOG_CRITICAL("BasicException initializing server: " + be.whatString())
-      return false;
-   } catch (const exception& e) {
-      LOG_CRITICAL("exception initializing server: " +
-                   string(e.what()))
-      return false;
-   } catch (...) {
-      LOG_CRITICAL("unknown exception initializing server")
-      return false;
+
+      try {
+         KeyValuePairs kvpServerSettings;
+
+         // read and process "logging" section
+         setupLogFiles(*configDataSource.m_object);
+
+         // read and process "server" section
+         if (configDataSource->hasSection(CFG_SECTION_SERVER) &&
+             configDataSource->readSection(CFG_SECTION_SERVER,
+                                           kvpServerSettings)) {
+            setupListeningPort(kvpServerSettings); 
+            setupThreading(kvpServerSettings);
+            setupSocketHandling(kvpServerSettings);
+            setupLogLevel(kvpServerSettings);
+            setupSocketBufferSizes(kvpServerSettings);
+            m_allowBuiltInHandlers =
+               hasTrueValue(kvpServerSettings,
+                            CFG_SERVER_ALLOW_BUILTIN_HANDLERS);
+            setupServerString(kvpServerSettings);
+         } else {
+            LOG_WARNING("HttpServer init no server section found")
+         }
+
+         // read and process "handlers" section
+         if (!setupHandlers(configDataSource.m_object)) {
+            return false;
+         }
+      } catch (const BasicException& be) {
+         LOG_CRITICAL("BasicException initializing server: " + be.whatString())
+         return false;
+      } catch (const exception& e) {
+         LOG_CRITICAL("exception initializing server: " +
+                      string(e.what()))
+         return false;
+      } catch (...) {
+         LOG_CRITICAL("unknown exception initializing server")
+         return false;
+      }
    }
 
    if (!setupServerSocket()) {
