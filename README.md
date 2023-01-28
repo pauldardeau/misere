@@ -26,7 +26,7 @@ because it's very simple and I like simple.
 
 Building
 --------
-Currently there is not autoconf support. There's a basic Makefile in
+Currently there is no autoconf support. There's a basic Makefile in
 src directory.
 
 Running
