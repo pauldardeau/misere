@@ -6,12 +6,12 @@ using namespace misere;
 
 HttpConnection* HttpConnection::open(const string& url) {
    //TODO: implement HttpConnection::open
-   return NULL;
+   return nullptr;
 }
 
 HttpConnection::HttpConnection(const HttpRequest& req) :
    request(req),
-   response(NULL) {
+   response(nullptr) {
 }
 
 HttpConnection::~HttpConnection() {
