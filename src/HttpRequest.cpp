@@ -419,10 +419,7 @@ bool HttpRequest::write(chaudiere::Socket* s, long bodyLength) {
       std::vector<std::string> headerKeys;
       m_arguments.getKeys(headerKeys);
 
-      std::vector<std::string>::iterator it = headerKeys.begin();
-      const std::vector<std::string>::const_iterator itEnd = headerKeys.end();
-      for (; it != itEnd; it++) {
-         const std::string& headerKey = *it;
+      for (const auto& headerKey : headerKeys) {
          headers += headerKey;
          headers += ": ";
          headers += m_arguments.getValue(headerKey);

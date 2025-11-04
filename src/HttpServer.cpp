@@ -255,11 +255,8 @@ void HttpServer::replaceVariables(const KeyValuePairs& kvp,
    if (!s.empty()) {
       vector<string> keys;
       kvp.getKeys(keys);
-      vector<string>::const_iterator it = keys.begin();
-      const vector<string>::const_iterator itEnd = keys.end();
       
-      for (; it != itEnd; it++) {
-         const string& key = *it;
+      for (const auto& key : keys) {
          if (StrUtils::containsString(s, key)) {
             StrUtils::replaceAll(s, key, kvp.getValue(key));
          }
@@ -380,12 +377,8 @@ HttpServer::~HttpServer() {
       delete m_threadingFactory;
    }
 
-   unordered_map<string,HttpHandler*>::iterator it =
-      m_mapPathHandlers.begin();
-   const unordered_map<string,HttpHandler*>::const_iterator itEnd =
-      m_mapPathHandlers.end();
-   for (; it != itEnd; it++) {
-      delete it->second;
+   for (auto& pair : m_mapPathHandlers) {
+      delete pair.second;
    }
 
    m_mapPathHandlers.erase(m_mapPathHandlers.begin(),
@@ -512,11 +505,8 @@ std::string HttpServer::buildHeader(const std::string& responseCode,
 
    vector<string> keys;
    headers.getKeys(keys);
-   const vector<string>::const_iterator itEnd = keys.end();
-   vector<string>::const_iterator it = keys.begin();
 
-   for ( ; it != itEnd; ++it) {
-      const string& headerKey = *it;
+   for (const auto& headerKey : keys) {
       sb += headerKey;  // header key
       
       if (!StrUtils::endsWith(headerKey, COLON)) {
@@ -874,11 +864,7 @@ bool HttpServer::setupHandlers(const chaudiere::SectionedConfigDataSource* dataS
       vector<string> vecKeys;
       kvpHandlers.getKeys(vecKeys);
 
-      vector<string>::const_iterator it = vecKeys.begin();
-      const vector<string>::const_iterator itEnd = vecKeys.end();
-
-      for ( ; it != itEnd; ++it) {
-         const string& path = (*it);
+      for (const auto& path : vecKeys) {
          const string& moduleSection = kvpHandlers.getValue(path);
 
          if (isLoggingDebug) {
@@ -937,15 +923,9 @@ bool HttpServer::setupHandlers(const chaudiere::SectionedConfigDataSource* dataS
                vector<string> vecModuleKeys;
                kvpModule.getKeys(vecModuleKeys);
 
-               vector<string>::const_iterator itMod =
-                  vecModuleKeys.begin();
-               const vector<string>::const_iterator itModEnd =
-                  vecModuleKeys.end();
-
                KeyValuePairs kvpApp;
 
-               for ( ; itMod != itModEnd; ++itMod) {
-                  const string& moduleKey = (*itMod);
+               for (const auto& moduleKey : vecModuleKeys) {
 
                   // starts with app prefix?
                   if (StrUtils::startsWith(moduleKey, APP_PREFIX)) {

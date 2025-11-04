@@ -222,11 +222,8 @@ void HttpClient::buildHeader(std::string& header,
 
    std::vector<std::string> vecKeys;
    kvpAddlHeaders.getKeys(vecKeys);
-   const std::vector<std::string>::const_iterator itEnd = vecKeys.end();
-   std::vector<std::string>::const_iterator it = vecKeys.begin();
 
-   for (; it != itEnd; it++) {
-      const std::string& key = *it;
+   for (const auto& key : vecKeys) {
       const std::string& value = kvpAddlHeaders.getValue(key);
 
       header += key;

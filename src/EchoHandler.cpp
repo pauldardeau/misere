@@ -42,10 +42,7 @@ void EchoHandler::serviceRequest(const HttpRequest& request,
    request.getHeaderKeys(headerKeys);
    
    if (!headerKeys.empty()) {
-      vector<string>::const_iterator it = headerKeys.begin();
-      const vector<string>::const_iterator itEnd = headerKeys.end();
-      for (; it != itEnd; it++) {
-         const std::string& headerKey = *it;
+      for (const auto& headerKey : headerKeys) {
          const std::string& headerValue = request.getHeaderValue(headerKey);
          body += headerKey;
          body += ": ";

@@ -112,14 +112,10 @@ void ServerObjectsDebugging::serviceRequest(const HttpRequest& request,
             long long totalCreated = 0L;
             long long totalDestroyed = 0L;
             long long totalAlive = 0L;
-            unordered_map<string, LifecycleStats>::const_iterator it =
-               mapClassStats.begin();
-            const unordered_map<string, LifecycleStats>::const_iterator itEnd =
-               mapClassStats.end();
          
-            for (; it != itEnd; it++) {
-               const std::string& className = (*it).first;
-               const LifecycleStats& stats = (*it).second;
+            for (const auto& pair : mapClassStats) {
+               const std::string& className = pair.first;
+               const LifecycleStats& stats = pair.second;
                const long long created = stats.m_instancesCreated;
                const long long destroyed = stats.m_instancesDestroyed;
                const long long alive = created - destroyed;
