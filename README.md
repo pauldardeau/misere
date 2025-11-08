@@ -41,8 +41,8 @@ Apache bench (ab): ab -t 60 -n 1000 -c 400 http://127.0.0.1:13001/Echo
 
 Platforms/Compilers
 -------------------
-This project is implemented with pre-C++11. It is tested with g++
-compiler on Linux, FreeBSD, and OpenBSD.
+This project is implemented with C++20. It is tested on Linux (Ubuntu,
+Debian, Mint), FreeBSD, and OpenBSD.
 
 Status/Maturity
 ---------------
@@ -52,7 +52,7 @@ slowly get there.
 
 C++ Standards
 -------------
-The code is pre-c++11 (intentionally) for maximum portability.
+The code is targeted for C++20.
 
 Coding Style
 ------------
@@ -62,7 +62,7 @@ best for me.
 
 What's An INI File
 ------------------
-In the 'old days', Windows computers made extensive use of INI files.
+In the old days, Windows computers made extensive use of INI files.
 This was before the system registry came along. An INI file is a
 simple text file that is composed of sections, and each section
 can have keys and values.
