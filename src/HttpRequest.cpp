@@ -161,16 +161,11 @@ bool HttpRequest::streamFromSocket() {
   
    if (HttpTransaction::streamFromSocket()) {
       const std::string& firstLine = getFirstHeaderLine(); 
-      StringTokenizer st(firstLine, " ");
-      std::vector<std::string> reqLineValues;
-      if (st.countTokens() != 3) {
+      std::vector<std::string> reqLineValues = StrUtils::split(firstLine, " ");
+      if (reqLineValues.size() != 3) {
          //throw BasicException("unable to parse headers");
          return false;
       }
-
-      reqLineValues.push_back(st.nextToken());
-      reqLineValues.push_back(st.nextToken());
-      reqLineValues.push_back(st.nextToken());
 
       m_method = reqLineValues[0];
       m_path = reqLineValues[1];
