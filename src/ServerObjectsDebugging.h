@@ -21,15 +21,15 @@ class ServerObjectsDebugging : public AbstractHandler
 public:
    ServerObjectsDebugging();
    virtual ~ServerObjectsDebugging();
-   
+
    virtual void serviceRequest(const HttpRequest& request,
                                HttpResponse& response);
-   
+
    std::string constructRow(const std::string& className,
                             long long created,
                             long long destroyed,
                             long long alive) const;
-   
+
 };
 
 }

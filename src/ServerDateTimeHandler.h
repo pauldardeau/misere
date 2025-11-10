@@ -19,10 +19,10 @@ class ServerDateTimeHandler : public AbstractHandler
 public:
    ServerDateTimeHandler();
    virtual ~ServerDateTimeHandler();
-   
+
    virtual void serviceRequest(const HttpRequest& request,
                                HttpResponse& response);
-   
+
 };
 
 }

@@ -24,7 +24,7 @@ class HttpRequestHandler : public chaudiere::RequestHandler
 private:
    HttpServer& m_server;
 
-   
+
 public:
    /**
     * Constructs a HttpRequestHandler using a SocketRequest for use by a KernelEventServer
@@ -34,7 +34,7 @@ public:
     * @see SocketRequest()
     */
    HttpRequestHandler(HttpServer& server, chaudiere::SocketRequest* socketRequest);
-   
+
    /**
     * Constructs a HttpRequestHandler using a Socket
     * @param server the HttpServer that is being run
@@ -43,23 +43,23 @@ public:
     * @param Socket()
     */
    HttpRequestHandler(HttpServer& server, chaudiere::Socket* socket);
-   
+
    /**
     * Destructor
     */
    ~HttpRequestHandler();
-   
+
    /**
     * Process the HTTP request from beginning to end
     */
    void run();
-   
-  
-private: 
+
+
+private:
    // disallow copies
    HttpRequestHandler(const HttpRequestHandler&);
    HttpRequestHandler& operator=(const HttpRequestHandler&);
-   
+
 };
 
 }

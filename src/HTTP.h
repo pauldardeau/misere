@@ -91,8 +91,8 @@ class HTTP
       // Informational 1xx
       static const std::string HTTP_RESP_INFO_CONTINUE;
       static const std::string HTTP_RESP_INFO_SWITCH_PROTOCOLS;
-      
-      
+
+
       // Successful 2xx
       static const std::string HTTP_RESP_SUCCESS_OK;
       static const std::string HTTP_RESP_SUCCESS_CREATED;
@@ -100,8 +100,8 @@ class HTTP
       static const std::string HTTP_RESP_SUCCESS_NO_CONTENT;
       static const std::string HTTP_RESP_SUCCESS_RESET_CONTENT;
       static const std::string HTTP_RESP_SUCCESS_PARTIAL_CONTENT;
-      
-      
+
+
       // Redirection 3xx
       static const std::string HTTP_RESP_REDIRECT_MULTIPLE_CHOICES;
       static const std::string HTTP_RESP_REDIRECT_MOVED_PERMANENTLY;
@@ -110,8 +110,8 @@ class HTTP
       static const std::string HTTP_RESP_REDIRECT_NOT_MODIFIED;
       static const std::string HTTP_RESP_REDIRECT_USE_PROXY;
       static const std::string HTTP_RESP_REDIRECT_TEMPORARY_REDIRECT;
-      
-      
+
+
       // Client Errors 4xx
       static const std::string HTTP_RESP_CLIENT_ERR_BAD_REQUEST;
       static const std::string HTTP_RESP_CLIENT_ERR_UNAUTHORIZED;
@@ -130,8 +130,8 @@ class HTTP
       static const std::string HTTP_RESP_CLIENT_ERR_REQUEST_UNSUPPORTED_MEDIA;
       static const std::string HTTP_RESP_CLIENT_ERR_REQUESTED_RANGE;
       static const std::string HTTP_RESP_CLIENT_ERR_EXPECTATION_FAILED;
-      
-      
+
+
       // Server Errors 5xx
       static const std::string HTTP_RESP_SERV_ERR_INTERNAL_ERROR;
       static const std::string HTTP_RESP_SERV_ERR_NOT_IMPLEMENTED;

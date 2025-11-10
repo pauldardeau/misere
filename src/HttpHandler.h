@@ -33,13 +33,13 @@ class HttpHandler
        * @return boolean indicating if initialization of handler succeeded
        */
       virtual bool init(const std::string& path, const chaudiere::KeyValuePairs& kvpArguments) = 0;
-   
+
       /**
        * The destroy method is called as part of cleanup operations when the server
        * is being terminated.
        */
       virtual void destroy() {}
-   
+
       /**
        * The serviceRequest method is called to satisfy an HTTP request on the
        * path associated with this handler.
@@ -49,7 +49,7 @@ class HttpHandler
        * @see HttpResponse()
        */
       virtual void serviceRequest(const HttpRequest& request, HttpResponse& response) = 0;
-   
+
       /**
        * The isAvailable method is called by the server prior to handing off a request
        * for processing to determine if the handler is currently available.

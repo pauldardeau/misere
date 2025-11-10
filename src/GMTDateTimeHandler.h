@@ -19,10 +19,10 @@ class GMTDateTimeHandler : public AbstractHandler
 public:
    GMTDateTimeHandler();
    virtual ~GMTDateTimeHandler();
-   
+
    virtual void serviceRequest(const HttpRequest& request,
                                HttpResponse& response);
-   
+
 };
 
 }

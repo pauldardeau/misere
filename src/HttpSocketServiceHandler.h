@@ -30,25 +30,25 @@ public:
     * @see HttpServer()
     */
    explicit HttpSocketServiceHandler(HttpServer& httpServer);
-   
+
    /**
     * Destructor
     */
    ~HttpSocketServiceHandler();
-   
+
    /**
     * Forwards the SocketRequest to the HttpServer for processing
     * @param socketRequest the SocketRequest to be processed
     * @see SocketRequest()
     */
    virtual void serviceSocket(chaudiere::SocketRequest* socketRequest);
-   
+
    /**
     * Retrieves the handler name. This is primarily an aid for debugging.
     * @return the handler name
     */
    virtual const std::string& getName() const;
-   
+
 private:
    HttpServer& m_httpServer;
 };

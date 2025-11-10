@@ -38,18 +38,18 @@ class HttpServer {
        * @param port the port number to listen on
        */
       explicit HttpServer(int port);
-   
+
       /**
        * Destructor
        */
       ~HttpServer();
-   
+
       /**
        * Retrieves the current time in Greenwich Mean Time (GMT)
        * @return current time in GMT
        */
       std::string getSystemDateGMT() const;
-   
+
       /**
        * Retrieves the current time for server in local time
        * @return current time as local server time
@@ -74,14 +74,14 @@ class HttpServer {
        * @return boolean indicating if the handler was successfully registered
        */
       bool addPathHandler(const std::string& path, HttpHandler* handler);
-   
+
       /**
        * Removes the handler for the specified path
        * @param path the path whose associated handler should be removed (deregistered)
        * @return boolean indicating if a handler was deregistered for the path
        */
       bool removePathHandler(const std::string& path);
-   
+
       /**
        * Retrieves the handler associated with the specified path
        * @param path the path whose handler is desired
@@ -94,13 +94,13 @@ class HttpServer {
        * @return exit code for the HTTP server process
        */
       int runSocketServer();
-   
+
       /**
        * Runs a kernel event server (e.g., kqueue or epoll)
        * @return exit code for the HTTP server process
        */
       int runKernelEventServer();
-   
+
       /**
        * Runs the HTTP server using either the built-in socket server or a kernel event server
        * @return exit code for the HTTP server process
@@ -128,32 +128,32 @@ class HttpServer {
                       const std::string& requestLine,
                       const std::string& responseCode,
                       const std::string& threadWorkerId);
-   
+
       /**
        * Retrieves the configuration data source of configuration settings
        * @see SectionedConfigDataSource()
        * @return the configuration data source
        */
       chaudiere::SectionedConfigDataSource* getConfigDataSource();
-   
+
       /**
        * Retrieves the size of the socket send buffer
        * @return size of the socket send buffers
        */
       int getSocketSendBufferSize() const;
-   
+
       /**
        * Retrieves the size of the socket receive buffer
        * @return size of the socket receive buffers
        */
       int getSocketReceiveBufferSize() const;
-   
+
       /**
        * Retrieves the identifier for the server
        * @return server identifier
        */
       const std::string& getServerId() const;
-   
+
       /**
        * Retrieves the size in bytes of a generic (void*) pointer
        * @return platform pointer size
@@ -176,7 +176,7 @@ class HttpServer {
        */
       bool hasTrueValue(const chaudiere::KeyValuePairs& kvp,
                         const std::string& setting) const;
-   
+
       /**
        * Convenience method to retrieve a setting and convert it to an integer
        * @param kvp the collection of key/value pair settings
@@ -186,7 +186,7 @@ class HttpServer {
        */
       int getIntValue(const chaudiere::KeyValuePairs& kvp,
                       const std::string& setting) const;
-   
+
       /**
        * Convenience method to replace all occurrences of keys in collection with their values
        * @param kvp the collection of key/value pairs for replacement
@@ -194,20 +194,20 @@ class HttpServer {
        */
       void replaceVariables(const chaudiere::KeyValuePairs& kvp,
                             std::string& s) const;
-   
+
       /**
        * Determines if compression is turned on for the specified mime type
        * @param mimeType the mime type to check whether to compress
        * @return boolean indicating whether the specified mime type is to be compressed
        */
       bool compressResponse(const std::string& mimeType) const;
-   
+
       /**
        * Determines if gzip compression is enabled for the server
        * @return boolean indicating if gzip compression is enabled
        */
       bool compressionEnabled() const;
-   
+
       /**
        * Retrieves the minimum size of the response payload to be compressed
        * @return minimum size of response payload (in bytes) to be compressed
@@ -225,7 +225,7 @@ class HttpServer {
       void setupListeningPort(const chaudiere::KeyValuePairs& kvp);
       void setupSocketHandling(const chaudiere::KeyValuePairs& kvp);
 
-   
+
    protected:
       /**
        * Initializes the HTTP server on the specified port by default by reading and
@@ -234,7 +234,7 @@ class HttpServer {
        * @return boolean indicating whether initialiation was successful
        */
       virtual bool init(int port);
-   
+
       /**
        * Adds built-in handlers
        * @return boolean indicating whether the built-in handlers were successfully added

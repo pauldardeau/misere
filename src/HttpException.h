@@ -18,8 +18,8 @@ class HttpException : public chaudiere::BasicException
 {
 private:
    int m_statusCode;
-   
-   
+
+
 public:
    /**
     * Constructs and HttpException using the given status code and reason
@@ -28,31 +28,31 @@ public:
     */
    HttpException(int statusCode,
                  const std::string& reasonPhrase);
-   
+
    /**
     * Copy constructor
     * @param copy the source of the copy
     */
    HttpException(const HttpException& copy);
-   
+
    /**
     * Destructor
     */
    ~HttpException() throw ();
-   
+
    /**
     * Copy operator
     * @param copy the source of the copy
     * @return reference to the updated object
     */
    HttpException& operator=(const HttpException& copy);
-   
+
    /**
     * Retrieves the HTTP status code
     * @return the HTTP status code
     */
    int getStatusCode() const;
-   
+
 };
 
 }

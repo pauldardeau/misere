@@ -29,7 +29,7 @@ class HttpClient
        * Constructor
        */
       HttpClient();
-   
+
       /**
        * Destructor
        */

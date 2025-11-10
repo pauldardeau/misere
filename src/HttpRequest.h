@@ -34,13 +34,13 @@ class HttpRequest : public HttpTransaction {
        * @see Socket()
        */
       explicit HttpRequest(chaudiere::Socket* socket, bool socketOwned=true);
-   
+
       /**
        * Copy constructor
        * @param copy the source of the copy
        */
       HttpRequest(const HttpRequest& copy);
-   
+
       /**
        * Destructor
        */
@@ -52,13 +52,13 @@ class HttpRequest : public HttpTransaction {
        * @return reference to updated object
        */
       HttpRequest& operator=(const HttpRequest& copy);
-   
+
       /**
        * Initializes HTTP request by reading from socket
        * @return boolean indicating whether reading from the socket succeeded
        */
       virtual bool streamFromSocket();
-   
+
       /**
        * Determines if the request object has been successfully initialized
        * @return boolean indicating whether the object was initialized
@@ -70,13 +70,13 @@ class HttpRequest : public HttpTransaction {
        * @return the request line value
        */
       const std::string& getRequest() const;
-   
+
       /**
        * Retrieves the HTTP method for the request
        * @return the method value
        */
       const std::string& getMethod() const;
-   
+
       /**
        * Retrieves the path for the request
        * @return the path value
@@ -89,7 +89,7 @@ class HttpRequest : public HttpTransaction {
        * @return boolean indicating whether the specified key exists in the arguments
        */
       bool hasArgument(const std::string& key) const;
-   
+
       /**
        * Retrieves the value associated with the specified argument key
        * @param key the key whose value is being retrieved
@@ -97,7 +97,7 @@ class HttpRequest : public HttpTransaction {
        * @return the value for the associated key
        */
       const std::string& getArgument(const std::string& key) const;
-   
+
       /**
        * Retrieves the keys for all arguments given with the request
        * @param vector to be populated with argument keys
@@ -109,37 +109,37 @@ class HttpRequest : public HttpTransaction {
        * @return boolean indicating if the header value is present
        */
       bool hasAccept() const;
-   
+
       /**
        * Determines if the Accept-encoding header is present
        * @return boolean indicating if the header value is present
        */
       bool hasAcceptEncoding() const;
-   
+
       /**
        * Determines if the Accept-language header is present
        * @return boolean indicating if the header value is present
        */
       bool hasAcceptLanguage() const;
-   
+
       /**
        * Determines if the Connection header is present
        * @return boolean indicating if the header value is present
        */
       bool hasConnection() const;
-   
+
       /**
        * Determines if the Do Not Track (dnt) header is present
        * @return boolean indicating if the header value is present
        */
       bool hasDNT() const;
-   
+
       /**
        * Determines if the Host header is present
        * @return boolean indicating if the header value is present
        */
       bool hasHost() const;
-   
+
       /**
        * Determines if the User-agent header is present
        * @return boolean indicating if the header value is present
@@ -151,37 +151,37 @@ class HttpRequest : public HttpTransaction {
        * @return the specified HTTP header value
        */
       const std::string& getAccept() const;
-   
+
       /**
        * Retrieves the value associated with the Accept-encoding header
        * @return the specified HTTP header value
        */
       const std::string& getAcceptEncoding() const;
-   
+
       /**
        * Retrieves the value associated with the Accept-language header
        * @return the specified HTTP header value
        */
       const std::string& getAcceptLanguage() const;
-   
+
       /**
        * Retrieves the value associated with the Connection header
        * @return the specified HTTP header value
        */
       const std::string& getConnection() const;
-   
+
       /**
        * Retrieves the value associated with the Do Not Track (dnt) header
        * @return the specified HTTP header value
        */
       const std::string& getDNT() const;
-   
+
       /**
        * Retrieves the value associated with the Host header
        * @return the specified HTTP header value
        */
       const std::string& getHost() const;
-   
+
       /**
        * Retrieves the value associated with the User-agent header
        * @return the specified HTTP header value
@@ -217,7 +217,7 @@ class HttpRequest : public HttpTransaction {
 
       bool write(chaudiere::Socket* s);
       bool write(chaudiere::Socket* s, long bodyLength);
-   
+
    protected:
       /**
        * Parse the body (if present in the request)

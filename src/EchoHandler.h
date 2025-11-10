@@ -19,10 +19,10 @@ class EchoHandler : public AbstractHandler
 public:
    EchoHandler();
    virtual ~EchoHandler();
-   
+
    virtual void serviceRequest(const HttpRequest& request,
                                HttpResponse& response);
-   
+
 };
 
 }

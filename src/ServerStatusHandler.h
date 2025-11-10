@@ -19,10 +19,10 @@ class ServerStatusHandler : public AbstractHandler
 public:
    ServerStatusHandler();
    virtual ~ServerStatusHandler();
-   
+
    virtual void serviceRequest(const HttpRequest& request,
                                HttpResponse& response);
-   
+
 };
 
 }
