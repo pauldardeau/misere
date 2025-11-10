@@ -5,7 +5,7 @@ CC = c++
 CC_OPTS = -c -pthread -I../src -I../../chaudiere/src -I../../poivre
 
 EXE_NAME = test_misere
-LIB_NAMES = ../src/misere.so ../../poivre/poivre.so ../../chaudiere/src/chaudiere.so
+LIB_NAMES = ../src/libmisere.so ../../poivre/poivre.so ../../chaudiere/src/libchaudiere.so
 
 OBJS = MockSocket.o \
 TestHttpClient.o \

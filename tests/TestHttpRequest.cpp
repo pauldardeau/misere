@@ -62,7 +62,7 @@ void TestHttpRequest::runTests() {
 void TestHttpRequest::testConstructor() {
    TEST_CASE("testConstructor");
    MockSocket socket(DEFAULT_GET);
-   HttpRequest request(socket);
+   HttpRequest request(&socket);
 }
 
 //******************************************************************************
@@ -99,7 +99,7 @@ void TestHttpRequest::testStreamFromSocket() {
    TEST_CASE("testStreamFromSocket");
    
    MockSocket socket(DEFAULT_GET);
-   HttpRequest request(socket);
+   HttpRequest request(&socket);
 }
 
 //******************************************************************************
@@ -108,7 +108,7 @@ void TestHttpRequest::testGetRequest() {
    TEST_CASE("testGetRequest");
    
    MockSocket socket(DEFAULT_GET);
-   HttpRequest request(socket);
+   HttpRequest request(&socket);
 }
 
 //******************************************************************************
@@ -117,11 +117,11 @@ void TestHttpRequest::testGetMethod() {
    TEST_CASE("testGetMethod");
 
    MockSocket socketGet(DEFAULT_GET);
-   HttpRequest requestGet(socketGet);
+   HttpRequest requestGet(&socketGet);
    requireStringEquals("GET", requestGet.getMethod(), "method is GET");
 
    MockSocket socketPost(DEFAULT_POST);
-   HttpRequest requestPost(socketPost);
+   HttpRequest requestPost(&socketPost);
    requireStringEquals("POST", requestPost.getMethod(), "method is POST");
 }
 
@@ -131,11 +131,11 @@ void TestHttpRequest::testGetPath() {
    TEST_CASE("testGetPath");
 
    MockSocket socketGet(DEFAULT_GET);
-   HttpRequest requestGet(socketGet);
+   HttpRequest requestGet(&socketGet);
    requireStringEquals(GET_PATH, requestGet.getPath(), "path should be GET path");
    
    MockSocket socketPost(DEFAULT_POST);
-   HttpRequest requestPost(socketPost);
+   HttpRequest requestPost(&socketPost);
    requireStringEquals(POST_PATH, requestPost.getPath(), "path should be POST path");
 }
 

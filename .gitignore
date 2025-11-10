@@ -4,3 +4,4 @@ xcuserdata
 *.o
 src/misere
 *.so
+tests/test_misere
