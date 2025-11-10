@@ -4,6 +4,7 @@
 #ifndef MISERE_HTTPSERVER_H
 #define MISERE_HTTPSERVER_H
 
+#include <memory>
 #include <string>
 #include <unordered_map>
 
@@ -246,9 +247,9 @@ class HttpServer {
 
 
    private:
-      chaudiere::ServerSocket* m_serverSocket;
-      chaudiere::ThreadPoolDispatcher* m_threadPool;
-      chaudiere::ThreadingFactory* m_threadingFactory;
+      std::unique_ptr<chaudiere::ServerSocket> m_serverSocket;
+      std::unique_ptr<chaudiere::ThreadPoolDispatcher> m_threadPool;
+      std::unique_ptr<chaudiere::ThreadingFactory> m_threadingFactory;
       chaudiere::KeyValuePairs m_properties;
       std::unordered_map<std::string, HttpHandler*> m_mapPathHandlers;
       std::unordered_map<std::string, chaudiere::DynamicLibrary*> m_mapPathLibraries;

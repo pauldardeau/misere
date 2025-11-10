@@ -365,16 +365,10 @@ HttpServer::~HttpServer() {
 
    if (m_serverSocket) {
       m_serverSocket->close();
-      delete m_serverSocket;
    }
 
    if (m_threadPool) {
       m_threadPool->stop();
-      delete m_threadPool;
-   }
-
-   if (m_threadingFactory != nullptr) {
-      delete m_threadingFactory;
    }
 
    for (auto& pair : m_mapPathHandlers) {
@@ -1064,11 +1058,11 @@ void HttpServer::setupConcurrency() {
 
    if (m_isThreaded) {
       bool isUsingLibDispatch = false;
-      m_threadingFactory = new PthreadsThreadingFactory;
-      ThreadingFactory::setThreadingFactory(m_threadingFactory);
-      m_threadPool =
+      m_threadingFactory.reset(new PthreadsThreadingFactory);
+      //ThreadingFactory::setThreadingFactory(m_threadingFactory);
+      m_threadPool.reset(
          m_threadingFactory->createThreadPoolDispatcher(m_threadPoolSize,
-                                                        "thread_pool");
+                                                        "thread_pool"));
 
       m_threadPool->start();
 
@@ -1103,7 +1097,7 @@ bool HttpServer::setupServerSocket() {
             //LOG_DEBUG(string(msg))
          }
 
-         m_serverSocket = new ServerSocket(m_serverPort);
+         m_serverSocket = std::make_unique<ServerSocket>(m_serverPort);
       } catch (...) {
          string exception = "unable to open server socket port '";
          exception += StrUtils::toString(m_serverPort);
