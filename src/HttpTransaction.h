@@ -4,7 +4,7 @@
 #ifndef MISERE_HTTPTRANSACTION_H
 #define MISERE_HTTPTRANSACTION_H
 
-
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -168,7 +168,7 @@ class HttpTransaction
       std::vector<std::string> m_vecHeaderLines;
       std::vector<std::string> m_vecRequestLineValues;
       std::string m_header;
-      chaudiere::ByteBuffer* m_body;
+      std::unique_ptr<chaudiere::ByteBuffer> m_body;
       std::string m_protocol;
       std::string m_firstHeaderLine;
       chaudiere::KeyValuePairs m_headers;

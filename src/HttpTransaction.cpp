@@ -53,13 +53,6 @@ HttpTransaction::~HttpTransaction() {
    if ((m_socket != nullptr) && m_socketOwned) {
       delete m_socket;
    }
-   m_socket = nullptr;
-   m_socketOwned = false;
-
-   if (m_body != nullptr) {
-      delete m_body;
-      m_body = nullptr;
-   }
 }
 
 //*****************************************************************************
@@ -161,22 +154,20 @@ const std::string& HttpTransaction::getRawHeader() const {
 
 //******************************************************************************
 
-const ByteBuffer* HttpTransaction::getBody() const {
-   return m_body;
+const chaudiere::ByteBuffer* HttpTransaction::getBody() const {
+   return m_body.get();
 }
 
 //******************************************************************************
 
 ByteBuffer* HttpTransaction::takeBody() {
-   ByteBuffer* buffer = m_body;
-   m_body = nullptr;
-   return buffer;
+   return m_body.release();
 }
 
 //******************************************************************************
 
 void HttpTransaction::setBody(ByteBuffer* body) {
-   m_body = body;
+   m_body.reset(body);
 }
 
 //******************************************************************************
