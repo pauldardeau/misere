@@ -104,7 +104,6 @@ HttpResponse* HttpClient::put(HttpRequest& request,
 HttpResponse* HttpClient::put(HttpRequest& request,
                               const ByteBuffer& buffer)
 {
-   
    HttpResponse* r = nullptr;
    Socket* s = socketForRequest(request);
    if (s != nullptr) {
@@ -274,7 +273,7 @@ HttpResponse* HttpClient::sendReceive(const std::string& address,
    socket->setSendBufferSize(SOCKET_SEND_BUFFER_SIZE);
    socket->setReceiveBufferSize(SOCKET_RECV_BUFFER_SIZE);
    socket->setIncludeMessageSize(false);
-   
+
    if (Logger::isLogging(LogLevel::Debug)) {
       LOG_DEBUG("*** start of send data ***")
       LOG_DEBUG(sendBuffer)

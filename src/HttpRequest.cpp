@@ -158,9 +158,9 @@ HttpRequest& HttpRequest::operator=(const HttpRequest& copy) {
 
 bool HttpRequest::streamFromSocket() {
    bool streamSuccess = false;
-  
+
    if (HttpTransaction::streamFromSocket()) {
-      const std::string& firstLine = getFirstHeaderLine(); 
+      const std::string& firstLine = getFirstHeaderLine();
       std::vector<std::string> reqLineValues = StrUtils::split(firstLine, " ");
       if (reqLineValues.size() != 3) {
          //throw BasicException("unable to parse headers");
@@ -177,7 +177,7 @@ bool HttpRequest::streamFromSocket() {
    } else {
       throw BasicException("unable to parse headers");
    }
-   
+
    return streamSuccess;
 }
 
@@ -227,7 +227,7 @@ void HttpRequest::getArgumentKeys(std::vector<std::string>& vecKeys) const {
 /*
 void HttpRequest::parseBody() {
    const std::string& body = getBody();
-   
+
    if (!body.empty() && StrUtils::containsString(body, AMPERSAND)) {
       StringTokenizer st1(body, AMPERSAND);
 
@@ -420,7 +420,7 @@ bool HttpRequest::write(chaudiere::Socket* s, long bodyLength) {
          headers += m_arguments.getValue(headerKey);
          headers += EOL;
       }
-      
+
       headers += EOL;
 
       success = s->write(headers);

@@ -73,12 +73,12 @@ HttpRequestHandler::~HttpRequestHandler() {
 
 void HttpRequestHandler::run() {
    Socket* socket = getSocket();
-   
+
    if (nullptr == socket) {
       LOG_ERROR("no socket or socket request present in RequestHandler")
       return;
    }
-  
+
    socket->setTcpNoDelay(true);
    socket->setSendBufferSize(m_server.getSocketSendBufferSize());
    socket->setReceiveBufferSize(m_server.getSocketReceiveBufferSize());
@@ -87,7 +87,7 @@ void HttpRequestHandler::run() {
    if (isLoggingDebug) {
       //LOG_DEBUG("starting parse of HttpRequest")
    }
-  
+
    HttpRequest request(socket, false);
 
    if (request.isInitialized()) {
@@ -95,16 +95,16 @@ void HttpRequestHandler::run() {
       if (isLoggingDebug) {
          //LOG_DEBUG("ending parse of HttpRequest")
       }
-   
+
       //const std::string& method = request.getMethod();
       const std::string& protocol = request.getProtocol();
       const std::string& path = request.getPath();
-      
+
       std::string routingPath = path;
-      
+
       std::string clientIPAddress;
       socket->getPeerIPAddress(clientIPAddress);
-      
+
       if (StrUtils::containsString(path, QUESTION_MARK)) {
          // strip arguments from path
          const std::string::size_type posQuestionMark =
@@ -119,28 +119,28 @@ void HttpRequestHandler::run() {
       //   LOG_COUNT_OCCURRENCE(COUNT_USER_AGENT,
       //                        request.getHeaderValue(HTTP_USER_AGENT))
       //}
-   
+
       HttpHandler* pHandler = m_server.getPathHandler(routingPath);
       bool handlerAvailable = false;
-   
+
       if (pHandler == nullptr) {
          LOG_INFO("no handler for request: " + routingPath)
       }
-   
+
       // assume the worst
       std::string responseCode = HTTP::HTTP_RESP_SERV_ERR_INTERNAL_ERROR;
       const std::string systemDate = m_server.getSystemDateGMT();
       KeyValuePairs headers;
       headers.addPair(HTTP_CONNECTION, CONNECTION_CLOSE);
       const std::string& serverString = m_server.getServerId();
-   
+
       if (!serverString.empty()) {
          headers.addPair(HTTP_SERVER, serverString);
       }
-   
+
       headers.addPair(HTTP_DATE, systemDate);
       //headers.addPair(HTTP_CONTENT_TYPE, CONTENT_TYPE_HTML);
-   
+
       if ((HTTP::HTTP_PROTOCOL1_0 != protocol) &&
           (HTTP::HTTP_PROTOCOL1_1 != protocol)) {
          responseCode = HTTP::HTTP_RESP_SERV_ERR_HTTP_VERSION_UNSUPPORTED;
@@ -154,21 +154,21 @@ void HttpRequestHandler::run() {
       } else {
          handlerAvailable = true;
       }
-   
+
       //const std::string httpHeader = request.getRawHeader();
-   
+
       //if (isLoggingDebug) {
       //   LOG_DEBUG("HttpServer method: " + method)
       //   LOG_DEBUG("HttpServer path: " + routingPath)
       //   LOG_DEBUG("HttpServer protocol: " + protocol)
-      
+
       //   LOG_DEBUG("HttpServer header:")
       //   LOG_DEBUG(httpHeader)
       //}
-   
+
       int contentLength = 0;
       HttpResponse response;
-   
+
       if ((nullptr != pHandler) && handlerAvailable) {
          try {
             pHandler->serviceRequest(request, response);
@@ -183,12 +183,12 @@ void HttpRequestHandler::run() {
                   /*
                   const std::string& acceptEncoding =
                      request.getAcceptEncoding();
-                 
+
                   if (StrUtils::containsString(acceptEncoding, GZIP) &&
                       m_server.compressionEnabled() &&
                       m_server.compressResponse(response.getContentType()) &&
                       contentLength >= m_server.minimumCompressionSize()) {
-                     
+
                      try {
                         const std::string compressedResponseBody =
                            StrUtils::gzipCompress(responseBody);
@@ -202,7 +202,7 @@ void HttpRequestHandler::run() {
                   */
                }
             }
-         
+
             response.populateWithHeaders(headers);
          } catch (const BasicException& be) {
             responseCode = HTTP::HTTP_RESP_SERV_ERR_INTERNAL_ERROR;
@@ -222,12 +222,12 @@ void HttpRequestHandler::run() {
       } else {
          headers.addPair(HTTP_CONTENT_LENGTH, ZERO);
       }
-   
+
       // log the request
       /*
       if (isThreadPooling()) {
          const std::string& runByWorkerThreadId = getRunByThreadWorkerId();
-      
+
          if (!runByWorkerThreadId.empty()) {
             m_server.logRequest(clientIPAddress,
                                 request.getFirstHeaderLine(),
@@ -244,11 +244,11 @@ void HttpRequestHandler::run() {
                              responseCode);
       }
       */
-   
+
       std::string headersAsString =
          m_server.buildHeader(responseCode, headers);
       socket->write(headersAsString);
-   
+
       if (contentLength > 0) {
          const ByteBuffer* body = response.getBody();
          if (body != nullptr) {
@@ -260,14 +260,14 @@ void HttpRequestHandler::run() {
        if (isLoggingDebug) {
          LOG_DEBUG("response written, calling read so that client can close first")
        }
-   
+
        // invoke a read to give the client the chance to close the socket
        // first. this also lets us easily detect the close on the client
        // end of the connection.  we won't actually read any data here,
        // this is just a wait to allow the client to close first
        char readBuffer[5];
        socket->read(readBuffer, 4);
-   
+
       //if (m_socketRequest != nullptr) {
       //   m_socketRequest->requestComplete();
       //}

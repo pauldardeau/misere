@@ -93,16 +93,16 @@ bool HttpTransaction::parseHeaders() {
    if (m_vecHeaderLines.empty()) {
       return false;
    }
-   
+
    m_firstHeaderLine = m_vecHeaderLines[0];
    StringTokenizer st(m_firstHeaderLine);
    const int tokenCount = st.countTokens();
-   
+
    if (3 <= tokenCount) {
       m_vecRequestLineValues.clear();
       m_vecRequestLineValues.reserve(3);
       string thirdValue;
-      
+
       for (int i = 0; i < tokenCount; ++i) {
          if (i > 1) {
             thirdValue += st.nextToken();
@@ -110,14 +110,14 @@ bool HttpTransaction::parseHeaders() {
             m_vecRequestLineValues.push_back(st.nextToken());
          }
       }
-      
+
       m_vecRequestLineValues.push_back(thirdValue);
       m_method = m_vecRequestLineValues[0];
       m_protocol = thirdValue;
-      
+
       for (const auto& headerLine : m_vecHeaderLines) {
          const string::size_type posColon = headerLine.find(COLON);
-         
+
          if (std::string::npos != posColon) {
             std::string lowerHeaderKey = headerLine.substr(0, posColon);
             StrUtils::toLowerCase(lowerHeaderKey);
@@ -126,20 +126,20 @@ bool HttpTransaction::parseHeaders() {
             m_headers.addPair(lowerHeaderKey, value);
          }
       }
-      
+
       if (hasHeaderValue(HTTP::HTTP_CONTENT_LENGTH)) {
          const std::string& contentLengthAsString =
             getHeaderValue(HTTP::HTTP_CONTENT_LENGTH);
-         
+
          if (!contentLengthAsString.empty()) {
             const int length = StrUtils::parseInt(contentLengthAsString);
-            
+
             if (length > 0) {
                m_contentLength = length;
             }
          }
       }
-      
+
       parseSuccess = true;
    }
 

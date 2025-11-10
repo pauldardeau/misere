@@ -213,15 +213,15 @@ const std::string& HttpServer::getServerId() const {
 bool HttpServer::hasTrueValue(const KeyValuePairs& kvp,
                               const std::string& setting) const {
    bool hasTrueValue = false;
-   
+
    if (kvp.hasKey(setting)) {
       const string& settingValue = kvp.getValue(setting);
-      
+
       if (StrUtils::containsString(CFG_TRUE_SETTING_VALUES, settingValue)) {
          hasTrueValue = true;
       }
    }
-   
+
    return hasTrueValue;
 }
 
@@ -230,7 +230,7 @@ bool HttpServer::hasTrueValue(const KeyValuePairs& kvp,
 int HttpServer::getIntValue(const KeyValuePairs& kvp,
                             const std::string& setting) const {
    int value = -1;
-   
+
    if (kvp.hasKey(setting)) {
       const string& valueAsString = StrUtils::strip(kvp.getValue(setting));
       if (!valueAsString.empty()) {
@@ -244,7 +244,7 @@ int HttpServer::getIntValue(const KeyValuePairs& kvp,
                      "'")
       }
    }
-   
+
    return value;
 }
 
@@ -255,7 +255,7 @@ void HttpServer::replaceVariables(const KeyValuePairs& kvp,
    if (!s.empty()) {
       vector<string> keys;
       kvp.getKeys(keys);
-      
+
       for (const auto& key : keys) {
          if (StrUtils::containsString(s, key)) {
             StrUtils::replaceAll(s, key, kvp.getValue(key));
@@ -289,7 +289,7 @@ bool HttpServer::init(int port) {
    if (m_usingConfigFile) {
       AutoPointer<SectionedConfigDataSource*> configDataSource(nullptr);
       bool haveDataSource = false;
-   
+
       try {
          configDataSource.assign(getConfigDataSource());
          haveDataSource = true;
@@ -300,7 +300,7 @@ bool HttpServer::init(int port) {
       } catch (...) {
          LOG_ERROR("unknown exception retrieving config data")
       }
-   
+
       if (!configDataSource.haveObject() || !haveDataSource) {
          LOG_ERROR("unable to retrieve config data")
          return false;
@@ -316,7 +316,7 @@ bool HttpServer::init(int port) {
          if (configDataSource->hasSection(CFG_SECTION_SERVER) &&
              configDataSource->readSection(CFG_SECTION_SERVER,
                                            kvpServerSettings)) {
-            setupListeningPort(kvpServerSettings); 
+            setupListeningPort(kvpServerSettings);
             setupThreading(kvpServerSettings);
             setupSocketHandling(kvpServerSettings);
             setupLogLevel(kvpServerSettings);
@@ -380,10 +380,10 @@ HttpServer::~HttpServer() {
 std::string HttpServer::getSystemDateGMT() const {
    time_t currentGMT;
    ::time(&currentGMT);
-   
+
    struct tm* timeptr = ::gmtime(&currentGMT);
    char dateBuffer[128];
-   
+
    ::snprintf(dateBuffer, 128,
               "%.3s, %02d %.3s %d %.2d:%.2d:%.2d GMT",
               LOG_WEEKDAY_NAME[timeptr->tm_wday],
@@ -393,7 +393,7 @@ std::string HttpServer::getSystemDateGMT() const {
               timeptr->tm_hour,
               timeptr->tm_min,
               timeptr->tm_sec);
-   
+
    return string(dateBuffer);
 }
 
@@ -402,10 +402,10 @@ std::string HttpServer::getSystemDateGMT() const {
 std::string HttpServer::getLocalDateTime() const {
    time_t currentTime;
    ::time(&currentTime);
-   
+
    struct tm* timeptr = ::localtime(&currentTime);
    char dateBuffer[128];
-   
+
    ::snprintf(dateBuffer, 128,
               "%d-%02d-%02d %.2d:%.2d:%.2d",
               1900 + timeptr->tm_year,
@@ -414,7 +414,7 @@ std::string HttpServer::getLocalDateTime() const {
               timeptr->tm_hour,
               timeptr->tm_min,
               timeptr->tm_sec);
-   
+
    return string(dateBuffer);
 }
 
@@ -459,7 +459,7 @@ bool HttpServer::addPathHandler(const std::string& path,
 bool HttpServer::removePathHandler(const std::string& path) {
    bool isSuccess = false;
    auto it = m_mapPathHandlers.find(path);
-   
+
    if (it != m_mapPathHandlers.end()) {
       m_mapPathHandlers.erase(it);
       isSuccess = true;
@@ -496,11 +496,11 @@ std::string HttpServer::buildHeader(const std::string& responseCode,
 
    for (const auto& headerKey : keys) {
       sb += headerKey;  // header key
-      
+
       if (!StrUtils::endsWith(headerKey, COLON)) {
          sb += COLON;
       }
-      
+
       sb += SPACE;
 
       sb += headers.getValue(headerKey);  // header value
@@ -553,12 +553,12 @@ void HttpServer::serviceSocket(SocketRequest* socketRequest) {
 
 int HttpServer::runSocketServer() {
    int rc = 0;
-   
+
    if (!m_serverSocket) {
       LOG_CRITICAL("runSocketServer called with null serverSocket")
       return 1;
    }
-   
+
    while (!m_isDone) {
       Socket* socket = m_serverSocket->accept();
 
@@ -600,7 +600,7 @@ int HttpServer::runSocketServer() {
          LOG_ERROR("HttpServer runServer unknown exception caught")
       }
    }
-   
+
    return rc;
 }
 
@@ -609,13 +609,13 @@ int HttpServer::runSocketServer() {
 int HttpServer::runKernelEventServer() {
    const int MAX_CON = 1200;
    int rc = 0;
-   
+
    if (m_threadingFactory != nullptr) {
       Mutex* mutexFD = m_threadingFactory->createMutex("fdMutex");
       Mutex* mutexHWMConnections =
          m_threadingFactory->createMutex("hwmConnectionsMutex");
       AutoPointer<KernelEventServer*> kernelEventServer(nullptr);
-      
+
       if (KqueueServer::isSupportedPlatform()) {
          kernelEventServer.assign(
             new KqueueServer(*mutexFD, *mutexHWMConnections));
@@ -626,7 +626,7 @@ int HttpServer::runKernelEventServer() {
          LOG_CRITICAL("no kernel event server available for platform")
          rc = 1;
       }
-      
+
       if (kernelEventServer.haveObject()) {
          try {
             SocketServiceHandler* serviceHandler =
@@ -653,7 +653,7 @@ int HttpServer::runKernelEventServer() {
       LOG_CRITICAL("no threading factory configured")
       rc = 1;
    }
-   
+
    return rc;
 }
 
@@ -805,10 +805,10 @@ void HttpServer::setupServerString(const chaudiere::KeyValuePairs& kvp) {
             kvpVars.addPair("$PRODUCT_VERSION", SERVER_VERSION);
             kvpVars.addPair("$CFG_SOCKETS", m_sockets);
             kvpVars.addPair("$CFG_THREADING", m_threading);
-                  
+
             const string::size_type posDollarOS =
                serverString.find("$OS_");
-                  
+
             if (posDollarOS != string::npos) {
                SystemInfo systemInfo;
                if (systemInfo.retrievedSystemInfo()) {
@@ -821,10 +821,10 @@ void HttpServer::setupServerString(const chaudiere::KeyValuePairs& kvp) {
                   LOG_WARNING("unable to retrieve system information to populate server string")
                }
             }
-                  
+
             replaceVariables(kvpVars, m_serverString);
          }
-               
+
          //LOG_INFO("setting server string: '" + m_serverString + "'")
       }
    }
@@ -840,7 +840,7 @@ bool HttpServer::setupHandlers(const chaudiere::SectionedConfigDataSource* dataS
       //LOG_DEBUG("adding built-in handlers")
       addBuiltInHandlers();
    }
-      
+
    if (isLoggingDebug) {
       //LOG_DEBUG("processing handlers")
    }
@@ -858,7 +858,7 @@ bool HttpServer::setupHandlers(const chaudiere::SectionedConfigDataSource* dataS
          if (isLoggingDebug) {
             LOG_DEBUG("path='" + path + "'")
          }
-            
+
          if (moduleSection.empty()) {
             LOG_WARNING(string("nothing specified for path ") + path)
             LOG_WARNING("Not servicing this path")
@@ -876,13 +876,13 @@ bool HttpServer::setupHandlers(const chaudiere::SectionedConfigDataSource* dataS
 
                const string& dllName = kvpModule.getValue(MODULE_DLL_NAME);
                HttpHandler* pHandler = nullptr;
-                  
+
                if (isLoggingDebug) {
                   LOG_DEBUG("trying to load dynamic library='" +
                             dllName +
                             "'")
                }
-                  
+
                DynamicLibrary* dll = new DynamicLibrary(dllName);
 
                // load the dll
@@ -933,12 +933,12 @@ bool HttpServer::setupHandlers(const chaudiere::SectionedConfigDataSource* dataS
                   if (isLoggingDebug) {
                      //LOG_DEBUG("initialization succeeded")
                   }
-                     
+
                   // register it
                   if (!addPathHandler(path, pHandler)) {
                      LOG_ERROR(string("unable to register handler for path ") +
                                path)
-                     
+
                      if (m_requireAllHandlersForStartup) {
                         return false;
                      }

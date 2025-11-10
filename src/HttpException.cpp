@@ -36,10 +36,10 @@ HttpException& HttpException::operator=(const HttpException& copy) {
    if (this == &copy) {
       return *this;
    }
-   
+
    BasicException::operator=(copy);
    m_statusCode = copy.m_statusCode;
-   
+
    return *this;
 }
 

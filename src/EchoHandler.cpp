@@ -30,7 +30,7 @@ EchoHandler::~EchoHandler() {
 void EchoHandler::serviceRequest(const HttpRequest& request,
                                  HttpResponse& response) {
    string body = "<html><body>";
-   
+
    body += request.getRequestMethod();
    body += " ";
    body += request.getRequestPath();
@@ -40,7 +40,7 @@ void EchoHandler::serviceRequest(const HttpRequest& request,
 
    vector<string> headerKeys;
    request.getHeaderKeys(headerKeys);
-   
+
    if (!headerKeys.empty()) {
       for (const auto& headerKey : headerKeys) {
          const std::string& headerValue = request.getHeaderValue(headerKey);
@@ -52,11 +52,11 @@ void EchoHandler::serviceRequest(const HttpRequest& request,
    } else {
       body += "no headers found!";
    }
-   
+
    body += "<br/>";
-  
+
    const ByteBuffer* requestBody = request.getBody();
-   if (requestBody != nullptr && !requestBody->empty()) { 
+   if (requestBody != nullptr && !requestBody->empty()) {
       std::string bodyReply = "body bytes: ";
       bodyReply += StrUtils::toString((int)requestBody->size());
       body += bodyReply;

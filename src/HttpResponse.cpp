@@ -174,7 +174,7 @@ bool HttpResponse::streamFromSocket() {
    if (Logger::isLogging(LogLevel::Debug)) {
       LOG_DEBUG("******** start of HttpResponse::streamFromSocket")
    }
-   
+
    bool streamSuccess = false;
 
    if (streamFromSocket2()) {
@@ -302,12 +302,12 @@ bool HttpResponse::streamFromSocket() {
             throw HttpException(m_statusCodeAsInteger, reasonPhrase);
          }
       }
-      
+
       streamSuccess = true;
    } else {
       LOG_ERROR("unable to parse headers")
    }
-   
+
    return streamSuccess;
 }
 
@@ -389,7 +389,7 @@ int HttpResponse::getContentLength() const {
 void HttpResponse::setContentLength(int contentLength) {
    char lengthText[40];
    snprintf(lengthText, 40, "%d", contentLength);
-   setHeaderValue(HTTP::HTTP_CONTENT_LENGTH, std::string(lengthText)); 
+   setHeaderValue(HTTP::HTTP_CONTENT_LENGTH, std::string(lengthText));
 }
 
 //******************************************************************************

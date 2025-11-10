@@ -33,7 +33,7 @@ void ServerStatusHandler::serviceRequest(const HttpRequest& request,
    double oneMinuteLoad = 0.0;
    double fiveMinuteLoad = 0.0;
    double fifteenMinuteLoad = 0.0;
-   
+
    if (SystemStats::getLoadAverages(oneMinuteLoad,
                                     fiveMinuteLoad,
                                     fifteenMinuteLoad)) {
@@ -45,9 +45,9 @@ void ServerStatusHandler::serviceRequest(const HttpRequest& request,
                  fifteenMinuteLoad);
       body += std::string(buffer);
    }
-   
+
    body += "</body></html>";
-   
+
    response.setBody(new ByteBuffer(body));
 }
 
