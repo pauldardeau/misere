@@ -576,7 +576,7 @@ int HttpServer::runSocketServer() {
             HttpRequestHandler* handler =
                new HttpRequestHandler(*this, socket);
             handler->setThreadPooling(true);
-	    handler->setAutoDelete();
+            handler->setAutoDelete();
 
             // give it to the thread pool
             bool added = m_threadPool->addRequest(handler);
