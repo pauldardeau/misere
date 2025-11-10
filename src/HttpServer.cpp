@@ -371,10 +371,6 @@ HttpServer::~HttpServer() {
       m_threadPool->stop();
    }
 
-   for (auto& pair : m_mapPathHandlers) {
-      delete pair.second;
-   }
-
    m_mapPathHandlers.erase(m_mapPathHandlers.begin(),
                            m_mapPathHandlers.end());
 }
@@ -451,7 +447,7 @@ bool HttpServer::addPathHandler(const std::string& path,
    bool isSuccess = false;
 
    if (!path.empty() && (nullptr != pHandler)) {
-      m_mapPathHandlers[path] = pHandler;
+      m_mapPathHandlers.emplace(path, pHandler);
       isSuccess = true;
    }
 
@@ -462,11 +458,9 @@ bool HttpServer::addPathHandler(const std::string& path,
 
 bool HttpServer::removePathHandler(const std::string& path) {
    bool isSuccess = false;
-   unordered_map<string,HttpHandler*>::iterator it =
-      m_mapPathHandlers.find(path);
+   auto it = m_mapPathHandlers.find(path);
    
    if (it != m_mapPathHandlers.end()) {
-      delete (*it).second;
       m_mapPathHandlers.erase(it);
       isSuccess = true;
    }
@@ -477,9 +471,9 @@ bool HttpServer::removePathHandler(const std::string& path) {
 //******************************************************************************
 
 HttpHandler* HttpServer::getPathHandler(const std::string& path) {
-   unordered_map<string,HttpHandler*>::iterator it = m_mapPathHandlers.find(path);
+   auto it = m_mapPathHandlers.find(path);
    if (it != m_mapPathHandlers.end()) {
-      return (*it).second;
+      return it->second.get();
    }
 
    return nullptr;
@@ -949,7 +943,7 @@ bool HttpServer::setupHandlers(const chaudiere::SectionedConfigDataSource* dataS
                         return false;
                      }
                   } else {
-                     m_mapPathLibraries[path] = dll;
+                     //m_mapPathLibraries[path] = dll;
                   }
                } else {
                   LOG_ERROR(string("unable to initialize handler for path ") +

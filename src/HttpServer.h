@@ -251,8 +251,8 @@ class HttpServer {
       std::unique_ptr<chaudiere::ThreadPoolDispatcher> m_threadPool;
       std::unique_ptr<chaudiere::ThreadingFactory> m_threadingFactory;
       chaudiere::KeyValuePairs m_properties;
-      std::unordered_map<std::string, HttpHandler*> m_mapPathHandlers;
-      std::unordered_map<std::string, chaudiere::DynamicLibrary*> m_mapPathLibraries;
+      std::unordered_map<std::string, std::unique_ptr<HttpHandler>> m_mapPathHandlers;
+      //std::unordered_map<std::string, chaudiere::DynamicLibrary*> m_mapPathLibraries;
       std::string m_accessLogFile;
       std::string m_errorLogFile;
       std::string m_logLevel;
