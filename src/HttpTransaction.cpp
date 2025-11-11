@@ -8,7 +8,6 @@
 #include "HttpTransaction.h"
 #include "HTTP.h"
 #include "Socket.h"
-#include "StringTokenizer.h"
 #include "BasicException.h"
 #include "InvalidKeyException.h"
 #include "StrUtils.h"
@@ -95,8 +94,8 @@ bool HttpTransaction::parseHeaders() {
    }
 
    m_firstHeaderLine = m_vecHeaderLines[0];
-   StringTokenizer st(m_firstHeaderLine);
-   const int tokenCount = st.countTokens();
+   std::vector<std::string> vecTokens = StrUtils::split(m_firstHeaderLine, " ");
+   const int tokenCount = vecTokens.size();
 
    if (3 <= tokenCount) {
       m_vecRequestLineValues.clear();
@@ -105,9 +104,9 @@ bool HttpTransaction::parseHeaders() {
 
       for (int i = 0; i < tokenCount; ++i) {
          if (i > 1) {
-            thirdValue += st.nextToken();
+            thirdValue += vecTokens[i];
          } else {
-            m_vecRequestLineValues.push_back(st.nextToken());
+            m_vecRequestLineValues.push_back(vecTokens[i]);
          }
       }
 
@@ -353,9 +352,8 @@ bool HttpTransaction::streamFromSocket() {
    }
 
    int lineIndex = 0;
-   StringTokenizer st(headers, "\r\n");
-   while (st.hasMoreTokens()) {
-      const string& token = st.nextToken();
+   std::vector<std::string> vecHeaders = StrUtils::split(headers, "\r\n");
+   for (const std::string& token : vecHeaders) {
       if (lineIndex == 0) {
          m_firstHeaderLine = token;
       }

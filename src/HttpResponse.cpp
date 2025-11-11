@@ -10,7 +10,6 @@
 #include "BasicException.h"
 #include "HttpException.h"
 #include "Logger.h"
-#include "StringTokenizer.h"
 #include "StrUtils.h"
 #include "ByteBuffer.h"
 
@@ -117,23 +116,20 @@ bool HttpResponse::streamFromSocket2() {
    }
 
    int lineIndex = 0;
-   StringTokenizer st(headers, "\r\n");
-   while (st.hasMoreTokens()) {
-      const string& token = st.nextToken();
+   std::vector<std::string> vecHeaders = StrUtils::split(headers, "\r\n");
+   for (const std::string& headerLine : vecHeaders) {
       if (lineIndex == 0) {
-         StringTokenizer stStatus(token, " ");
-         if (stStatus.countTokens() == 3) {
-            stStatus.nextToken();
-            const string& statusCodeAsText = stStatus.nextToken();
-            m_statusCode = statusCodeAsText;
+         std::vector<std::string> vecStatusTokens = StrUtils::split(headerLine, " ");
+         if (vecStatusTokens.size() == 3) {
+            m_statusCode = vecStatusTokens[1];
             m_statusCodeAsInteger = StrUtils::parseInt(m_statusCode);
          }
       }
-      if (token.length() > 0) {
-         string::size_type posColon = token.find(":");
+      if (headerLine.size() > 0) {
+         string::size_type posColon = headerLine.find(":");
          if (posColon != string::npos) {
-            string key = StrUtils::strip(token.substr(0, posColon));
-            string value = StrUtils::strip(token.substr(posColon+1, token.length() - 1
+            string key = StrUtils::strip(headerLine.substr(0, posColon));
+            string value = StrUtils::strip(headerLine.substr(posColon+1, headerLine.size() - 1
 ));
             if (key.length() > 0 && value.length() > 0) {
                StrUtils::toLowerCase(key);

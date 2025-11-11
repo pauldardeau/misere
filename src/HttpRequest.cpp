@@ -7,7 +7,6 @@
 #include "Socket.h"
 #include "BasicException.h"
 #include "StrUtils.h"
-#include "StringTokenizer.h"
 #include "Logger.h"
 #include "HTTP.h"
 
@@ -229,10 +228,10 @@ void HttpRequest::parseBody() {
    const std::string& body = getBody();
 
    if (!body.empty() && StrUtils::containsString(body, AMPERSAND)) {
-      StringTokenizer st1(body, AMPERSAND);
+      std::vector<std::string> vecPairs = StrUtils::split(body, AMPERSAND);
 
-      while (st1.hasMoreTokens()) {
-         std::string pair(st1.nextToken());
+      for (const std::string& pairText : vecPairs) {
+         std::string pair(pairText);
 
          StrUtils::replaceAll(pair, PLUS, SPACE);
          StrUtils::replaceAll(pair, ENC_DOUBLE_QUOTE, DOUBLE_QUOTE);
