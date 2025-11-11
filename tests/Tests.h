@@ -5,12 +5,12 @@
 #define MISERE_TESTS_H
 
 namespace misere {
-   
+
 class Tests {
 public:
    void run();
 };
-   
+
 }
 
 #endif

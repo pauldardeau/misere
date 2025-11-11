@@ -13,7 +13,7 @@ class TestHttpResponse : public poivre::TestSuite {
 
 protected:
    void runTests();
-   
+
    void testConstructor();
    void testConstructorWithSocket();
    void testCopyConstructor();
@@ -28,7 +28,7 @@ protected:
 
 public:
    TestHttpResponse();
-   
+
 };
 
 }

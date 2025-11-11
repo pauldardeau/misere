@@ -13,7 +13,7 @@ class TestHttpClient : public poivre::TestSuite {
 
 protected:
    void runTests();
-   
+
    void testConstructor();
    void testPost();
    void testSendReceive();

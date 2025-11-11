@@ -12,7 +12,7 @@ class TestHttpServer : public poivre::TestSuite {
 
 protected:
    void runTests();
-   
+
    void testConstructor();
    void testConstructorWithPort();
    void testConstructorWithConfigFile();

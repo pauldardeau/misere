@@ -164,7 +164,7 @@ void TestHttpTransaction::testStreamFromSocket() {
    requireStringEquals(resource, txn.getRequestPath(), "request path");
    requireStringEquals(protocol, txn.getProtocol(), "protocol");
    requireStringEquals(request_line, txn.getFirstHeaderLine(), "request line");
-  
+
    // host
    require(txn.hasHeaderValue(key_host), "host header exists");
    requireStringEquals(host, txn.getHeaderValue(key_host), "host");
@@ -183,7 +183,7 @@ void TestHttpTransaction::testStreamFromSocket() {
 
    // user agent
    require(txn.hasHeaderValue(key_user_agent), "user agent exists");
-   requireStringEquals(user_agent, txn.getHeaderValue(key_user_agent), "user agent"); 
+   requireStringEquals(user_agent, txn.getHeaderValue(key_user_agent), "user agent");
 }
 
 //*****************************************************************************

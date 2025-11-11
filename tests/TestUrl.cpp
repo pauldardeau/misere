@@ -78,7 +78,7 @@ void TestUrl::testAssignmentCopy() {
 void TestUrl::testGetProtocol() {
    TEST_CASE("testGetProtocol");
    Url url(FULL_TEXT);
-   requireStringEquals(PROTOCOL, url.protocol(), "protocol should match"); 
+   requireStringEquals(PROTOCOL, url.protocol(), "protocol should match");
 }
 
 //******************************************************************************

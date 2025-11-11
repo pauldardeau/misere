@@ -16,7 +16,7 @@ protected:
 
 public:
    TestHTTP();
-   
+
 };
 
 }

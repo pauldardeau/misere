@@ -13,7 +13,7 @@ class TestHttpRequest : public poivre::TestSuite {
 
 protected:
    void runTests();
-   
+
    void testConstructor();
    void testCopyConstructor();
    void testMoveConstructor();
@@ -32,7 +32,7 @@ public:
    TestHttpRequest();
 
 };
-   
+
 }
 
 #endif

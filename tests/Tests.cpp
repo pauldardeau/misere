@@ -17,22 +17,22 @@ using namespace misere;
 void Tests::run() {
    TestHTTP testHTTP;
    testHTTP.run();
-   
+
    TestHttpClient testHttpClient;
    testHttpClient.run();
-   
+
    TestHttpException testHttpException;
    testHttpException.run();
-   
+
    TestHttpRequest testHttpRequest;
    testHttpRequest.run();
-   
+
    TestHttpResponse testHttpResponse;
    testHttpResponse.run();
-   
+
    TestHttpServer testHttpServer;
    testHttpServer.run();
-   
+
    TestHttpTransaction testHttpTransaction;
    testHttpTransaction.run();
 

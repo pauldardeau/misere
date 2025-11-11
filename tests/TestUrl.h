@@ -13,7 +13,7 @@ class TestUrl : public poivre::TestSuite {
 
 protected:
    void runTests();
-   
+
    void testConstructor();
    void testCopyConstructor();
    void testAssignmentCopy();
@@ -27,7 +27,7 @@ public:
    TestUrl();
 
 };
-   
+
 }
 
 #endif

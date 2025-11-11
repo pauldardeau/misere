@@ -97,7 +97,7 @@ void TestHttpRequest::testAssignmentMove() {
 
 void TestHttpRequest::testStreamFromSocket() {
    TEST_CASE("testStreamFromSocket");
-   
+
    MockSocket socket(DEFAULT_GET);
    HttpRequest request(&socket);
 }
@@ -106,7 +106,7 @@ void TestHttpRequest::testStreamFromSocket() {
 
 void TestHttpRequest::testGetRequest() {
    TEST_CASE("testGetRequest");
-   
+
    MockSocket socket(DEFAULT_GET);
    HttpRequest request(&socket);
 }
@@ -133,7 +133,7 @@ void TestHttpRequest::testGetPath() {
    MockSocket socketGet(DEFAULT_GET);
    HttpRequest requestGet(&socketGet);
    requireStringEquals(GET_PATH, requestGet.getPath(), "path should be GET path");
-   
+
    MockSocket socketPost(DEFAULT_POST);
    HttpRequest requestPost(&socketPost);
    requireStringEquals(POST_PATH, requestPost.getPath(), "path should be POST path");

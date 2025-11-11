@@ -38,7 +38,7 @@ void TestHttpException::testCopyConstructor() {
 
    const int statusCode = 500;
    std::string reason = "Server Error";
-   
+
    HttpException httpException(statusCode, reason);
    HttpException copyException(httpException);
    require(statusCode == copyException.getStatusCode(), "status code should match");
@@ -56,10 +56,10 @@ void TestHttpException::testMoveConstructor() {
 
 void TestHttpException::testAssignmentCopy() {
    TEST_CASE("testAssignmentCopy");
-   
+
    const int statusCode = 500;
    std::string reason = "Server Error";
-   
+
    HttpException httpException(statusCode, reason);
    HttpException copyException(404, "Not Found");
    copyException = httpException;
@@ -78,10 +78,10 @@ void TestHttpException::testAssignmentMove() {
 
 void TestHttpException::testGetStatusCode() {
    TEST_CASE("testGetStatusCode");
-   
+
    const int statusCode = 500;
    std::string reason = "Server Error";
-   
+
    HttpException httpException(statusCode, reason);
    require(statusCode == httpException.getStatusCode(), "status code should match");
 }
