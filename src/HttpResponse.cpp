@@ -125,13 +125,13 @@ bool HttpResponse::streamFromSocket2() {
             m_statusCodeAsInteger = StrUtils::parseInt(m_statusCode);
          }
       }
-      if (headerLine.size() > 0) {
+      if (!headerLine.empty()) {
          string::size_type posColon = headerLine.find(":");
          if (posColon != string::npos) {
             string key = StrUtils::strip(headerLine.substr(0, posColon));
             string value = StrUtils::strip(headerLine.substr(posColon+1, headerLine.size() - 1
 ));
-            if (key.length() > 0 && value.length() > 0) {
+            if (!key.empty() && !value.empty()) {
                StrUtils::toLowerCase(key);
                addHeader(key, value);
             }

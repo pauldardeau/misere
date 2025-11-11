@@ -389,11 +389,11 @@ bool HttpRequest::write(chaudiere::Socket* s, long bodyLength) {
    if (s != nullptr) {
       const std::string& method = getMethod();
       const std::string& path = getPath();
-      if (method.length() == 0) {
+      if (method.empty()) {
          return false;
       }
 
-      if (path.length() == 0) {
+      if (path.empty()) {
          return false;
       }
 

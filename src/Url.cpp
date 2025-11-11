@@ -48,19 +48,19 @@ Url::Url(const std::string& fullText) :
       }
    }
 
-   if (m_fullText.length() == 0) {
+   if (m_fullText.empty()) {
       throw BasicException("no full text");
    }
 
-   if (m_host.length() == 0) {
+   if (m_host.empty()) {
       throw BasicException("missing host");
    }
 
-   if (m_path.length() == 0) {
+   if (m_path.empty()) {
       throw BasicException("missing path");
    }
 
-   if (m_protocol.length() == 0) {
+   if (m_protocol.empty()) {
       throw BasicException("missing protocol");
    }
 

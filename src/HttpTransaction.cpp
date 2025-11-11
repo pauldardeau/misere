@@ -357,13 +357,13 @@ bool HttpTransaction::streamFromSocket() {
       if (lineIndex == 0) {
          m_firstHeaderLine = token;
       }
-      if (token.length() > 0) {
+      if (!token.empty()) {
          string::size_type posColon = token.find(":");
          if (posColon != string::npos) {
             string key = StrUtils::strip(token.substr(0, posColon));
             string value = StrUtils::strip(token.substr(posColon+1, token.length() - 1
 ));
-            if (key.length() > 0 && value.length() > 0) {
+            if (!key.empty() && !value.empty()) {
                StrUtils::toLowerCase(key);
                addHeader(key, value);
             }
