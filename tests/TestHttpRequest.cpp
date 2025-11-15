@@ -62,7 +62,7 @@ void TestHttpRequest::runTests() {
 void TestHttpRequest::testConstructor() {
    TEST_CASE("testConstructor");
    MockSocket socket(DEFAULT_GET);
-   HttpRequest request(&socket);
+   HttpRequest request(&socket, false);
 }
 
 //******************************************************************************

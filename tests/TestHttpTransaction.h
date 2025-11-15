@@ -8,7 +8,7 @@
 
 namespace misere {
 
-class TestHttpTransaction : public poivre::TestSuite {
+class TestHttpTransaction : public chaudiere::TestSuite {
 
 protected:
    void runTests();

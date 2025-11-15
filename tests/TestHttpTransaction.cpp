@@ -7,7 +7,7 @@
 
 using namespace std;
 using namespace misere;
-using namespace poivre;
+using namespace chaudiere;
 
 static const string EOL = "\r\n";
 

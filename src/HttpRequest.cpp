@@ -103,7 +103,7 @@ HttpRequest::HttpRequest(const Url& url) :
    m_path = url.path();
 
    Socket* s = new Socket(url.host(), port);
-   if (s->isOpen()) {
+   if (s->isConnected()) {
       setSocket(s, true);
    } else {
       delete s;
@@ -159,6 +159,7 @@ bool HttpRequest::streamFromSocket() {
    bool streamSuccess = false;
 
    if (HttpTransaction::streamFromSocket()) {
+      printf("HttpTransaction::streamFromSocket returned true\n");
       const std::string& firstLine = getFirstHeaderLine();
       std::vector<std::string> reqLineValues = StrUtils::split(firstLine, " ");
       if (reqLineValues.size() != 3) {
@@ -174,6 +175,7 @@ bool HttpRequest::streamFromSocket() {
 
       streamSuccess = true;
    } else {
+      printf("HttpTransaction::streamFromSocket returned false\n");
       throw BasicException("unable to parse headers");
    }
 

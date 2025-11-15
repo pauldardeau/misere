@@ -2,10 +2,10 @@
 # BSD License
 
 CC = c++
-CC_OPTS = -c -pthread -I../src -I../chaudiere/src -I../chaudiere/poivre
+CC_OPTS = -c -pthread -I../src -I../chaudiere/src
 
 EXE_NAME = test_misere
-LIB_NAMES = ../src/libmisere.so ../chaudiere/poivre/poivre.so ../chaudiere/src/libchaudiere.so
+LIB_NAMES = ../src/libmisere.so ../chaudiere/src/libchaudiere.so
 
 OBJS = MockSocket.o \
 TestHttpClient.o \

@@ -9,7 +9,7 @@
 
 namespace misere {
 
-class TestHTTP : public poivre::TestSuite {
+class TestHTTP : public chaudiere::TestSuite {
 
 protected:
    void runTests();

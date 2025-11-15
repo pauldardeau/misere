@@ -321,8 +321,17 @@ bool HttpTransaction::streamFromSocket() {
    string headers;
    Socket* s = getSocket();
 
+   printf("HttpTransaction::streamFromSocket entered\n");
+
+   if (nullptr != s) {
+      printf("socket pointer is non-null\n");   
+   } else {
+      printf("socket pointer is null\n");
+   }
+
    while (readingHeaders) {
       bytes_read = s->readSocket(&charRead, 1);
+      printf("bytes_read = %d\n", bytes_read);
       if (bytes_read > 0) {
          if (charRead == '\r') {
             onEOL = true;
@@ -350,6 +359,8 @@ bool HttpTransaction::streamFromSocket() {
          }
       }
    }
+
+   printf("headers: '%s'\n'", headers.c_str());
 
    int lineIndex = 0;
    std::vector<std::string> vecHeaders = StrUtils::split(headers, "\r\n");
