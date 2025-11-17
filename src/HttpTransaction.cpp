@@ -324,7 +324,7 @@ bool HttpTransaction::streamFromSocket() {
    printf("HttpTransaction::streamFromSocket entered\n");
 
    if (nullptr != s) {
-      printf("socket pointer is non-null\n");   
+      printf("socket pointer is non-null\n");
    } else {
       printf("socket pointer is null\n");
    }
