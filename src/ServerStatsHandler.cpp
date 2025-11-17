@@ -44,6 +44,7 @@ std::string ServerStatsHandler::constructRow(const std::string& occurrenceType,
    row += occurrenceName;
    row += "</td>";
 
+   //TODO: make StrUtils::toString(long long) and use it here
    ::snprintf(buffer, 128, "%lld", occurrences);
    row += "<td align=\"right\">";
    row += std::string(buffer);

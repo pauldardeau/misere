@@ -51,6 +51,7 @@ std::string ServerObjectsDebugging::constructRow(const std::string& className,
    }
    row += "</td>";
 
+   //TODO: make StrUtils::toString(long long) and use it here
    ::snprintf(buffer, 128, "%lld", created);
    row += "<td align=\"right\">";
    if (isAlive) {
@@ -62,6 +63,7 @@ std::string ServerObjectsDebugging::constructRow(const std::string& className,
    }
    row += "</td>";
 
+   //TODO: make StrUtils::toString(long long) and use it here
    ::snprintf(buffer, 128, "%lld", destroyed);
    row += "<td align=\"right\">";
    if (isAlive) {
@@ -73,6 +75,7 @@ std::string ServerObjectsDebugging::constructRow(const std::string& className,
    }
    row += "</td>";
 
+   //TODO: make StrUtils::toString(long long) and use it here
    ::snprintf(buffer, 128, "%lld", alive);
    row += "<td align=\"right\">";
    if (isAlive) {
