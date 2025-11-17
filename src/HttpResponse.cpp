@@ -373,8 +373,8 @@ int HttpResponse::getContentLength() const {
    int lengthValue = 0;
 
    if (hasHeaderValue(HTTP::HTTP_CONTENT_LENGTH)) {
-      const std::string& contentLength = getHeaderValue(HTTP::HTTP_CONTENT_LENGTH);
-      lengthValue = atoi(contentLength.c_str());
+      lengthValue =
+         StrUtils::parseInt(getHeaderValue(HTTP::HTTP_CONTENT_LENGTH));
    }
 
    return lengthValue;
@@ -383,9 +383,7 @@ int HttpResponse::getContentLength() const {
 //******************************************************************************
 
 void HttpResponse::setContentLength(int contentLength) {
-   char lengthText[40];
-   snprintf(lengthText, 40, "%d", contentLength);
-   setHeaderValue(HTTP::HTTP_CONTENT_LENGTH, std::string(lengthText));
+   setHeaderValue(HTTP::HTTP_CONTENT_LENGTH, StrUtils::toString(contentLength));
 }
 
 //******************************************************************************
