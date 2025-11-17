@@ -6,6 +6,7 @@
 #include "HttpResponse.h"
 #include "Logger.h"
 #include "StdLogger.h"
+#include "StrUtils.h"
 
 #include "ServerObjectsDebugging.h"
 
@@ -33,7 +34,6 @@ std::string ServerObjectsDebugging::constructRow(const std::string& className,
                                                  long long destroyed,
                                                  long long alive) const {
    std::string row;
-   char buffer[128];
 
    bool isAlive = false;
    if (alive > 0L) {
@@ -51,37 +51,31 @@ std::string ServerObjectsDebugging::constructRow(const std::string& className,
    }
    row += "</td>";
 
-   //TODO: make StrUtils::toString(long long) and use it here
-   ::snprintf(buffer, 128, "%lld", created);
    row += "<td align=\"right\">";
    if (isAlive) {
       row += "<b>";
    }
-   row += std::string(buffer);
+   row += StrUtils::toString(created);
    if (isAlive) {
       row += "</b>";
    }
    row += "</td>";
 
-   //TODO: make StrUtils::toString(long long) and use it here
-   ::snprintf(buffer, 128, "%lld", destroyed);
    row += "<td align=\"right\">";
    if (isAlive) {
       row += "<b>";
    }
-   row += std::string(buffer);
+   row += StrUtils::toString(destroyed);
    if (isAlive) {
       row += "</b>";
    }
    row += "</td>";
 
-   //TODO: make StrUtils::toString(long long) and use it here
-   ::snprintf(buffer, 128, "%lld", alive);
    row += "<td align=\"right\">";
    if (isAlive) {
       row += "<b>";
    }
-   row += std::string(buffer);
+   row += StrUtils::toString(alive);
    if (isAlive) {
       row += "</b>";
    }

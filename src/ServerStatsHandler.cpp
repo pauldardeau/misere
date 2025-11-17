@@ -6,6 +6,7 @@
 #include "HttpResponse.h"
 #include "Logger.h"
 #include "StdLogger.h"
+#include "StrUtils.h"
 
 #include "ServerStatsHandler.h"
 
@@ -32,7 +33,6 @@ std::string ServerStatsHandler::constructRow(const std::string& occurrenceType,
                                              const std::string& occurrenceName,
                                              long long occurrences) const {
    std::string row;
-   char buffer[128];
 
    row += "<tr>";
 
@@ -44,10 +44,8 @@ std::string ServerStatsHandler::constructRow(const std::string& occurrenceType,
    row += occurrenceName;
    row += "</td>";
 
-   //TODO: make StrUtils::toString(long long) and use it here
-   ::snprintf(buffer, 128, "%lld", occurrences);
    row += "<td align=\"right\">";
-   row += std::string(buffer);
+   row += StrUtils::toString(occurrences);
    row += "</td>";
 
    row += "</tr>";
