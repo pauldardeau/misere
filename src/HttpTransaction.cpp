@@ -367,6 +367,30 @@ bool HttpTransaction::streamFromSocket() {
    for (const std::string& token : vecHeaders) {
       if (lineIndex == 0) {
          m_firstHeaderLine = token;
+
+         // populate the first-line-derived fields (method/protocol and the
+         // raw 3-token breakdown) the same way parseHeaders() does, since
+         // that method is never actually invoked on this code path
+         std::vector<std::string> vecTokens = StrUtils::split(m_firstHeaderLine, " ");
+         const std::size_t tokenCount = vecTokens.size();
+
+         if (3 <= tokenCount) {
+            m_vecRequestLineValues.clear();
+            m_vecRequestLineValues.reserve(3);
+            string thirdValue;
+
+            for (std::size_t i = 0; i < tokenCount; ++i) {
+               if (i > 1) {
+                  thirdValue += vecTokens[i];
+               } else {
+                  m_vecRequestLineValues.push_back(vecTokens[i]);
+               }
+            }
+
+            m_vecRequestLineValues.push_back(thirdValue);
+            m_method = m_vecRequestLineValues[0];
+            m_protocol = thirdValue;
+         }
       }
       if (!token.empty()) {
          string::size_type posColon = token.find(":");

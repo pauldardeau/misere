@@ -11,6 +11,21 @@ using namespace chaudiere;
 
 static const string EOL = "\r\n";
 
+namespace {
+// streamFromSocket() is protected on HttpTransaction (it's meant to be
+// invoked by derived classes like HttpRequest/HttpResponse from their own
+// constructors) -- re-expose it publicly so this test can exercise the
+// base class's parsing logic directly.
+class TestableHttpTransaction : public HttpTransaction {
+public:
+   TestableHttpTransaction(chaudiere::Socket* socket, bool socketOwned) :
+      HttpTransaction(socket, socketOwned) {
+   }
+
+   using HttpTransaction::streamFromSocket;
+};
+}
+
 //******************************************************************************
 
 TestHttpTransaction::TestHttpTransaction() :
@@ -155,9 +170,9 @@ void TestHttpTransaction::testStreamFromSocket() {
    key_accept_encoding + ": " + accept_encoding + EOL +
    key_user_agent + ": " + user_agent + EOL + EOL;
 
-   HttpTransaction txn;
    MockSocket mock_socket(req);
-   //require(txn.streamFromSocket(), "streamFromSocket");
+   TestableHttpTransaction txn(&mock_socket, false);
+   require(txn.streamFromSocket(), "streamFromSocket");
 
    // request line
    requireStringEquals(verb, txn.getRequestMethod(), "http verb");
