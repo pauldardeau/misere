@@ -2,7 +2,7 @@
 # BSD License
 
 CC = c++
-CC_OPTS = -c -Wall -fPIC -O2 -pthread -I../chaudiere/src
+CC_OPTS = -c -Wall -fPIC -O2 -pthread -std=c++20 -I../chaudiere/src -I../poivre
 LINK_CMD = c++
 # remove -ldl for non-linux
 LINK_LIBS = -lpthread -ldl
@@ -43,7 +43,7 @@ $(SO_NAME) : $(OBJS)
 	$(LINK_CMD) -shared -fPIC $(OBJS) -o $(SO_NAME) $(LINK_LIBS)
 
 $(EXE_NAME) : $(SO_NAME) $(MAIN_OBJS)
-	$(CC) -c -Wall -O2 -pthread -I../chaudiere/src main.cpp -o main.o
+	$(CC) -c -Wall -O2 -pthread -std=c++20 -I../chaudiere/src -I../poivre main.cpp -o main.o
 	$(LINK_CMD) $(MAIN_OBJS) -o $(EXE_NAME) ./$(SO_NAME) ../chaudiere/src/libchaudiere.so $(LINK_LIBS)
 
 %.o : %.cpp

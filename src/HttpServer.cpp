@@ -287,7 +287,7 @@ bool HttpServer::init(int port) {
    m_serverPort = port;
 
    if (m_usingConfigFile) {
-      AutoPointer<SectionedConfigDataSource*> configDataSource(nullptr);
+      poivre::AutoPointer<SectionedConfigDataSource> configDataSource(nullptr);
       bool haveDataSource = false;
 
       try {
@@ -310,7 +310,7 @@ bool HttpServer::init(int port) {
          KeyValuePairs kvpServerSettings;
 
          // read and process "logging" section
-         setupLogFiles(*configDataSource.m_object);
+         setupLogFiles(*configDataSource());
 
          // read and process "server" section
          if (configDataSource->hasSection(CFG_SECTION_SERVER) &&
@@ -330,7 +330,7 @@ bool HttpServer::init(int port) {
          }
 
          // read and process "handlers" section
-         if (!setupHandlers(configDataSource.m_object)) {
+         if (!setupHandlers(configDataSource())) {
             return false;
          }
       } catch (const BasicException& be) {
@@ -614,7 +614,7 @@ int HttpServer::runKernelEventServer() {
       Mutex* mutexFD = m_threadingFactory->createMutex("fdMutex");
       Mutex* mutexHWMConnections =
          m_threadingFactory->createMutex("hwmConnectionsMutex");
-      AutoPointer<KernelEventServer*> kernelEventServer(nullptr);
+      poivre::AutoPointer<KernelEventServer> kernelEventServer(nullptr);
 
       if (KqueueServer::isSupportedPlatform()) {
          kernelEventServer.assign(

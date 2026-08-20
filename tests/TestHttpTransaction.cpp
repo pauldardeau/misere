@@ -14,7 +14,7 @@ static const string EOL = "\r\n";
 //******************************************************************************
 
 TestHttpTransaction::TestHttpTransaction() :
-   TestSuite("TestHttpTransaction") {
+   poivre::TestSuite("TestHttpTransaction") {
 }
 
 //******************************************************************************

@@ -10,7 +10,7 @@ using namespace misere;
 //******************************************************************************
 
 TestHttpResponse::TestHttpResponse() :
-   TestSuite("TestHttpResponse") {
+   poivre::TestSuite("TestHttpResponse") {
 }
 
 //******************************************************************************

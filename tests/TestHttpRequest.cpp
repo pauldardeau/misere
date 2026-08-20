@@ -36,7 +36,7 @@ using namespace misere;
 //******************************************************************************
 
 TestHttpRequest::TestHttpRequest() :
-   TestSuite("TestHttpRequest") {
+   poivre::TestSuite("TestHttpRequest") {
 }
 
 //******************************************************************************

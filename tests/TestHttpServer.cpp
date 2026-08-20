@@ -8,7 +8,7 @@ using namespace misere;
 //******************************************************************************
 
 TestHttpServer::TestHttpServer() :
-   TestSuite("TestHttpServer") {
+   poivre::TestSuite("TestHttpServer") {
 }
 
 //******************************************************************************

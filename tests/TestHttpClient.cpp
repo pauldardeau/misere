@@ -9,7 +9,7 @@ using namespace misere;
 //******************************************************************************
 
 TestHttpClient::TestHttpClient() :
-   TestSuite("TestHttpClient") {
+   poivre::TestSuite("TestHttpClient") {
 }
 
 //******************************************************************************

@@ -10,7 +10,7 @@ using namespace chaudiere;
 //******************************************************************************
 
 TestHttpException::TestHttpException() :
-   TestSuite("TestHttpException") {
+   poivre::TestSuite("TestHttpException") {
 }
 
 //******************************************************************************
