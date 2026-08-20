@@ -27,6 +27,7 @@ static const std::string HTTP_SERVER          = "server:";
 static const std::string HTTP_USER_AGENT      = "User-Agent";
 
 static const std::string CONNECTION_CLOSE     = "close";
+static const std::string CONNECTION_KEEP_ALIVE = "keep-alive";
 
 static const std::string ZERO                 = "0";
 static const std::string FAVICON_ICO          = "/favicon.ico";
@@ -42,6 +43,28 @@ static const std::string GZIP                 = "gzip";
 
 using namespace misere;
 using namespace chaudiere;
+
+//******************************************************************************
+
+static bool clientRequestedClose(const HttpRequest& request) {
+   if (request.hasConnection()) {
+      std::string value = request.getConnection();
+      StrUtils::toLowerCase(value);
+      return (value == "close");
+   }
+   return false;
+}
+
+//******************************************************************************
+
+static bool clientRequestedKeepAlive(const HttpRequest& request) {
+   if (request.hasConnection()) {
+      std::string value = request.getConnection();
+      StrUtils::toLowerCase(value);
+      return (value == "keep-alive");
+   }
+   return false;
+}
 
 //******************************************************************************
 
@@ -89,24 +112,48 @@ void HttpRequestHandler::run() {
       //LOG_DEBUG("starting parse of HttpRequest")
    }
 
-   std::unique_ptr<HttpRequest> requestPtr;
+   const bool keepAliveEnabled = m_server.keepAliveEnabled();
+   const int keepAliveMaxRequests = m_server.keepAliveMaxRequests();
 
-   try {
-      requestPtr.reset(new HttpRequest(socket, false));
-   } catch (const BasicException& be) {
-      LOG_ERROR("exception parsing request: " + be.whatString())
-      return;
-   } catch (const std::exception& e) {
-      LOG_ERROR(std::string("exception parsing request: ") + e.what())
-      return;
-   } catch (...) {
-      LOG_ERROR("unknown exception parsing request")
-      return;
-   }
+   int requestCount = 0;
+   bool connectionOpen = true;
 
-   HttpRequest& request = *requestPtr;
+   while (connectionOpen) {
+      connectionOpen = false;
+      ++requestCount;
 
-   if (request.isInitialized()) {
+      if (keepAliveEnabled && (requestCount > 1)) {
+         // only a *follow-up* request on an already-negotiated persistent
+         // connection is subject to the idle timeout - the very first
+         // request on a freshly accepted connection behaves exactly as
+         // it did before keep-alive existed
+         socket->setReceiveTimeout(m_server.keepAliveTimeoutSecs());
+      }
+
+      std::unique_ptr<HttpRequest> requestPtr;
+
+      try {
+         requestPtr.reset(new HttpRequest(socket, false));
+      } catch (const BasicException& be) {
+         if (requestCount == 1) {
+            LOG_ERROR("exception parsing request: " + be.whatString())
+         }
+         return;
+      } catch (const std::exception& e) {
+         if (requestCount == 1) {
+            LOG_ERROR(std::string("exception parsing request: ") + e.what())
+         }
+         return;
+      } catch (...) {
+         if (requestCount == 1) {
+            LOG_ERROR("unknown exception parsing request")
+         }
+         return;
+      }
+
+      HttpRequest& request = *requestPtr;
+
+      if (request.isInitialized()) {
 
       if (isLoggingDebug) {
          //LOG_DEBUG("ending parse of HttpRequest")
@@ -147,7 +194,25 @@ void HttpRequestHandler::run() {
       std::string responseCode = HTTP::HTTP_RESP_SERV_ERR_INTERNAL_ERROR;
       const std::string systemDate = m_server.getSystemDateGMT();
       KeyValuePairs headers;
-      headers.addPair(HTTP_CONNECTION, CONNECTION_CLOSE);
+
+      // HTTP/1.1 defaults to persistent unless the client asked to close;
+      // HTTP/1.0 defaults to close unless the client explicitly asked to
+      // keep the connection alive
+      bool negotiatedKeepAlive = false;
+
+      if (keepAliveEnabled &&
+          (requestCount < keepAliveMaxRequests) &&
+          !clientRequestedClose(request)) {
+         if (HTTP::HTTP_PROTOCOL1_1 == protocol) {
+            negotiatedKeepAlive = true;
+         } else if (HTTP::HTTP_PROTOCOL1_0 == protocol) {
+            negotiatedKeepAlive = clientRequestedKeepAlive(request);
+         }
+      }
+
+      headers.addPair(HTTP_CONNECTION,
+                      negotiatedKeepAlive ? CONNECTION_KEEP_ALIVE : CONNECTION_CLOSE);
+      connectionOpen = negotiatedKeepAlive;
       const std::string& serverString = m_server.getServerId();
 
       if (!serverString.empty()) {
@@ -288,6 +353,7 @@ void HttpRequestHandler::run() {
       //   m_socketRequest->requestComplete();
       //}
        */
+      }
    }
 }
 

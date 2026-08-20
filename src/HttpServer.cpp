@@ -69,6 +69,8 @@ static const int CFG_DEFAULT_SEND_BUFFER_SIZE     = 8192;
 static const int CFG_DEFAULT_RECEIVE_BUFFER_SIZE  = 8192;
 static const int CFG_DEFAULT_PORT_NUMBER          = 9000;
 static const int CFG_DEFAULT_THREAD_POOL_SIZE     = 4;
+static const int CFG_DEFAULT_KEEP_ALIVE_TIMEOUT       = 5;
+static const int CFG_DEFAULT_KEEP_ALIVE_MAX_REQUESTS  = 100;
 
 // configuration sections
 static const string CFG_SECTION_SERVER                 = "server";
@@ -89,6 +91,9 @@ static const string CFG_SERVER_RECEIVE_BUFFER_SIZE     = "socket_receive_buffer_
 static const string CFG_SERVER_ALLOW_BUILTIN_HANDLERS  = "allow_builtin_handlers";
 static const string CFG_SERVER_STRING                  = "server_string";
 static const string CFG_SERVER_SOCKETS                 = "sockets";
+static const string CFG_SERVER_KEEP_ALIVE              = "keep_alive";
+static const string CFG_SERVER_KEEP_ALIVE_TIMEOUT      = "keep_alive_timeout";
+static const string CFG_SERVER_KEEP_ALIVE_MAX_REQUESTS = "keep_alive_max_requests";
 
 // socket options
 static const string CFG_SOCKETS_SOCKET_SERVER          = "socket_server";
@@ -151,11 +156,14 @@ HttpServer::HttpServer(const std::string& configFilePath) :
    m_requireAllHandlersForStartup(false),
    m_compressionEnabled(true),
    m_usingConfigFile(true),
+   m_keepAliveEnabled(false),
    m_threadPoolSize(CFG_DEFAULT_THREAD_POOL_SIZE),
    m_serverPort(CFG_DEFAULT_PORT_NUMBER),
    m_socketSendBufferSize(CFG_DEFAULT_SEND_BUFFER_SIZE),
    m_socketReceiveBufferSize(CFG_DEFAULT_RECEIVE_BUFFER_SIZE),
-   m_minimumCompressionSize(1000) {
+   m_minimumCompressionSize(1000),
+   m_keepAliveTimeoutSecs(CFG_DEFAULT_KEEP_ALIVE_TIMEOUT),
+   m_keepAliveMaxRequests(CFG_DEFAULT_KEEP_ALIVE_MAX_REQUESTS) {
    LOG_INSTANCE_CREATE("HttpServer")
    init(CFG_DEFAULT_PORT_NUMBER);
 }
@@ -175,11 +183,14 @@ HttpServer::HttpServer(int port) :
    m_requireAllHandlersForStartup(false),
    m_compressionEnabled(false),
    m_usingConfigFile(false),
+   m_keepAliveEnabled(false),
    m_threadPoolSize(CFG_DEFAULT_THREAD_POOL_SIZE),
    m_serverPort(CFG_DEFAULT_PORT_NUMBER),
    m_socketSendBufferSize(CFG_DEFAULT_SEND_BUFFER_SIZE),
    m_socketReceiveBufferSize(CFG_DEFAULT_RECEIVE_BUFFER_SIZE),
-   m_minimumCompressionSize(1000) {
+   m_minimumCompressionSize(1000),
+   m_keepAliveTimeoutSecs(CFG_DEFAULT_KEEP_ALIVE_TIMEOUT),
+   m_keepAliveMaxRequests(CFG_DEFAULT_KEEP_ALIVE_MAX_REQUESTS) {
    LOG_INSTANCE_CREATE("HttpServer")
    init(port);
 }
@@ -321,6 +332,7 @@ bool HttpServer::init(int port) {
             setupSocketHandling(kvpServerSettings);
             setupLogLevel(kvpServerSettings);
             setupSocketBufferSizes(kvpServerSettings);
+            setupKeepAlive(kvpServerSettings);
             m_allowBuiltInHandlers =
                hasTrueValue(kvpServerSettings,
                             CFG_SERVER_ALLOW_BUILTIN_HANDLERS);
@@ -800,6 +812,49 @@ void HttpServer::setupSocketBufferSizes(const chaudiere::KeyValuePairs& kvp) {
          m_socketReceiveBufferSize = buffSize;
       }
    }
+}
+
+//******************************************************************************
+
+void HttpServer::setupKeepAlive(const chaudiere::KeyValuePairs& kvp) {
+   //LOG_DEBUG("setupKeepAlive")
+   m_keepAliveEnabled = hasTrueValue(kvp, CFG_SERVER_KEEP_ALIVE);
+
+   if (kvp.hasKey(CFG_SERVER_KEEP_ALIVE_TIMEOUT)) {
+      const int timeoutSecs =
+         getIntValue(kvp, CFG_SERVER_KEEP_ALIVE_TIMEOUT);
+
+      if (timeoutSecs > 0) {
+         m_keepAliveTimeoutSecs = timeoutSecs;
+      }
+   }
+
+   if (kvp.hasKey(CFG_SERVER_KEEP_ALIVE_MAX_REQUESTS)) {
+      const int maxRequests =
+         getIntValue(kvp, CFG_SERVER_KEEP_ALIVE_MAX_REQUESTS);
+
+      if (maxRequests > 0) {
+         m_keepAliveMaxRequests = maxRequests;
+      }
+   }
+}
+
+//******************************************************************************
+
+bool HttpServer::keepAliveEnabled() const {
+   return m_keepAliveEnabled;
+}
+
+//******************************************************************************
+
+int HttpServer::keepAliveTimeoutSecs() const {
+   return m_keepAliveTimeoutSecs;
+}
+
+//******************************************************************************
+
+int HttpServer::keepAliveMaxRequests() const {
+   return m_keepAliveMaxRequests;
 }
 
 //******************************************************************************

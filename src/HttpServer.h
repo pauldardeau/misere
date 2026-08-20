@@ -224,6 +224,28 @@ class HttpServer {
       bool setupServerSocket();
       void setupListeningPort(const chaudiere::KeyValuePairs& kvp);
       void setupSocketHandling(const chaudiere::KeyValuePairs& kvp);
+      void setupKeepAlive(const chaudiere::KeyValuePairs& kvp);
+
+      /**
+       * Determines whether persistent (keep-alive) connections are enabled
+       * @return boolean indicating whether keep-alive is enabled
+       */
+      bool keepAliveEnabled() const;
+
+      /**
+       * Retrieves the number of seconds a connection may sit idle waiting
+       * for the next request before being closed
+       * @return the idle timeout, in seconds
+       */
+      int keepAliveTimeoutSecs() const;
+
+      /**
+       * Retrieves the maximum number of requests that will be served on a
+       * single persistent connection before it's closed regardless of
+       * idle time
+       * @return the maximum number of requests per connection
+       */
+      int keepAliveMaxRequests() const;
 
 
    protected:
@@ -270,11 +292,14 @@ class HttpServer {
       bool m_requireAllHandlersForStartup;
       bool m_compressionEnabled;
       bool m_usingConfigFile;
+      bool m_keepAliveEnabled;
       int m_threadPoolSize;
       int m_serverPort;
       int m_socketSendBufferSize;
       int m_socketReceiveBufferSize;
       int m_minimumCompressionSize;
+      int m_keepAliveTimeoutSecs;
+      int m_keepAliveMaxRequests;
 
       // copies not allowed
       HttpServer(const HttpServer&);
