@@ -64,6 +64,8 @@ HttpResponse* HttpClient::get(HttpRequest& request)
       request.setMethod(HTTP::HTTP_METHOD_GET);
       if (request.write(s)) {
          r = new HttpResponse(s);
+      } else {
+         delete s;
       }
    }
 
@@ -78,6 +80,8 @@ HttpResponse* HttpClient::head(HttpRequest& request)
       request.setMethod(HTTP::HTTP_METHOD_HEAD);
       if (request.write(s)) {
          r = new HttpResponse(s);
+      } else {
+         delete s;
       }
    }
 
@@ -95,6 +99,8 @@ HttpResponse* HttpClient::put(HttpRequest& request,
           s->write(EOL.c_str(), EOL.size()) &&
           s->write(buffer.c_str(), buffer.size())) {
          r = new HttpResponse(s);
+      } else {
+         delete s;
       }
    }
 
@@ -112,6 +118,8 @@ HttpResponse* HttpClient::put(HttpRequest& request,
           s->write(EOL.c_str(), EOL.size()) &&
           s->write((const char*) buffer.const_data(), buffer.size())) {
          r = new HttpResponse(s);
+      } else {
+         delete s;
       }
    }
 
@@ -129,6 +137,8 @@ HttpResponse* HttpClient::post(HttpRequest& request,
           s->write(EOL.c_str(), EOL.size()) &&
           s->write(buffer.c_str(), buffer.size())) {
          r = new HttpResponse(s);
+      } else {
+         delete s;
       }
    }
 
@@ -146,6 +156,8 @@ HttpResponse* HttpClient::post(HttpRequest& request,
           s->write(EOL.c_str(), EOL.size()) &&
           s->write((const char*) buffer.const_data(), buffer.size())) {
          r = new HttpResponse(s);
+      } else {
+         delete s;
       }
    }
 
@@ -160,6 +172,8 @@ HttpResponse* HttpClient::do_delete(HttpRequest& request)
       request.setMethod(HTTP::HTTP_METHOD_DELETE);
       if (request.write(s)) {
          response = new HttpResponse(s);
+      } else {
+         delete s;
       }
    }
 
