@@ -14,22 +14,26 @@ static const std::string POST_PATH = "/here.html";
 static const std::string DEFAULT_GET =
    "GET " + GET_PATH  + " HTTP/1.0\r\n" +
    "Host: my-proxy:8080\r\n" +
-   "Connection: close\r\n";
+   "Connection: close\r\n" +
+   "\r\n";
 
 static const std::string DEFAULT_POST =
    "POST " + POST_PATH + " HTTP/1.0\r\n" +
    "Host: a.valid.host\r\n" +
-   "Connection: close\r\n";
+   "Connection: close\r\n" +
+   "\r\n";
 
 static const std::string GET_WITH_PORT =
    "GET /here.html HTTP/1.0\r\n"
    "Host: a.valid.host:81\r\n"
-   "Connection: close\r\n";
+   "Connection: close\r\n"
+   "\r\n";
 
 static const std::string GET_WITH_PARAMETERS =
    "GET /here.html?a=1&b=2 HTTP/1.0\r\n"
    "Host: a.valid.host\r\n"
-   "Connection: close\r\n";
+   "Connection: close\r\n"
+   "\r\n";
 
 using namespace misere;
 
@@ -99,7 +103,7 @@ void TestHttpRequest::testStreamFromSocket() {
    TEST_CASE("testStreamFromSocket");
 
    MockSocket socket(DEFAULT_GET);
-   HttpRequest request(&socket);
+   HttpRequest request(&socket, false);
 }
 
 //******************************************************************************
@@ -108,7 +112,7 @@ void TestHttpRequest::testGetRequest() {
    TEST_CASE("testGetRequest");
 
    MockSocket socket(DEFAULT_GET);
-   HttpRequest request(&socket);
+   HttpRequest request(&socket, false);
 }
 
 //******************************************************************************
@@ -117,11 +121,11 @@ void TestHttpRequest::testGetMethod() {
    TEST_CASE("testGetMethod");
 
    MockSocket socketGet(DEFAULT_GET);
-   HttpRequest requestGet(&socketGet);
+   HttpRequest requestGet(&socketGet, false);
    requireStringEquals("GET", requestGet.getMethod(), "method is GET");
 
    MockSocket socketPost(DEFAULT_POST);
-   HttpRequest requestPost(&socketPost);
+   HttpRequest requestPost(&socketPost, false);
    requireStringEquals("POST", requestPost.getMethod(), "method is POST");
 }
 
@@ -131,11 +135,11 @@ void TestHttpRequest::testGetPath() {
    TEST_CASE("testGetPath");
 
    MockSocket socketGet(DEFAULT_GET);
-   HttpRequest requestGet(&socketGet);
+   HttpRequest requestGet(&socketGet, false);
    requireStringEquals(GET_PATH, requestGet.getPath(), "path should be GET path");
 
    MockSocket socketPost(DEFAULT_POST);
-   HttpRequest requestPost(&socketPost);
+   HttpRequest requestPost(&socketPost, false);
    requireStringEquals(POST_PATH, requestPost.getPath(), "path should be POST path");
 }
 
