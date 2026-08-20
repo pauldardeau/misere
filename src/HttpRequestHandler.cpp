@@ -3,6 +3,7 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <memory>
 
 #include "HttpRequestHandler.h"
 #include "Socket.h"
@@ -88,7 +89,22 @@ void HttpRequestHandler::run() {
       //LOG_DEBUG("starting parse of HttpRequest")
    }
 
-   HttpRequest request(socket, false);
+   std::unique_ptr<HttpRequest> requestPtr;
+
+   try {
+      requestPtr.reset(new HttpRequest(socket, false));
+   } catch (const BasicException& be) {
+      LOG_ERROR("exception parsing request: " + be.whatString())
+      return;
+   } catch (const std::exception& e) {
+      LOG_ERROR(std::string("exception parsing request: ") + e.what())
+      return;
+   } catch (...) {
+      LOG_ERROR("unknown exception parsing request")
+      return;
+   }
+
+   HttpRequest& request = *requestPtr;
 
    if (request.isInitialized()) {
 

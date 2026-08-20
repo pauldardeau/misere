@@ -545,7 +545,19 @@ void HttpServer::serviceSocket(SocketRequest* socketRequest) {
    } else {
       // no thread pool available -- process it synchronously
       HttpRequestHandler requestHandler(*this, socketRequest);
-      requestHandler.run();
+
+      try {
+         requestHandler.run();
+      } catch (const BasicException& be) {
+         LOG_ERROR("HttpServer serviceSocket BasicException caught: " +
+                   be.whatString())
+      } catch (const exception& e) {
+         LOG_ERROR(string("HttpServer serviceSocket exception caught: ") +
+                   string(e.what()))
+      } catch (...) {
+         LOG_ERROR("HttpServer serviceSocket unknown exception caught")
+      }
+
       if (socketRequest->isAutoDelete()) {
          delete socketRequest;
       }
