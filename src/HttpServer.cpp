@@ -61,7 +61,7 @@ static const string CFG_TRUE_SETTING_VALUES = "yes|true|1";
 
 static const string EMPTY = "";
 static const string SPACE = " ";
-static const string EOL   = "\n";
+static const string EOL   = "\r\n";
 static const string COLON = ":";
 
 // default settings
