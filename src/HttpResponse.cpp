@@ -120,9 +120,25 @@ bool HttpResponse::streamFromSocket2() {
    for (const std::string& headerLine : vecHeaders) {
       if (lineIndex == 0) {
          std::vector<std::string> vecStatusTokens = StrUtils::split(headerLine, " ");
-         if (vecStatusTokens.size() == 3) {
+         // reason phrases are routinely multiple words ("Not Found",
+         // "Internal Server Error"), so StrUtils::split can produce more
+         // than 3 tokens here -- rejoin everything from the 3rd token on
+         // instead of requiring an exact count of 3
+         if (vecStatusTokens.size() >= 3) {
+            std::string reasonPhrase = vecStatusTokens[2];
+            for (std::size_t i = 3; i < vecStatusTokens.size(); ++i) {
+               reasonPhrase += " ";
+               reasonPhrase += vecStatusTokens[i];
+            }
+
+            std::vector<std::string> requestLineValues;
+            requestLineValues.push_back(vecStatusTokens[0]);
+            requestLineValues.push_back(vecStatusTokens[1]);
+            requestLineValues.push_back(reasonPhrase);
+
             m_statusCode = vecStatusTokens[1];
             m_statusCodeAsInteger = StrUtils::parseInt(m_statusCode);
+            setRequestLineValues(requestLineValues);
          }
       }
       if (!headerLine.empty()) {

@@ -381,6 +381,9 @@ bool HttpTransaction::streamFromSocket() {
 
             for (std::size_t i = 0; i < tokenCount; ++i) {
                if (i > 1) {
+                  if (i > 2) {
+                     thirdValue += " ";
+                  }
                   thirdValue += vecTokens[i];
                } else {
                   m_vecRequestLineValues.push_back(vecTokens[i]);
