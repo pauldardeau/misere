@@ -150,7 +150,7 @@ HttpServer::HttpServer(const std::string& configFilePath) :
    m_allowBuiltInHandlers(false),
    m_requireAllHandlersForStartup(false),
    m_compressionEnabled(true),
-   m_usingConfigFile(false),
+   m_usingConfigFile(true),
    m_threadPoolSize(CFG_DEFAULT_THREAD_POOL_SIZE),
    m_serverPort(CFG_DEFAULT_PORT_NUMBER),
    m_socketSendBufferSize(CFG_DEFAULT_SEND_BUFFER_SIZE),
