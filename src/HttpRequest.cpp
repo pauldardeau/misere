@@ -107,7 +107,7 @@ HttpRequest::HttpRequest(const Url& url) :
       setSocket(s, true);
    } else {
       delete s;
-      //TODO: throw exception
+      throw BasicException("unable to connect to host: " + url.host());
    }
 }
 
