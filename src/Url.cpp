@@ -28,22 +28,23 @@ Url::Url(const std::string& fullText) :
          if (posSlash != string::npos) {
             m_host = fullText.substr(posDoubleSlash + 2,
                                      posSlash - posDoubleSlash - 2);
-            const string::size_type posPortColon = m_host.find(":");
-            if (posPortColon != string::npos) {
-                std::string portAsText = m_host.substr(posPortColon + 1,
-                                                       m_host.length() - posPortColon - 1);
-                m_port = StrUtils::parseInt(portAsText);
-                if (m_port < 0) {
-                   // negative values not allowed
-                   throw BasicException("negative port values not valid");
-                }
-                m_host = m_host.substr(0, posPortColon);
-            }
-
             m_path = fullText.substr(posSlash,
                                      fullText.size() - posDoubleSlash);
          } else {
+            m_host = fullText.substr(posDoubleSlash + 2);
             m_path = "/";
+         }
+
+         const string::size_type posPortColon = m_host.find(":");
+         if (posPortColon != string::npos) {
+             std::string portAsText = m_host.substr(posPortColon + 1,
+                                                    m_host.length() - posPortColon - 1);
+             m_port = StrUtils::parseInt(portAsText);
+             if (m_port < 0) {
+                // negative values not allowed
+                throw BasicException("negative port values not valid");
+             }
+             m_host = m_host.substr(0, posPortColon);
          }
       }
    }
