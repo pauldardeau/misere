@@ -369,7 +369,12 @@ void HttpRequest::setMethod(const std::string& method) {
 
 void HttpRequest::setHeaderValue(const std::string& key,
                                  const std::string& value) {
+   // m_arguments is what write() serializes for an outgoing request;
+   // also populate the inherited header store so hasHeaderValue()/
+   // getHeaderValue() (which are not overridden here) can read back
+   // what was just set.
    m_arguments.addPair(key, value);
+   HttpTransaction::setHeaderValue(key, value);
 }
 
 //******************************************************************************
