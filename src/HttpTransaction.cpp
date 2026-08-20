@@ -251,7 +251,12 @@ const std::string& HttpTransaction::getFirstHeaderLine() const {
 //******************************************************************************
 
 void HttpTransaction::populateWithHeaders(KeyValuePairs& headers) {
-   headers = m_headers;
+   std::vector<std::string> keys;
+   m_headers.getKeys(keys);
+
+   for (const auto& key : keys) {
+      headers.addPair(key, m_headers.getValue(key));
+   }
 }
 
 //******************************************************************************
