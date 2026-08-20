@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <algorithm>
 
 #include "HttpTransaction.h"
 #include "HTTP.h"
@@ -313,54 +314,41 @@ int HttpTransaction::getContentLength() const {
 
 bool HttpTransaction::streamFromSocket() {
    int contentLength = -1;  // unknown
-   bool readingHeaders = true;
-   bool onEOL = false;
-   int eolNL = 0;
-   char charRead;
    int bytes_read;
-   string headers;
    Socket* s = getSocket();
 
-   printf("HttpTransaction::streamFromSocket entered\n");
-
-   if (nullptr != s) {
-      printf("socket pointer is non-null\n");
-   } else {
-      printf("socket pointer is null\n");
+   if (nullptr == s) {
+      return false;
    }
 
-   while (readingHeaders) {
-      bytes_read = s->readSocket(&charRead, 1);
-      printf("bytes_read = %d\n", bytes_read);
-      if (bytes_read > 0) {
-         if (charRead == '\r') {
-            onEOL = true;
-         } else {
-            if (charRead == '\n') {
-               if (onEOL) {
-                  eolNL++;
-                  if (eolNL == 2) {
-                     readingHeaders = false;
-                     headers = headers.substr(0, headers.length() - 1);
-                  }
-               }
-            } else {
-               onEOL = false;
-               eolNL = 0;
-            }
-         }
+   static const std::string HEADER_TERMINATOR = "\r\n\r\n";
 
-         if (readingHeaders) {
-            headers += charRead;
-         }
-      } else {
-         if (bytes_read == -1) {
-            return false;
-         }
+   // read in chunks rather than one byte per recv() call, scanning the
+   // accumulated buffer for the blank line that ends the headers; any
+   // bytes read past that point are the start of the body and are handed
+   // to the body-reading loop below instead of being re-read from the
+   // socket
+   std::string buffered;
+   std::string headers;
+   bool foundHeaderEnd = false;
+   char chunk[8192];
+
+   while (!foundHeaderEnd) {
+      bytes_read = s->recvAvailable(chunk, sizeof(chunk));
+
+      if (bytes_read <= 0) {
+         return false;
+      }
+
+      buffered.append(chunk, bytes_read);
+
+      const std::string::size_type posTerminator = buffered.find(HEADER_TERMINATOR);
+      if (posTerminator != std::string::npos) {
+         headers = buffered.substr(0, posTerminator);
+         buffered.erase(0, posTerminator + HEADER_TERMINATOR.length());
+         foundHeaderEnd = true;
       }
    }
-
-   printf("headers: '%s'\n'", headers.c_str());
 
    int lineIndex = 0;
    std::vector<std::string> vecHeaders = StrUtils::split(headers, "\r\n");
@@ -414,8 +402,16 @@ bool HttpTransaction::streamFromSocket() {
 
    if (contentLength > 0) {
       ByteBuffer* bb = new ByteBuffer(contentLength);
-      int remainingBytes = contentLength;
       int offset = 0;
+
+      // serve whatever was already read past the header terminator first
+      if (!buffered.empty()) {
+         const int fromBuffer = std::min((int) buffered.size(), contentLength);
+         memcpy(bb->data(), buffered.data(), fromBuffer);
+         offset = fromBuffer;
+      }
+
+      int remainingBytes = contentLength - offset;
       int bytesToRead = 8192;
       char buffer[8192];
       while (remainingBytes > 0) {
