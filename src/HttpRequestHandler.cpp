@@ -172,7 +172,7 @@ void HttpRequestHandler::run() {
       if ((nullptr != pHandler) && handlerAvailable) {
          try {
             pHandler->serviceRequest(request, response);
-            responseCode = HTTP::HTTP_RESP_SUCCESS_OK;
+            responseCode = HTTP::responseLineForStatusCode(response.getStatusCode());
             const ByteBuffer* responseBody = response.getBody();
             if (responseBody != nullptr) {
                contentLength = responseBody->size();

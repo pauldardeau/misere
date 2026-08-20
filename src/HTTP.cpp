@@ -135,6 +135,57 @@ const std::string HTTP::HTTP_RESP_SERV_ERR_HTTP_VERSION_UNSUPPORTED    = "505 HT
 
 
 //******************************************************************************
+
+std::string HTTP::responseLineForStatusCode(int statusCode) {
+   switch (statusCode) {
+      case 100: return HTTP_RESP_INFO_CONTINUE;
+      case 101: return HTTP_RESP_INFO_SWITCH_PROTOCOLS;
+
+      case 200: return HTTP_RESP_SUCCESS_OK;
+      case 201: return HTTP_RESP_SUCCESS_CREATED;
+      case 202: return HTTP_RESP_SUCCESS_ACCEPTED;
+      case 204: return HTTP_RESP_SUCCESS_NO_CONTENT;
+      case 205: return HTTP_RESP_SUCCESS_RESET_CONTENT;
+      case 206: return HTTP_RESP_SUCCESS_PARTIAL_CONTENT;
+
+      case 300: return HTTP_RESP_REDIRECT_MULTIPLE_CHOICES;
+      case 301: return HTTP_RESP_REDIRECT_MOVED_PERMANENTLY;
+      case 302: return HTTP_RESP_REDIRECT_FOUND;
+      case 303: return HTTP_RESP_REDIRECT_SEE_OTHER;
+      case 304: return HTTP_RESP_REDIRECT_NOT_MODIFIED;
+      case 305: return HTTP_RESP_REDIRECT_USE_PROXY;
+      case 307: return HTTP_RESP_REDIRECT_TEMPORARY_REDIRECT;
+
+      case 400: return HTTP_RESP_CLIENT_ERR_BAD_REQUEST;
+      case 401: return HTTP_RESP_CLIENT_ERR_UNAUTHORIZED;
+      case 403: return HTTP_RESP_CLIENT_ERR_FORBIDDEN;
+      case 404: return HTTP_RESP_CLIENT_ERR_NOT_FOUND;
+      case 405: return HTTP_RESP_CLIENT_ERR_METHOD_NOT_ALLOWED;
+      case 406: return HTTP_RESP_CLIENT_ERR_NOT_ACCEPTABLE;
+      case 407: return HTTP_RESP_CLIENT_ERR_PROXY_AUTH_REQUIRED;
+      case 408: return HTTP_RESP_CLIENT_ERR_REQUEST_TIMEOUT;
+      case 409: return HTTP_RESP_CLIENT_ERR_CONFLICT;
+      case 410: return HTTP_RESP_CLIENT_ERR_GONE;
+      case 411: return HTTP_RESP_CLIENT_ERR_LENGTH_REQUIRED;
+      case 412: return HTTP_RESP_CLIENT_ERR_PRECONDITION_FAILED;
+      case 413: return HTTP_RESP_CLIENT_ERR_REQUEST_TOO_LARGE;
+      case 414: return HTTP_RESP_CLIENT_ERR_REQUEST_URI_TOO_LONG;
+      case 415: return HTTP_RESP_CLIENT_ERR_REQUEST_UNSUPPORTED_MEDIA;
+      case 416: return HTTP_RESP_CLIENT_ERR_REQUESTED_RANGE;
+      case 417: return HTTP_RESP_CLIENT_ERR_EXPECTATION_FAILED;
+
+      case 500: return HTTP_RESP_SERV_ERR_INTERNAL_ERROR;
+      case 501: return HTTP_RESP_SERV_ERR_NOT_IMPLEMENTED;
+      case 502: return HTTP_RESP_SERV_ERR_BAD_GATEWAY;
+      case 503: return HTTP_RESP_SERV_ERR_SERVICE_UNAVAILABLE;
+      case 504: return HTTP_RESP_SERV_ERR_GATEWAY_TIMEOUT;
+      case 505: return HTTP_RESP_SERV_ERR_HTTP_VERSION_UNSUPPORTED;
+
+      default: return std::to_string(statusCode);
+   }
+}
+
+//******************************************************************************
 //******************************************************************************
 
 

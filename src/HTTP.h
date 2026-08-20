@@ -140,6 +140,15 @@ class HTTP
       static const std::string HTTP_RESP_SERV_ERR_GATEWAY_TIMEOUT;
       static const std::string HTTP_RESP_SERV_ERR_HTTP_VERSION_UNSUPPORTED;
 
+      /**
+       * Retrieves the full "<code> <reason phrase>" response line text
+       * (e.g. "404 Not Found") for a known HTTP status code.
+       * @param statusCode the numeric HTTP status code
+       * @return the full response line text, or just the numeric code by
+       *         itself if it isn't one of the known status codes
+       */
+      static std::string responseLineForStatusCode(int statusCode);
+
 };
 
 }
