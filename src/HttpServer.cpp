@@ -373,6 +373,9 @@ HttpServer::~HttpServer() {
 
    m_mapPathHandlers.erase(m_mapPathHandlers.begin(),
                            m_mapPathHandlers.end());
+
+   m_mapPathLibraries.erase(m_mapPathLibraries.begin(),
+                            m_mapPathLibraries.end());
 }
 
 //******************************************************************************
@@ -883,7 +886,7 @@ bool HttpServer::setupHandlers(const chaudiere::SectionedConfigDataSource* dataS
                             "'")
                }
 
-               DynamicLibrary* dll = new DynamicLibrary(dllName);
+               std::unique_ptr<DynamicLibrary> dll(new DynamicLibrary(dllName));
 
                // load the dll
                try {
@@ -894,10 +897,10 @@ bool HttpServer::setupHandlers(const chaudiere::SectionedConfigDataSource* dataS
                      if (isLoggingDebug) {
                         LOG_DEBUG("dynamic library loaded")
                      }
-                  }
 
-                  PFN_CREATE_HANDLER pfnCreateHandler = (PFN_CREATE_HANDLER) pfn;
-                  pHandler = (*pfnCreateHandler)();
+                     PFN_CREATE_HANDLER pfnCreateHandler = (PFN_CREATE_HANDLER) pfn;
+                     pHandler = (*pfnCreateHandler)();
+                  }
                } catch (const exception& e) {
                   LOG_ERROR(string("exception caught trying to load module library ") +
                             dllName)
@@ -929,7 +932,13 @@ bool HttpServer::setupHandlers(const chaudiere::SectionedConfigDataSource* dataS
                }
 
                // now initialize the servlet
-               if (pHandler->init(path, kvpApp)) {
+               if (nullptr == pHandler) {
+                  LOG_ERROR(string("unable to create handler for path ") +
+                            path)
+                  if (m_requireAllHandlersForStartup) {
+                     return false;
+                  }
+               } else if (pHandler->init(path, kvpApp)) {
                   if (isLoggingDebug) {
                      //LOG_DEBUG("initialization succeeded")
                   }
@@ -943,7 +952,10 @@ bool HttpServer::setupHandlers(const chaudiere::SectionedConfigDataSource* dataS
                         return false;
                      }
                   } else {
-                     //m_mapPathLibraries[path] = dll;
+                     // keep the library loaded for as long as the handler
+                     // created from it is registered -- the handler's code
+                     // lives inside it
+                     m_mapPathLibraries[path] = std::move(dll);
                   }
                } else {
                   LOG_ERROR(string("unable to initialize handler for path ") +
