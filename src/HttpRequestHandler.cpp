@@ -3,7 +3,6 @@
 
 #include <stdio.h>
 #include <string.h>
-#include <memory>
 
 #include "HttpRequestHandler.h"
 #include "Socket.h"
@@ -130,28 +129,13 @@ void HttpRequestHandler::run() {
          socket->setReceiveTimeout(m_server.keepAliveTimeoutSecs());
       }
 
-      std::unique_ptr<HttpRequest> requestPtr;
-
       try {
-         requestPtr.reset(new HttpRequest(socket, false));
-      } catch (const BasicException& be) {
-         if (requestCount == 1) {
-            LOG_ERROR("exception parsing request: " + be.whatString())
-         }
-         return;
-      } catch (const std::exception& e) {
-         if (requestCount == 1) {
-            LOG_ERROR(std::string("exception parsing request: ") + e.what())
-         }
-         return;
-      } catch (...) {
-         if (requestCount == 1) {
-            LOG_ERROR("unknown exception parsing request")
-         }
-         return;
-      }
 
-      HttpRequest& request = *requestPtr;
+      // stack-allocated: if the constructor throws (a malformed/truncated
+      // request), the object never comes into existence, so there's
+      // nothing to clean up - no heap allocation needed just to make this
+      // exception-safe
+      HttpRequest request(socket, false);
 
       if (request.isInitialized()) {
 
@@ -353,6 +337,23 @@ void HttpRequestHandler::run() {
       //   m_socketRequest->requestComplete();
       //}
        */
+      }
+
+      } catch (const BasicException& be) {
+         if (requestCount == 1) {
+            LOG_ERROR("exception parsing request: " + be.whatString())
+         }
+         return;
+      } catch (const std::exception& e) {
+         if (requestCount == 1) {
+            LOG_ERROR(std::string("exception parsing request: ") + e.what())
+         }
+         return;
+      } catch (...) {
+         if (requestCount == 1) {
+            LOG_ERROR("unknown exception parsing request")
+         }
+         return;
       }
    }
 }
