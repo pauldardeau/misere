@@ -34,6 +34,29 @@ make -C src            # builds libmisere.so and the misere executable
 make -C tests          # builds test_misere (needs the poivre submodule)
 ```
 
+### Building with CMake
+
+A `CMakeLists.txt` is also provided:
+
+```bash
+cmake -S . -B build
+cmake --build build
+ctest --test-dir build --output-on-failure   # builds and runs test_misere
+```
+
+This builds the `misere` static library, the `misere` server executable, and (only when
+misere is the top-level project, not pulled in via `add_subdirectory()`) `test_misere`.
+To depend on misere from another CMake project - vendored as a git submodule:
+
+```cmake
+add_subdirectory(misere)
+target_link_libraries(my_target PRIVATE misere)
+```
+
+No `-I` needed - the include directory, chaudière (linked transitively), and the C++20
+requirement all propagate automatically. The Makefile isn't going anywhere; both build
+systems compile the same sources.
+
 Objectives/Purpose
 -------------------
 1. Coding is fun!

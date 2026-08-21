@@ -1,0 +1,41 @@
+name: Build and test
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - name: make chaudiere
+        run: make
+        working-directory: chaudiere/src
+      - name: make library
+        run: make
+        working-directory: src
+      - name: make tests
+        run: make
+        working-directory: tests
+      - name: run-tests
+        run: ./test_misere
+        working-directory: tests
+
+  cmake-build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - name: Configure
+        run: cmake -S . -B build
+      - name: Build
+        run: cmake --build build
+      - name: Test
+        run: ctest --test-dir build --output-on-failure
