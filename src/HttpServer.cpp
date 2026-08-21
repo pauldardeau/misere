@@ -37,6 +37,7 @@
 #include "Thread.h"
 #include "ThreadPoolDispatcher.h"
 #include "PthreadsThreadingFactory.h"
+#include "StdThreadingFactory.h"
 
 // kernel events
 #include "KernelEventServer.h"
@@ -1131,7 +1132,19 @@ void HttpServer::setupConcurrency() {
 
    if (m_isThreaded) {
       bool isUsingLibDispatch = false;
-      m_threadingFactory.reset(new PthreadsThreadingFactory);
+
+      if (m_threading == CFG_THREADING_CPP11) {
+         m_threadingFactory.reset(new StdThreadingFactory);
+      } else {
+         if (m_threading == CFG_THREADING_GCD_LIBDISPATCH) {
+            // no GCD/libdispatch-backed ThreadingFactory exists in
+            // chaudiere yet -- fall back to pthreads rather than
+            // silently claiming to run something that isn't there
+            LOG_WARNING("gcd_libdispatch threading is not implemented, falling back to pthreads")
+            m_threading = CFG_THREADING_PTHREADS;
+         }
+         m_threadingFactory.reset(new PthreadsThreadingFactory);
+      }
       //ThreadingFactory::setThreadingFactory(m_threadingFactory);
       m_threadPool.reset(
          m_threadingFactory->createThreadPoolDispatcher(m_threadPoolSize,
