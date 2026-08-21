@@ -160,9 +160,63 @@ Configuration File
 -------------------
 Misère uses an `.ini` file for configuration - simple, and simple is good.
 `src/misere.ini` is a fully-commented example covering the listening port,
-threading model (`pthreads`, `c++11`, `gcd_libdispatch`, or `none`),
-socket-vs-kernel-events handling, log level, built-in handlers, the server
-identification string, and dynamically-loaded handler modules.
+threading model, socket handling, log level, keep-alive, built-in handlers,
+the server identification string, and dynamically-loaded handler modules.
+
+### Choosing `threading`
+
+- **`pthreads`** (default) and **`c++11`** (`std::thread`) are functionally
+  equivalent - benchmarked head-to-head under identical load, the numbers
+  were indistinguishable from run-to-run noise. That's expected: chaudière's
+  `StdThread`/`PthreadsThread` are both thin wrappers over the same OS
+  thread primitives (`std::thread` is itself implemented on top of pthreads
+  on Linux). Pick whichever you prefer; there's no performance reason to
+  choose one over the other.
+- **`gcd_libdispatch`** has no backing implementation in chaudière yet - the
+  server logs a warning and falls back to `pthreads` if configured.
+- **`none`** disables threading entirely (one request at a time, no pool).
+  Useful for debugging, not for production.
+
+### Choosing `sockets`
+
+- **`socket_server`** (default) accepts connections and hands each one to a
+  thread-pool worker.
+- **`kernel_events`** uses epoll (Linux) or kqueue (BSD/macOS) to multiplex
+  many connections through a small number of threads, only handing a
+  connection to a worker once it actually has data to read.
+
+  With `keep_alive = false`, this is where `kernel_events` is meant to
+  shine: an idle connection costs an epoll registration, not a dedicated
+  thread. With `keep_alive = true`, though, a worker that picks up a
+  persistent connection holds it - via a blocking read - for the
+  connection's *entire* lifetime, exactly like `socket_server` does; the fd
+  isn't handed back to epoll until the whole keep-alive session ends, so
+  epoll's actual advantage (many idle connections, few threads) never gets
+  exercised by continuously-busy clients. Benchmarked with `keep_alive =
+  true` under saturated load, `socket_server` matched or slightly beat
+  `kernel_events` - `kernel_events` pays epoll's per-request bookkeeping
+  cost (`epoll_ctl` add/remove, busy-fd tracking) without the offsetting
+  benefit in that scenario. We haven't benchmarked the workload
+  `kernel_events` is actually designed for (many concurrent connections
+  that are mostly idle between requests), so this isn't "kernel_events is
+  never worth it" - just that it isn't a free win once keep-alive is on.
+
+  **Default to `socket_server`** unless you have a specific large-scale,
+  mostly-idle-connections workload that justifies `kernel_events`.
+
+### Sizing `thread_pool_size` when `keep_alive = true`
+
+Without keep-alive, a worker thread is freed back to the pool almost
+immediately after each request, so `thread_pool_size` mostly just bounds
+*request* concurrency. With keep-alive, a worker is held for as long as its
+connection stays alive - so `thread_pool_size` needs to cover your expected
+*peak concurrent connections*, not just peak request rate. In testing,
+undersizing the pool (e.g. 40 concurrent persistent clients against a pool
+of 16) reliably destabilized the process under sustained load; sizing the
+pool to match or exceed expected concurrent connections resolved it
+cleanly. If you can't bound concurrent connections in advance, prefer
+leaving `keep_alive = false`, or keep `keep_alive_max_requests`/
+`keep_alive_timeout` low enough to keep connection turnover high.
 
 Running
 -------
