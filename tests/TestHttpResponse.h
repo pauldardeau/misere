@@ -16,6 +16,7 @@ protected:
 
    void testConstructor();
    void testConstructorWithSocket();
+   void testTwoResponsesInSingleRead();
    void testCopyConstructor();
    void testMoveConstructor();
    void testAssignmentCopy();

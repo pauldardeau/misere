@@ -11,3 +11,7 @@ MockSocket::MockSocket(const std::string& payload) :
    setLineInputBuffer(payload);
 }
 
+void MockSocket::setNextPayload(const std::string& payload) {
+   setLineInputBuffer(payload);
+}
+

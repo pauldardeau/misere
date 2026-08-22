@@ -3,6 +3,7 @@
 
 #include "TestHttpTransaction.h"
 #include "HttpTransaction.h"
+#include "SocketConnection.h"
 #include "MockSocket.h"
 
 using namespace std;
@@ -12,17 +13,42 @@ using namespace chaudiere;
 static const string EOL = "\r\n";
 
 namespace {
-// streamFromSocket() is protected on HttpTransaction (it's meant to be
+// streamFromConnection() is protected on HttpTransaction (it's meant to be
 // invoked by derived classes like HttpRequest/HttpResponse from their own
 // constructors) -- re-expose it publicly so this test can exercise the
 // base class's parsing logic directly.
 class TestableHttpTransaction : public HttpTransaction {
 public:
-   TestableHttpTransaction(chaudiere::Socket* socket, bool socketOwned) :
-      HttpTransaction(socket, socketOwned) {
+   TestableHttpTransaction(ByteConnection* connection, bool connectionOwned) :
+      HttpTransaction(connection, connectionOwned) {
    }
 
-   using HttpTransaction::streamFromSocket;
+   using HttpTransaction::streamFromConnection;
+};
+
+// A minimal ByteConnection that records whether it has been destroyed and
+// whether close() was called on it, so close()/ownership behavior can be
+// verified precisely rather than just "didn't crash".
+class TrackingConnection : public ByteConnection {
+public:
+   TrackingConnection(bool* deletedFlag, bool* closedFlag) :
+      m_deleted(deletedFlag),
+      m_closed(closedFlag) {
+      *m_deleted = false;
+      *m_closed = false;
+   }
+
+   ~TrackingConnection() override {
+      *m_deleted = true;
+   }
+
+   int read(char*, int) override { return -1; }
+   bool write(const char*, std::size_t) override { return false; }
+   void close() override { *m_closed = true; }
+
+private:
+   bool* m_deleted;
+   bool* m_closed;
 };
 }
 
@@ -41,6 +67,8 @@ void TestHttpTransaction::runTests() {
    testAssignmentCopy();
    testAssignmentMove();
    testStreamFromSocket();
+   testStreamFromSocketWithBody();
+   testStreamFromSocketSequentialRequests();
    testGetRawHeader();
    testGetBody();
    testSetBody();
@@ -49,6 +77,8 @@ void TestHttpTransaction::runTests() {
    testGetHeaderValues();
    testSetHeaderValue();
    testGetProtocol();
+   testCloseDoesNotDeleteUnownedConnection();
+   testCloseDeletesOwnedConnection();
 }
 
 //******************************************************************************
@@ -171,8 +201,9 @@ void TestHttpTransaction::testStreamFromSocket() {
    key_user_agent + ": " + user_agent + EOL + EOL;
 
    MockSocket mock_socket(req);
-   TestableHttpTransaction txn(&mock_socket, false);
-   require(txn.streamFromSocket(), "streamFromSocket");
+   SocketConnection connection(&mock_socket, false);
+   TestableHttpTransaction txn(&connection, false);
+   require(txn.streamFromConnection(), "streamFromConnection");
 
    // request line
    requireStringEquals(verb, txn.getRequestMethod(), "http verb");
@@ -199,6 +230,101 @@ void TestHttpTransaction::testStreamFromSocket() {
    // user agent
    require(txn.hasHeaderValue(key_user_agent), "user agent exists");
    requireStringEquals(user_agent, txn.getHeaderValue(key_user_agent), "user agent");
+}
+
+//*****************************************************************************
+
+void TestHttpTransaction::testStreamFromSocketWithBody() {
+   TEST_CASE("testStreamFromSocketWithBody");
+
+   // large enough that the header terminator and the full body can't both
+   // arrive in the same 8192-byte read - this exercises the body-reading
+   // loop's own read() calls, not just the leftover bytes captured while
+   // scanning for the end of headers
+   string bodyText;
+   bodyText.reserve(9000);
+   while (bodyText.size() < 9000) {
+      bodyText += "0123456789";
+   }
+
+   const string req = "POST /submit HTTP/1.1" + EOL +
+      "Host: www.acme.com" + EOL +
+      "Content-Length: " + std::to_string(bodyText.size()) + EOL +
+      "Connection: close" + EOL + EOL +
+      bodyText;
+
+   MockSocket mock_socket(req);
+   SocketConnection connection(&mock_socket, false);
+   TestableHttpTransaction txn(&connection, false);
+
+   require(txn.streamFromConnection(), "streamFromConnection with body");
+
+   const chaudiere::ByteBuffer* body = txn.getBody();
+   require(nullptr != body, "body should be present");
+   require((int) bodyText.size() == body->size(), "body size should match Content-Length");
+   requireStringEquals(bodyText, string(body->const_data(), body->size()), "body content should match what was sent");
+}
+
+//*****************************************************************************
+
+void TestHttpTransaction::testStreamFromSocketSequentialRequests() {
+   TEST_CASE("testStreamFromSocketSequentialRequests");
+
+   const string req1 = "GET /first HTTP/1.1" + EOL +
+      "Host: www.acme.com" + EOL + "Connection: keep-alive" + EOL + EOL;
+   const string req2 = "GET /second HTTP/1.1" + EOL +
+      "Host: www.acme.com" + EOL + "Connection: keep-alive" + EOL + EOL;
+
+   MockSocket mock_socket(req1);
+   // borrowed, not owned - the same connection is reused across both
+   // requests below, matching how HttpRequestHandler reuses one
+   // connection across the requests on a persistent connection
+   SocketConnection connection(&mock_socket, false);
+
+   TestableHttpTransaction txn1(&connection, false);
+   require(txn1.streamFromConnection(), "first request should parse");
+   requireStringEquals(string("GET /first HTTP/1.1"), txn1.getFirstHeaderLine(), "first request line");
+
+   // simulate the second request arriving only after the first was fully
+   // consumed
+   mock_socket.setNextPayload(req2);
+
+   TestableHttpTransaction txn2(&connection, false);
+   require(txn2.streamFromConnection(), "second request on the same connection should parse");
+   requireStringEquals(string("GET /second HTTP/1.1"), txn2.getFirstHeaderLine(), "second request line");
+}
+
+//*****************************************************************************
+
+void TestHttpTransaction::testCloseDoesNotDeleteUnownedConnection() {
+   TEST_CASE("testCloseDoesNotDeleteUnownedConnection");
+
+   bool deleted = false;
+   bool closed = false;
+   TrackingConnection connection(&deleted, &closed);
+   TestableHttpTransaction txn(&connection, false);   // connectionOwned = false
+
+   txn.close();
+
+   requireFalse(deleted, "close() must not delete a connection the transaction does not own");
+   require(closed, "close() should still close the underlying connection even when not owned");
+}
+
+//*****************************************************************************
+
+void TestHttpTransaction::testCloseDeletesOwnedConnection() {
+   TEST_CASE("testCloseDeletesOwnedConnection");
+
+   bool deleted = false;
+   bool closed = false;
+   TrackingConnection* connection = new TrackingConnection(&deleted, &closed);
+   TestableHttpTransaction txn(connection, true);   // connectionOwned = true
+
+   txn.close();
+
+   require(closed, "close() should close a connection the transaction owns");
+   require(deleted, "close() should delete a connection the transaction owns");
+   requireFalse(txn.isConnectionOwned(), "isConnectionOwned should be false after close()");
 }
 
 //*****************************************************************************

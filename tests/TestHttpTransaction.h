@@ -19,6 +19,8 @@ protected:
    void testAssignmentCopy();
    void testAssignmentMove();
    void testStreamFromSocket();
+   void testStreamFromSocketWithBody();
+   void testStreamFromSocketSequentialRequests();
    void testGetRawHeader();
    void testGetBody();
    void testSetBody();
@@ -27,6 +29,8 @@ protected:
    void testGetHeaderValues();
    void testSetHeaderValue();
    void testGetProtocol();
+   void testCloseDoesNotDeleteUnownedConnection();
+   void testCloseDeletesOwnedConnection();
 
 public:
    TestHttpTransaction();

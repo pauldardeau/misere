@@ -5,10 +5,11 @@
 #include <stdlib.h>
 #include <string.h>
 #include <algorithm>
+#include <utility>
 
 #include "HttpTransaction.h"
 #include "HTTP.h"
-#include "Socket.h"
+#include "ByteConnection.h"
 #include "BasicException.h"
 #include "InvalidKeyException.h"
 #include "StrUtils.h"
@@ -24,11 +25,12 @@ using namespace chaudiere;
 
 //******************************************************************************
 
-HttpTransaction::HttpTransaction(chaudiere::Socket* socket, bool socketOwned) :
+HttpTransaction::HttpTransaction(ByteConnection* connection, bool connectionOwned, std::string leadingBytes) :
    m_body(nullptr),
    m_contentLength(0),
-   m_socket(socket),
-   m_socketOwned(socketOwned) {
+   m_connection(connection),
+   m_connectionOwned(connectionOwned),
+   m_unconsumedBytes(std::move(leadingBytes)) {
 }
 
 //******************************************************************************
@@ -43,15 +45,16 @@ HttpTransaction::HttpTransaction(const HttpTransaction& copy) :
    m_headers(copy.m_headers),
    m_method(copy.m_method),
    m_contentLength(copy.m_contentLength),
-   m_socket(nullptr),
-   m_socketOwned(false) {
+   m_connection(nullptr),
+   m_connectionOwned(false),
+   m_unconsumedBytes() {
 }
 
 //******************************************************************************
 
 HttpTransaction::~HttpTransaction() {
-   if ((m_socket != nullptr) && m_socketOwned) {
-      delete m_socket;
+   if ((m_connection != nullptr) && m_connectionOwned) {
+      delete m_connection;
    }
 }
 
@@ -71,16 +74,17 @@ HttpTransaction& HttpTransaction::operator=(const HttpTransaction& copy) {
    m_headers = copy.m_headers;
    m_method = copy.m_method;
    m_contentLength = copy.m_contentLength;
-   if (m_socket != nullptr) {
-      if (m_socketOwned) {
-         delete m_socket;
+   if (m_connection != nullptr) {
+      if (m_connectionOwned) {
+         delete m_connection;
       }
-      m_socket = nullptr;
-      m_socketOwned = false;
+      m_connection = nullptr;
+      m_connectionOwned = false;
    }
-   if (!copy.m_socketOwned) {
-      m_socketOwned = false;
+   if (!copy.m_connectionOwned) {
+      m_connectionOwned = false;
    }
+   m_unconsumedBytes.clear();
 
    return *this;
 }
@@ -262,34 +266,36 @@ void HttpTransaction::populateWithHeaders(KeyValuePairs& headers) {
 //******************************************************************************
 
 void HttpTransaction::close() {
-   if (m_socket != nullptr) {
-      m_socket->close();
-      delete m_socket;
-      m_socket = nullptr;
-      m_socketOwned = false;
+   if (m_connection != nullptr) {
+      m_connection->close();
+      if (m_connectionOwned) {
+         delete m_connection;
+      }
+      m_connection = nullptr;
+      m_connectionOwned = false;
    }
 }
 
 //*****************************************************************************
 
-void HttpTransaction::setSocket(Socket* s, bool socketOwned) {
-   m_socket = s;
-   m_socketOwned = socketOwned;
+void HttpTransaction::setConnection(ByteConnection* c, bool connectionOwned) {
+   m_connection = c;
+   m_connectionOwned = connectionOwned;
 }
 
 //*****************************************************************************
 
-Socket* HttpTransaction::takeSocket() {
-   Socket* s = m_socket;
-   m_socket = nullptr;
-   m_socketOwned = false;
-   return s;
+ByteConnection* HttpTransaction::takeConnection() {
+   ByteConnection* c = m_connection;
+   m_connection = nullptr;
+   m_connectionOwned = false;
+   return c;
 }
 
 //*****************************************************************************
 
-Socket* HttpTransaction::getSocket() {
-   return m_socket;
+ByteConnection* HttpTransaction::getConnection() {
+   return m_connection;
 }
 
 //*****************************************************************************
@@ -317,29 +323,43 @@ int HttpTransaction::getContentLength() const {
 
 //*****************************************************************************
 
-bool HttpTransaction::streamFromSocket() {
+bool HttpTransaction::streamFromConnection() {
    int contentLength = -1;  // unknown
    int bytes_read;
-   Socket* s = getSocket();
+   ByteConnection* c = getConnection();
 
-   if (nullptr == s) {
+   if (nullptr == c) {
       return false;
    }
 
    static const std::string HEADER_TERMINATOR = "\r\n\r\n";
 
-   // read in chunks rather than one byte per recv() call, scanning the
+   // read in chunks rather than one byte per read() call, scanning the
    // accumulated buffer for the blank line that ends the headers; any
-   // bytes read past that point are the start of the body and are handed
-   // to the body-reading loop below instead of being re-read from the
-   // socket
-   std::string buffered;
+   // bytes read past that point are the start of the body (or the start
+   // of the *next* transaction on this connection) and are handed to the
+   // body-reading loop below, or preserved via setUnconsumedBytes() at
+   // the end, instead of being re-read from the connection
+   //
+   // seeded with whatever a previous transaction on this connection
+   // over-read and handed off via takeUnconsumedBytes() - this may
+   // already contain this entire request/response (and then some), in
+   // which case the terminator check below finds it before a single new
+   // read() call is made
+   std::string buffered = takeUnconsumedBytes();
    std::string headers;
    bool foundHeaderEnd = false;
    char chunk[8192];
 
+   std::string::size_type posTerminator = buffered.find(HEADER_TERMINATOR);
+   if (posTerminator != std::string::npos) {
+      headers = buffered.substr(0, posTerminator);
+      buffered.erase(0, posTerminator + HEADER_TERMINATOR.length());
+      foundHeaderEnd = true;
+   }
+
    while (!foundHeaderEnd) {
-      bytes_read = s->recvAvailable(chunk, sizeof(chunk));
+      bytes_read = c->read(chunk, sizeof(chunk));
 
       if (bytes_read <= 0) {
          return false;
@@ -347,7 +367,7 @@ bool HttpTransaction::streamFromSocket() {
 
       buffered.append(chunk, bytes_read);
 
-      const std::string::size_type posTerminator = buffered.find(HEADER_TERMINATOR);
+      posTerminator = buffered.find(HEADER_TERMINATOR);
       if (posTerminator != std::string::npos) {
          headers = buffered.substr(0, posTerminator);
          buffered.erase(0, posTerminator + HEADER_TERMINATOR.length());
@@ -414,6 +434,7 @@ bool HttpTransaction::streamFromSocket() {
          const int fromBuffer = std::min((int) buffered.size(), contentLength);
          memcpy(bb->data(), buffered.data(), fromBuffer);
          offset = fromBuffer;
+         buffered.erase(0, fromBuffer);
       }
 
       int remainingBytes = contentLength - offset;
@@ -423,30 +444,50 @@ bool HttpTransaction::streamFromSocket() {
          if (remainingBytes < bytesToRead) {
             bytesToRead = remainingBytes;
          }
-         bytes_read = s->readSocket(buffer, bytesToRead);
+         bytes_read = c->read(buffer, bytesToRead);
          if (bytes_read > 0) {
             memcpy((void*) (bb->data()+offset), buffer, bytes_read);
             offset += bytes_read;
             remainingBytes -= bytes_read;
          } else {
+            delete bb;
             return false;
          }
       }
       setBody(bb);
    }
+
+   // whatever remains in buffered - whether there was no body at all, or
+   // buffered held more than this transaction's body - belongs to the
+   // next transaction on this connection
+   setUnconsumedBytes(buffered);
    return true;
 }
 
 //*****************************************************************************
 
-bool HttpTransaction::isSocketOwned() const {
-   return m_socketOwned;
+bool HttpTransaction::isConnectionOwned() const {
+   return m_connectionOwned;
 }
 
 //*****************************************************************************
 
-void HttpTransaction::setSocketOwned(bool socketOwned) {
-   m_socketOwned = socketOwned;
+void HttpTransaction::setConnectionOwned(bool connectionOwned) {
+   m_connectionOwned = connectionOwned;
+}
+
+//*****************************************************************************
+
+std::string HttpTransaction::takeUnconsumedBytes() {
+   std::string bytes;
+   bytes.swap(m_unconsumedBytes);
+   return bytes;
+}
+
+//*****************************************************************************
+
+void HttpTransaction::setUnconsumedBytes(const std::string& bytes) {
+   m_unconsumedBytes = bytes;
 }
 
 //*****************************************************************************

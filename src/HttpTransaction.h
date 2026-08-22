@@ -9,7 +9,7 @@
 #include <vector>
 
 #include "KeyValuePairs.h"
-#include "Socket.h"
+#include "ByteConnection.h"
 #include "ByteBuffer.h"
 
 
@@ -25,8 +25,16 @@ class HttpTransaction
    public:
       /**
        * Default constructor
+       * @param connection the connection to read from / write to
+       * @param connectionOwned whether this transaction should close and
+       *        delete the connection when it is destroyed
+       * @param leadingBytes bytes already read from the connection but not
+       *        consumed by a previous transaction sharing it - e.g. the
+       *        start of this request/response, over-read along with the
+       *        end of the previous one on the same persistent connection.
+       *        See takeUnconsumedBytes().
        */
-      HttpTransaction(chaudiere::Socket* socket=nullptr, bool socketOwned=true);
+      HttpTransaction(ByteConnection* connection=nullptr, bool connectionOwned=true, std::string leadingBytes=std::string());
 
       /**
        * Copy constructor
@@ -131,9 +139,22 @@ class HttpTransaction
 
       void close();
 
-      void setSocketOwned(bool socketOwned);
+      void setConnectionOwned(bool connectionOwned);
 
-      bool isSocketOwned() const;
+      bool isConnectionOwned() const;
+
+      /**
+       * Retrieves and clears any bytes that were read from the connection
+       * but not consumed by this transaction - bytes belonging to the
+       * next transaction sharing the same connection (e.g. the start of
+       * the next keep-alive request, read along with the end of this
+       * one). Intended to be passed as the leadingBytes constructor
+       * argument of the next HttpTransaction constructed against the
+       * same connection; see HttpRequestHandler::run() for the intended
+       * usage pattern. Empty if nothing was left over.
+       * @return the unconsumed bytes
+       */
+      std::string takeUnconsumedBytes();
 
    protected:
       /**
@@ -156,13 +177,24 @@ class HttpTransaction
        */
       bool parseHeaders();
 
-      void setSocket(chaudiere::Socket* s, bool socketOwned);
-      chaudiere::Socket* takeSocket();
-      chaudiere::Socket* getSocket();
+      void setConnection(ByteConnection* c, bool connectionOwned);
+      ByteConnection* takeConnection();
+      ByteConnection* getConnection();
       void addHeader(const std::string& key, const std::string& value);
       bool hasHeader(const std::string& key) const;
       int getContentLength() const;
-      virtual bool streamFromSocket();
+      virtual bool streamFromConnection();
+
+      /**
+       * Records bytes read from the connection but not consumed by this
+       * transaction, for a later takeUnconsumedBytes() call - either by
+       * this same transaction's own parsing logic (see
+       * streamFromConnection()) or, once parsing is complete, by
+       * whichever caller constructs the next transaction on this
+       * connection.
+       * @param bytes the unconsumed bytes (may be empty)
+       */
+      void setUnconsumedBytes(const std::string& bytes);
 
    private:
       std::vector<std::string> m_vecHeaderLines;
@@ -174,8 +206,9 @@ class HttpTransaction
       chaudiere::KeyValuePairs m_headers;
       std::string m_method;
       int m_contentLength;
-      chaudiere::Socket* m_socket;
-      bool m_socketOwned;
+      ByteConnection* m_connection;
+      bool m_connectionOwned;
+      std::string m_unconsumedBytes;
 
 };
 

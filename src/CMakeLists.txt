@@ -18,6 +18,7 @@ add_library(misere
    ServerObjectsDebugging.cpp
    ServerStatsHandler.cpp
    ServerStatusHandler.cpp
+   SocketConnection.cpp
    Url.cpp
 )
 

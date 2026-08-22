@@ -20,6 +20,7 @@ HttpServer.o \
 HttpSocketServiceHandler.o \
 HttpTransaction.o \
 HttpConnection.o \
+SocketConnection.o \
 AbstractHandler.o \
 EchoHandler.o \
 GMTDateTimeHandler.o \

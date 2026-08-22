@@ -10,7 +10,7 @@
 #include "HttpTransaction.h"
 #include "HttpResponse.h"
 #include "KeyValuePairs.h"
-#include "Socket.h"
+#include "ByteConnection.h"
 #include "Url.h"
 
 
@@ -29,11 +29,16 @@ class HttpRequest : public HttpTransaction {
       explicit HttpRequest(const Url& url);
 
       /**
-       * Constructs and initializes an HttpRequest object from a socket
-       * @param socket the socket to read for initializing the object
-       * @see Socket()
+       * Constructs and initializes an HttpRequest object from a connection
+       * @param connection the connection to read for initializing the object
+       * @param connectionOwned whether this request should close and
+       *        delete the connection when it is destroyed
+       * @param leadingBytes bytes already read from the connection but
+       *        not consumed by a previous request sharing it - see
+       *        HttpTransaction::takeUnconsumedBytes()
+       * @see ByteConnection()
        */
-      explicit HttpRequest(chaudiere::Socket* socket, bool socketOwned=true);
+      explicit HttpRequest(ByteConnection* connection, bool connectionOwned=true, std::string leadingBytes=std::string());
 
       /**
        * Copy constructor
@@ -54,10 +59,10 @@ class HttpRequest : public HttpTransaction {
       HttpRequest& operator=(const HttpRequest& copy);
 
       /**
-       * Initializes HTTP request by reading from socket
-       * @return boolean indicating whether reading from the socket succeeded
+       * Initializes HTTP request by reading from the connection
+       * @return boolean indicating whether reading from the connection succeeded
        */
-      virtual bool streamFromSocket();
+      virtual bool streamFromConnection();
 
       /**
        * Determines if the request object has been successfully initialized
@@ -215,8 +220,8 @@ class HttpRequest : public HttpTransaction {
          return m_url.host();
       }
 
-      bool write(chaudiere::Socket* s);
-      bool write(chaudiere::Socket* s, long bodyLength);
+      bool write(ByteConnection* c);
+      bool write(ByteConnection* c, long bodyLength);
 
    protected:
       /**

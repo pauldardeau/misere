@@ -4,10 +4,11 @@
 #include <cstdio>
 #include <cstdlib>
 #include <algorithm>
+#include <utility>
 
 #include "HttpResponse.h"
 #include "HTTP.h"
-#include "Socket.h"
+#include "ByteConnection.h"
 #include "BasicException.h"
 #include "HttpException.h"
 #include "Logger.h"
@@ -41,12 +42,12 @@ HttpResponse::HttpResponse(const HttpResponse& copy) :
 
 //******************************************************************************
 
-HttpResponse::HttpResponse(Socket* socket) :
-   HttpTransaction(socket) {
+HttpResponse::HttpResponse(ByteConnection* connection, std::string leadingBytes) :
+   HttpTransaction(connection, true, std::move(leadingBytes)) {
    LOG_INSTANCE_CREATE("HttpResponse")
 
-   if (!streamFromSocket()) {
-      throw BasicException("unable to construct HttpResponse from Socket");
+   if (!streamFromConnection()) {
+      throw BasicException("unable to construct HttpResponse from ByteConnection");
    }
 }
 
@@ -73,29 +74,40 @@ HttpResponse& HttpResponse::operator=(const HttpResponse& copy) {
 
 //******************************************************************************
 
-bool HttpResponse::streamFromSocket2() {
+bool HttpResponse::streamFromConnection2() {
    int contentLength = -1;  // unknown
    int bytes_read;
-   Socket* s = getSocket();
+   ByteConnection* c = getConnection();
 
-   if (nullptr == s) {
+   if (nullptr == c) {
       return false;
    }
 
    static const std::string HEADER_TERMINATOR = "\r\n\r\n";
 
-   // read in chunks rather than one byte per recv() call, scanning the
+   // read in chunks rather than one byte per read() call, scanning the
    // accumulated buffer for the blank line that ends the headers; any
-   // bytes read past that point are the start of the body and are handed
-   // to the body-reading loop below instead of being re-read from the
-   // socket
-   std::string buffered;
+   // bytes read past that point are the start of the body (or the start
+   // of the *next* transaction on this connection) and are handed to the
+   // body-reading loop below, or preserved via setUnconsumedBytes() at
+   // the end, instead of being re-read from the connection
+   //
+   // seeded with whatever a previous transaction on this connection
+   // over-read and handed off via takeUnconsumedBytes()
+   std::string buffered = takeUnconsumedBytes();
    std::string headers;
    bool foundHeaderEnd = false;
    char chunk[8192];
 
+   std::string::size_type posTerminator = buffered.find(HEADER_TERMINATOR);
+   if (posTerminator != std::string::npos) {
+      headers = buffered.substr(0, posTerminator);
+      buffered.erase(0, posTerminator + HEADER_TERMINATOR.length());
+      foundHeaderEnd = true;
+   }
+
    while (!foundHeaderEnd) {
-      bytes_read = s->recvAvailable(chunk, sizeof(chunk));
+      bytes_read = c->read(chunk, sizeof(chunk));
 
       if (bytes_read <= 0) {
          return false;
@@ -103,7 +115,7 @@ bool HttpResponse::streamFromSocket2() {
 
       buffered.append(chunk, bytes_read);
 
-      const std::string::size_type posTerminator = buffered.find(HEADER_TERMINATOR);
+      posTerminator = buffered.find(HEADER_TERMINATOR);
       if (posTerminator != std::string::npos) {
          headers = buffered.substr(0, posTerminator);
          buffered.erase(0, posTerminator + HEADER_TERMINATOR.length());
@@ -163,6 +175,7 @@ bool HttpResponse::streamFromSocket2() {
          const int fromBuffer = std::min((int) buffered.size(), contentLength);
          memcpy(bb->data(), buffered.data(), fromBuffer);
          offset = fromBuffer;
+         buffered.erase(0, fromBuffer);
       }
 
       int remainingBytes = contentLength - offset;
@@ -172,28 +185,34 @@ bool HttpResponse::streamFromSocket2() {
          if (remainingBytes < bytesToRead) {
             bytesToRead = remainingBytes;
          }
-         bytes_read = s->readSocket(buffer, bytesToRead);
+         bytes_read = c->read(buffer, bytesToRead);
          if (bytes_read > 0) {
             memcpy((void*) (bb->data()+offset), buffer, bytes_read);
             offset += bytes_read;
             remainingBytes -= bytes_read;
          } else {
+            delete bb;
             return false;
          }
       }
       setBody(bb);
    }
+
+   // whatever remains in buffered - whether there was no body at all, or
+   // buffered held more than this response's body - belongs to the next
+   // transaction on this connection
+   setUnconsumedBytes(buffered);
    return true;
 }
 
-bool HttpResponse::streamFromSocket() {
+bool HttpResponse::streamFromConnection() {
    if (Logger::isLogging(LogLevel::Debug)) {
-      LOG_DEBUG("******** start of HttpResponse::streamFromSocket")
+      LOG_DEBUG("******** start of HttpResponse::streamFromConnection")
    }
 
    bool streamSuccess = false;
 
-   if (streamFromSocket2()) {
+   if (streamFromConnection2()) {
       const std::vector<std::string>& vecRequestLineValues =
          getRequestLineValues();
 

@@ -9,6 +9,7 @@
 #include "HTTP.h"
 #include "HttpResponse.h"
 #include "Socket.h"
+#include "SocketConnection.h"
 #include "BasicException.h"
 #include "KeyValuePairs.h"
 #include "Logger.h"
@@ -61,11 +62,12 @@ HttpResponse* HttpClient::get(HttpRequest& request)
    HttpResponse* r = nullptr;
    Socket* s = socketForRequest(request);
    if (s != nullptr) {
+      SocketConnection* connection = new SocketConnection(s, true);
       request.setMethod(HTTP::HTTP_METHOD_GET);
-      if (request.write(s)) {
-         r = new HttpResponse(s);
+      if (request.write(connection)) {
+         r = new HttpResponse(connection);
       } else {
-         delete s;
+         delete connection;
       }
    }
 
@@ -77,11 +79,12 @@ HttpResponse* HttpClient::head(HttpRequest& request)
    HttpResponse* r = nullptr;
    Socket* s = socketForRequest(request);
    if (s != nullptr) {
+      SocketConnection* connection = new SocketConnection(s, true);
       request.setMethod(HTTP::HTTP_METHOD_HEAD);
-      if (request.write(s)) {
-         r = new HttpResponse(s);
+      if (request.write(connection)) {
+         r = new HttpResponse(connection);
       } else {
-         delete s;
+         delete connection;
       }
    }
 
@@ -94,13 +97,14 @@ HttpResponse* HttpClient::put(HttpRequest& request,
    HttpResponse* r = nullptr;
    Socket* s = socketForRequest(request);
    if (s != nullptr) {
+      SocketConnection* connection = new SocketConnection(s, true);
       request.setMethod(HTTP::HTTP_METHOD_PUT);
-      if (request.write(s, buffer.size()) &&
-          s->write(EOL.c_str(), EOL.size()) &&
-          s->write(buffer.c_str(), buffer.size())) {
-         r = new HttpResponse(s);
+      if (request.write(connection, buffer.size()) &&
+          connection->write(EOL.c_str(), EOL.size()) &&
+          connection->write(buffer.c_str(), buffer.size())) {
+         r = new HttpResponse(connection);
       } else {
-         delete s;
+         delete connection;
       }
    }
 
@@ -113,13 +117,14 @@ HttpResponse* HttpClient::put(HttpRequest& request,
    HttpResponse* r = nullptr;
    Socket* s = socketForRequest(request);
    if (s != nullptr) {
+      SocketConnection* connection = new SocketConnection(s, true);
       request.setMethod(HTTP::HTTP_METHOD_PUT);
-      if (request.write(s, buffer.size()) &&
-          s->write(EOL.c_str(), EOL.size()) &&
-          s->write((const char*) buffer.const_data(), buffer.size())) {
-         r = new HttpResponse(s);
+      if (request.write(connection, buffer.size()) &&
+          connection->write(EOL.c_str(), EOL.size()) &&
+          connection->write(buffer.const_data(), buffer.size())) {
+         r = new HttpResponse(connection);
       } else {
-         delete s;
+         delete connection;
       }
    }
 
@@ -132,13 +137,14 @@ HttpResponse* HttpClient::post(HttpRequest& request,
    HttpResponse* r = nullptr;
    Socket* s = socketForRequest(request);
    if (s != nullptr) {
+      SocketConnection* connection = new SocketConnection(s, true);
       request.setMethod(HTTP::HTTP_METHOD_POST);
-      if (request.write(s, buffer.size()) &&
-          s->write(EOL.c_str(), EOL.size()) &&
-          s->write(buffer.c_str(), buffer.size())) {
-         r = new HttpResponse(s);
+      if (request.write(connection, buffer.size()) &&
+          connection->write(EOL.c_str(), EOL.size()) &&
+          connection->write(buffer.c_str(), buffer.size())) {
+         r = new HttpResponse(connection);
       } else {
-         delete s;
+         delete connection;
       }
    }
 
@@ -151,13 +157,14 @@ HttpResponse* HttpClient::post(HttpRequest& request,
    HttpResponse* r = nullptr;
    Socket* s = socketForRequest(request);
    if (s != nullptr) {
+      SocketConnection* connection = new SocketConnection(s, true);
       request.setMethod(HTTP::HTTP_METHOD_POST);
-      if (request.write(s, buffer.size()) &&
-          s->write(EOL.c_str(), EOL.size()) &&
-          s->write((const char*) buffer.const_data(), buffer.size())) {
-         r = new HttpResponse(s);
+      if (request.write(connection, buffer.size()) &&
+          connection->write(EOL.c_str(), EOL.size()) &&
+          connection->write(buffer.const_data(), buffer.size())) {
+         r = new HttpResponse(connection);
       } else {
-         delete s;
+         delete connection;
       }
    }
 
@@ -169,11 +176,12 @@ HttpResponse* HttpClient::do_delete(HttpRequest& request)
    HttpResponse* response = nullptr;
    Socket* s = socketForRequest(request);
    if (s != nullptr) {
+      SocketConnection* connection = new SocketConnection(s, true);
       request.setMethod(HTTP::HTTP_METHOD_DELETE);
-      if (request.write(s)) {
-         response = new HttpResponse(s);
+      if (request.write(connection)) {
+         response = new HttpResponse(connection);
       } else {
-         delete s;
+         delete connection;
       }
    }
 
@@ -288,15 +296,17 @@ HttpResponse* HttpClient::sendReceive(const std::string& address,
    socket->setReceiveBufferSize(SOCKET_RECV_BUFFER_SIZE);
    socket->setIncludeMessageSize(false);
 
+   SocketConnection* connection = new SocketConnection(socket, true);
+
    if (Logger::isLogging(LogLevel::Debug)) {
       LOG_DEBUG("*** start of send data ***")
       LOG_DEBUG(sendBuffer)
       LOG_DEBUG("*** end of send data ***")
    }
 
-   socket->write(sendBuffer);
+   connection->write(sendBuffer.data(), sendBuffer.size());
 
-   return new HttpResponse(socket);
+   return new HttpResponse(connection);
 }
 
 //******************************************************************************

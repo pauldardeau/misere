@@ -9,6 +9,7 @@
 #include "BasicException.h"
 #include "ByteBuffer.h"
 #include "KeyValuePairs.h"
+#include "Socket.h"
 #include "HttpRequest.h"
 #include "HttpResponse.h"
 

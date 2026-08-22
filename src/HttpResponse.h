@@ -7,7 +7,7 @@
 #include <string>
 
 #include "HttpTransaction.h"
-#include "Socket.h"
+#include "ByteConnection.h"
 
 
 namespace misere
@@ -25,13 +25,16 @@ class HttpResponse : public HttpTransaction
       HttpResponse();
 
       /**
-       * Constructs and HttpResponse by reading from socket
-       * @param socket the socket to read from
-       * @see Socket()
+       * Constructs and HttpResponse by reading from a connection
+       * @param connection the connection to read from
+       * @param leadingBytes bytes already read from the connection but
+       *        not consumed by a previous response sharing it - see
+       *        HttpTransaction::takeUnconsumedBytes()
+       * @see ByteConnection()
        * @throw BasicException
        * @throw HttpException
        */
-      explicit HttpResponse(chaudiere::Socket* socket);
+      explicit HttpResponse(ByteConnection* connection, std::string leadingBytes=std::string());
 
       /**
        * Copy constructor
@@ -52,11 +55,11 @@ class HttpResponse : public HttpTransaction
       HttpResponse& operator=(const HttpResponse& copy);
 
       /**
-       * Initializes HttpResponse instance by reading data from socket
+       * Initializes HttpResponse instance by reading data from the connection
        * @return boolean indicating whether initialization succeeded
        */
-      virtual bool streamFromSocket();
-      bool streamFromSocket2();
+      virtual bool streamFromConnection();
+      bool streamFromConnection2();
 
       /**
        * Retrieves the HTTP status code

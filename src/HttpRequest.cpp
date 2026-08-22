@@ -2,9 +2,11 @@
 // BSD License
 
 #include <stdio.h>
+#include <utility>
 
 #include "HttpRequest.h"
 #include "Socket.h"
+#include "SocketConnection.h"
 #include "BasicException.h"
 #include "StrUtils.h"
 #include "Logger.h"
@@ -104,7 +106,7 @@ HttpRequest::HttpRequest(const Url& url) :
 
    Socket* s = new Socket(url.host(), port);
    if (s->isConnected()) {
-      setSocket(s, true);
+      setConnection(new SocketConnection(s, true), true);
    } else {
       delete s;
       throw BasicException("unable to connect to host: " + url.host());
@@ -113,12 +115,12 @@ HttpRequest::HttpRequest(const Url& url) :
 
 //******************************************************************************
 
-HttpRequest::HttpRequest(Socket* socket, bool socketOwned) :
-   HttpTransaction(socket, socketOwned),
+HttpRequest::HttpRequest(ByteConnection* connection, bool connectionOwned, std::string leadingBytes) :
+   HttpTransaction(connection, connectionOwned, std::move(leadingBytes)),
    m_initialized(false) {
 
    LOG_INSTANCE_CREATE("HttpRequest")
-   m_initialized = streamFromSocket();
+   m_initialized = streamFromConnection();
 }
 
 //******************************************************************************
@@ -155,10 +157,10 @@ HttpRequest& HttpRequest::operator=(const HttpRequest& copy) {
 
 //******************************************************************************
 
-bool HttpRequest::streamFromSocket() {
+bool HttpRequest::streamFromConnection() {
    bool streamSuccess = false;
 
-   if (HttpTransaction::streamFromSocket()) {
+   if (HttpTransaction::streamFromConnection()) {
       const std::string& firstLine = getFirstHeaderLine();
       std::vector<std::string> reqLineValues = StrUtils::split(firstLine, " ");
       if (reqLineValues.size() != 3) {
@@ -378,20 +380,20 @@ void HttpRequest::setHeaderValue(const std::string& key,
 //******************************************************************************
 
 HttpResponse* HttpRequest::getResponse() {
-   return new HttpResponse(takeSocket());
+   return new HttpResponse(takeConnection());
 }
 
 //******************************************************************************
 
-bool HttpRequest::write(chaudiere::Socket* s) {
-   return write(s, -1L);
+bool HttpRequest::write(ByteConnection* c) {
+   return write(c, -1L);
 }
 
 //******************************************************************************
 
-bool HttpRequest::write(chaudiere::Socket* s, long bodyLength) {
+bool HttpRequest::write(ByteConnection* c, long bodyLength) {
    bool success = false;
-   if (s != nullptr) {
+   if (c != nullptr) {
       const std::string& method = getMethod();
       const std::string& path = getPath();
       if (method.empty()) {
@@ -427,7 +429,7 @@ bool HttpRequest::write(chaudiere::Socket* s, long bodyLength) {
 
       headers += EOL;
 
-      success = s->write(headers);
+      success = c->write(headers.c_str(), headers.size());
    }
 
    return success;

@@ -6,6 +6,7 @@
 
 #include "HttpRequestHandler.h"
 #include "Socket.h"
+#include "SocketConnection.h"
 #include "SocketRequest.h"
 #include "HttpServer.h"
 #include "HTTP.h"
@@ -106,6 +107,12 @@ void HttpRequestHandler::run() {
    socket->setSendBufferSize(m_server.getSocketSendBufferSize());
    socket->setReceiveBufferSize(m_server.getSocketReceiveBufferSize());
 
+   // socket is owned by the base RequestHandler for the lifetime of this
+   // handler, reused across every request on a persistent connection -
+   // this wrapper never takes ownership of it. The HTTP layer below only
+   // ever sees this ByteConnection, never the raw socket.
+   SocketConnection connection(socket, false);
+
    const bool isLoggingDebug = Logger::isLogging(Debug);
    if (isLoggingDebug) {
       //LOG_DEBUG("starting parse of HttpRequest")
@@ -116,6 +123,11 @@ void HttpRequestHandler::run() {
 
    int requestCount = 0;
    bool connectionOpen = true;
+
+   // bytes read along with the end of one request that already belong to
+   // the next one on this persistent connection - carried from one
+   // iteration of this loop to the next via HttpRequest::takeUnconsumedBytes()
+   std::string unconsumedBytes;
 
    while (connectionOpen) {
       connectionOpen = false;
@@ -135,7 +147,8 @@ void HttpRequestHandler::run() {
       // request), the object never comes into existence, so there's
       // nothing to clean up - no heap allocation needed just to make this
       // exception-safe
-      HttpRequest request(socket, false);
+      HttpRequest request(&connection, false, unconsumedBytes);
+      unconsumedBytes = request.takeUnconsumedBytes();
 
       if (request.isInitialized()) {
 
@@ -312,12 +325,12 @@ void HttpRequestHandler::run() {
 
       std::string headersAsString =
          m_server.buildHeader(responseCode, headers);
-      socket->write(headersAsString);
+      connection.write(headersAsString.data(), headersAsString.size());
 
       if (contentLength > 0) {
          const ByteBuffer* body = response.getBody();
          if (body != nullptr) {
-            socket->write(body->const_data(), body->size());
+            connection.write(body->const_data(), body->size());
          }
       }
 

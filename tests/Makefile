@@ -18,6 +18,7 @@ TestHttpRequest.o \
 TestHttpResponse.o \
 TestHttpServer.o \
 TestHttpTransaction.o \
+TestSocketConnection.o \
 TestUrl.o \
 Tests.o \
 $(POIVRE_OBJS)

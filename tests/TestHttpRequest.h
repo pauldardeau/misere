@@ -27,6 +27,8 @@ protected:
    void testHasArgument();
    void testGetArgument();
    void testGetArgumentKeys();
+   void testTwoRequestsInSingleRead();
+   void testRequestWithBodyFollowedByNextRequest();
 
 public:
    TestHttpRequest();
