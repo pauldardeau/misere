@@ -4,3 +4,6 @@
 [submodule "poivre"]
 	path = poivre
 	url = https://github.com/pauldardeau/poivre.git
+[submodule "armure"]
+	path = armure
+	url = https://github.com/pauldardeau/armure.git

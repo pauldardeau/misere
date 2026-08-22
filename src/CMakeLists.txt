@@ -19,6 +19,8 @@ add_library(misere
    ServerStatsHandler.cpp
    ServerStatusHandler.cpp
    SocketConnection.cpp
+   SocketTransport.cpp
+   TlsConnection.cpp
    Url.cpp
 )
 
@@ -40,7 +42,13 @@ target_include_directories(misere
 # PUBLIC: misere's own public headers use chaudiere types throughout
 # (KeyValuePairs, Socket, etc.), so a consumer of misere also needs
 # chaudiere's include directory and link library.
-target_link_libraries(misere PUBLIC chaudiere)
+#
+# armure::armure is PUBLIC for the same reason: TlsConnection.h stores an
+# armure::Connection by value, so a consumer including it needs armure's
+# headers too. misere does not yet expose any TLS configuration at the
+# HttpServer API level - this is internal transport machinery only - but
+# the dependency itself is not optional/hidden.
+target_link_libraries(misere PUBLIC chaudiere armure::armure)
 
 # HttpServer.cpp uses poivre::AutoPointer<> directly (same situation as
 # chaudiere's SocketServer.cpp) - implementation detail only, not in any

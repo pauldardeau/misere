@@ -21,6 +21,16 @@ option(MISERE_BUILD_TESTS "Build misere's own test suite" ${MISERE_IS_TOP_LEVEL}
 # top-level configure), so this doesn't pull in chaudiere's tests or a
 # second copy of poivre.
 add_subdirectory(chaudiere)
+
+# Same reasoning as chaudiere above: armure's own ARMURE_BUILD_TESTS/
+# ARMURE_BUILD_EXAMPLES default off here (this isn't armure's own
+# top-level configure), so this doesn't pull in armure's test suite, its
+# own separate poivre submodule, or its example programs - just the
+# armure::armure library target (and, transitively, mbedTLS - see
+# armure/CMakeLists.txt). misere is not yet TLS-capable at the server API
+# level; this is the internal transport machinery that will support that.
+add_subdirectory(armure)
+
 add_subdirectory(src)
 
 if(MISERE_BUILD_TESTS)
