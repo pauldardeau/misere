@@ -11,6 +11,7 @@
 #include "TestHttpRequest.h"
 #include "TestHttpResponse.h"
 #include "TestHttpServer.h"
+#include "TestHttpsIntegration.h"
 #include "TestHttpTransaction.h"
 #include "TestSocketConnection.h"
 #include "TestSocketTransport.h"
@@ -49,6 +50,9 @@ void Tests::run() {
 
    TestTlsConnection testTlsConnection;
    testTlsConnection.run();
+
+   TestHttpsIntegration testHttpsIntegration;
+   testHttpsIntegration.run();
 
    TestUrl testUrl;
    testUrl.run();

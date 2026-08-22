@@ -52,6 +52,9 @@
 #include "ServerStatsHandler.h"
 #include "ServerStatusHandler.h"
 
+// TLS
+#include "armure/Armure.h"
+
 
 using namespace std;
 
@@ -95,6 +98,9 @@ static const string CFG_SERVER_SOCKETS                 = "sockets";
 static const string CFG_SERVER_KEEP_ALIVE              = "keep_alive";
 static const string CFG_SERVER_KEEP_ALIVE_TIMEOUT      = "keep_alive_timeout";
 static const string CFG_SERVER_KEEP_ALIVE_MAX_REQUESTS = "keep_alive_max_requests";
+static const string CFG_SERVER_TLS_ENABLED             = "tls_enabled";
+static const string CFG_SERVER_TLS_CERTIFICATE         = "tls_certificate";
+static const string CFG_SERVER_TLS_PRIVATE_KEY         = "tls_private_key";
 
 // socket options
 static const string CFG_SOCKETS_SOCKET_SERVER          = "socket_server";
@@ -158,6 +164,8 @@ HttpServer::HttpServer(const std::string& configFilePath) :
    m_compressionEnabled(true),
    m_usingConfigFile(true),
    m_keepAliveEnabled(false),
+   m_tlsEnabled(false),
+   m_tlsContext(std::nullopt),
    m_threadPoolSize(CFG_DEFAULT_THREAD_POOL_SIZE),
    m_serverPort(CFG_DEFAULT_PORT_NUMBER),
    m_socketSendBufferSize(CFG_DEFAULT_SEND_BUFFER_SIZE),
@@ -185,6 +193,8 @@ HttpServer::HttpServer(int port) :
    m_compressionEnabled(false),
    m_usingConfigFile(false),
    m_keepAliveEnabled(false),
+   m_tlsEnabled(false),
+   m_tlsContext(std::nullopt),
    m_threadPoolSize(CFG_DEFAULT_THREAD_POOL_SIZE),
    m_serverPort(CFG_DEFAULT_PORT_NUMBER),
    m_socketSendBufferSize(CFG_DEFAULT_SEND_BUFFER_SIZE),
@@ -334,6 +344,11 @@ bool HttpServer::init(int port) {
             setupLogLevel(kvpServerSettings);
             setupSocketBufferSizes(kvpServerSettings);
             setupKeepAlive(kvpServerSettings);
+
+            if (!setupTls(kvpServerSettings)) {
+               return false;
+            }
+
             m_allowBuiltInHandlers =
                hasTrueValue(kvpServerSettings,
                             CFG_SERVER_ALLOW_BUILTIN_HANDLERS);
@@ -856,6 +871,79 @@ int HttpServer::keepAliveTimeoutSecs() const {
 
 int HttpServer::keepAliveMaxRequests() const {
    return m_keepAliveMaxRequests;
+}
+
+//******************************************************************************
+
+bool HttpServer::tlsEnabled() const {
+   return m_tlsEnabled;
+}
+
+//******************************************************************************
+
+const armure::Context& HttpServer::tlsContext() const {
+   return m_tlsContext.value();
+}
+
+//******************************************************************************
+
+bool HttpServer::setupTls(const KeyValuePairs& kvp) {
+   m_tlsEnabled = hasTrueValue(kvp, CFG_SERVER_TLS_ENABLED);
+
+   if (!m_tlsEnabled) {
+      return true;
+   }
+
+   if (!kvp.hasKey(CFG_SERVER_TLS_CERTIFICATE) ||
+       kvp.getValue(CFG_SERVER_TLS_CERTIFICATE).empty()) {
+      LOG_CRITICAL(CFG_SERVER_TLS_ENABLED + " is set but " + CFG_SERVER_TLS_CERTIFICATE + " is missing")
+      return false;
+   }
+
+   if (!kvp.hasKey(CFG_SERVER_TLS_PRIVATE_KEY) ||
+       kvp.getValue(CFG_SERVER_TLS_PRIVATE_KEY).empty()) {
+      LOG_CRITICAL(CFG_SERVER_TLS_ENABLED + " is set but " + CFG_SERVER_TLS_PRIVATE_KEY + " is missing")
+      return false;
+   }
+
+   const string& certPath = kvp.getValue(CFG_SERVER_TLS_CERTIFICATE);
+   const string& keyPath = kvp.getValue(CFG_SERVER_TLS_PRIVATE_KEY);
+
+   armure::Result<armure::Certificate> certResult = armure::Certificate::loadFromFile(certPath);
+   if (!certResult) {
+      LOG_CRITICAL("unable to load TLS certificate '" + certPath + "': " +
+                   string(certResult.error().message()))
+      return false;
+   }
+
+   armure::Result<armure::PrivateKey> keyResult = armure::PrivateKey::loadFromFile(keyPath);
+   if (!keyResult) {
+      LOG_CRITICAL("unable to load TLS private key '" + keyPath + "': " +
+                   string(keyResult.error().message()))
+      return false;
+   }
+
+   // Role::Server's default VerifyMode is None (a server does not
+   // request a client certificate unless explicitly asked to) - exactly
+   // what this phase needs, and deliberately left unconfigured rather
+   // than adding client-certificate configuration this task doesn't
+   // call for.
+   armure::Result<armure::Context> contextResult =
+      armure::ContextBuilder(armure::Role::Server)
+         .withCertificate(std::move(certResult).value())
+         .withPrivateKey(std::move(keyResult).value())
+         .build();
+
+   if (!contextResult) {
+      LOG_CRITICAL("unable to build TLS context: " + string(contextResult.error().message()))
+      return false;
+   }
+
+   m_tlsContext = std::move(contextResult).value();
+
+   LOG_INFO("TLS enabled (certificate=" + certPath + ")")
+
+   return true;
 }
 
 //******************************************************************************

@@ -4,9 +4,15 @@
 #include <stdio.h>
 #include <string.h>
 
+#include <memory>
+#include <utility>
+
 #include "HttpRequestHandler.h"
 #include "Socket.h"
+#include "ByteConnection.h"
 #include "SocketConnection.h"
+#include "SocketTransport.h"
+#include "TlsConnection.h"
 #include "SocketRequest.h"
 #include "HttpServer.h"
 #include "HTTP.h"
@@ -109,9 +115,63 @@ void HttpRequestHandler::run() {
 
    // socket is owned by the base RequestHandler for the lifetime of this
    // handler, reused across every request on a persistent connection -
-   // this wrapper never takes ownership of it. The HTTP layer below only
-   // ever sees this ByteConnection, never the raw socket.
-   SocketConnection connection(socket, false);
+   // neither the plain nor the TLS-backed ByteConnection below ever
+   // takes ownership of it. The HTTP layer that follows only ever sees
+   // this ByteConnection, never the raw socket, and is otherwise
+   // completely unaware of whether TLS is involved.
+   std::unique_ptr<ByteConnection> connection;
+
+   if (m_server.tlsEnabled()) {
+      // SocketTransport adapts the same borrowed socket to armure's
+      // Transport interface; the server's shared armure Context (built
+      // once at startup - see HttpServer::setupTls()) creates one new,
+      // independent Connection per accepted socket.
+      auto transport = std::make_unique<SocketTransport>(socket, false);
+      armure::Result<armure::Connection> connectionResult =
+         m_server.tlsContext().createConnection(std::move(transport));
+
+      if (!connectionResult) {
+         LOG_ERROR("TLS: unable to create connection: " +
+                   std::string(connectionResult.error().message()))
+         return;
+      }
+
+      try {
+         // TlsConnection's constructor drives the handshake to
+         // completion (or throws) before returning, so HTTP parsing
+         // below can never begin against a connection that hasn't
+         // actually finished the TLS handshake yet.
+         connection = std::make_unique<TlsConnection>(std::move(connectionResult).value(), socket);
+      } catch (const BasicException& be) {
+         LOG_ERROR("TLS handshake failed: " + be.whatString())
+         return;
+      } catch (const std::exception& e) {
+         LOG_ERROR(std::string("TLS handshake failed: ") + e.what())
+         return;
+      }
+   } else {
+      connection = std::make_unique<SocketConnection>(socket, false);
+   }
+
+   // armure::Connection's destructor deliberately performs no I/O and
+   // never sends a TLS close_notify - that only ever happens via an
+   // explicit close()/shutdown() call (see armure::Connection::~Connection()'s
+   // own documentation). Nothing else in this class or in the base
+   // RequestHandler is TLS-aware, so without this, every TLS connection
+   // would end with an abrupt socket close instead of an orderly TLS
+   // shutdown. Scoped to the TLS case only - SocketConnection::close()
+   // is just m_socket->close(), a harmless duplicate of what
+   // RequestHandler's destructor already does for plain HTTP, so
+   // leaving that path untouched keeps plain HTTP's existing socket
+   // lifecycle exactly as it was. Runs exactly once, on every exit from
+   // this function (normal completion or any of the catches below) -
+   // never per-request - so a persistent (keep-alive) TLS connection
+   // isn't torn down until the very last request on it has been served.
+   struct TlsCloseGuard {
+      ByteConnection* connection;
+      bool active;
+      ~TlsCloseGuard() { if (active) { connection->close(); } }
+   } tlsCloseGuard{connection.get(), m_server.tlsEnabled()};
 
    const bool isLoggingDebug = Logger::isLogging(Debug);
    if (isLoggingDebug) {
@@ -147,7 +207,7 @@ void HttpRequestHandler::run() {
       // request), the object never comes into existence, so there's
       // nothing to clean up - no heap allocation needed just to make this
       // exception-safe
-      HttpRequest request(&connection, false, unconsumedBytes);
+      HttpRequest request(connection.get(), false, unconsumedBytes);
       unconsumedBytes = request.takeUnconsumedBytes();
 
       if (request.isInitialized()) {
@@ -325,12 +385,12 @@ void HttpRequestHandler::run() {
 
       std::string headersAsString =
          m_server.buildHeader(responseCode, headers);
-      connection.write(headersAsString.data(), headersAsString.size());
+      connection->write(headersAsString.data(), headersAsString.size());
 
       if (contentLength > 0) {
          const ByteBuffer* body = response.getBody();
          if (body != nullptr) {
-            connection.write(body->const_data(), body->size());
+            connection->write(body->const_data(), body->size());
          }
       }
 

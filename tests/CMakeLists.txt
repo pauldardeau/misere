@@ -6,6 +6,7 @@ add_executable(test_misere
    TestHttpRequest.cpp
    TestHttpResponse.cpp
    TestHttpServer.cpp
+   TestHttpsIntegration.cpp
    TestHttpTransaction.cpp
    TestSocketConnection.cpp
    TestSocketTransport.cpp

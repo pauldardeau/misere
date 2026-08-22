@@ -5,6 +5,7 @@
 #define MISERE_HTTPSERVER_H
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <unordered_map>
 
@@ -16,6 +17,7 @@
 #include "ThreadPoolDispatcher.h"
 #include "SectionedConfigDataSource.h"
 #include "ThreadingFactory.h"
+#include "armure/Context.h"
 
 
 namespace misere {
@@ -227,6 +229,18 @@ class HttpServer {
       void setupKeepAlive(const chaudiere::KeyValuePairs& kvp);
 
       /**
+       * Reads TLS configuration ("tls_enabled"/"tls_certificate"/
+       * "tls_private_key") and, if enabled, loads the certificate/
+       * private key and builds the server's shared armure Context.
+       * @param kvp the "server" section's configuration settings
+       * @return boolean indicating whether TLS setup succeeded - false
+       *         (which fails server initialization) if tls_enabled is
+       *         set but the certificate/key are missing or invalid;
+       *         true (a no-op) if TLS is not enabled at all
+       */
+      bool setupTls(const chaudiere::KeyValuePairs& kvp);
+
+      /**
        * Determines whether persistent (keep-alive) connections are enabled
        * @return boolean indicating whether keep-alive is enabled
        */
@@ -246,6 +260,22 @@ class HttpServer {
        * @return the maximum number of requests per connection
        */
       int keepAliveMaxRequests() const;
+
+      /**
+       * Determines whether this server is configured to accept TLS
+       * (HTTPS) connections rather than plain HTTP.
+       * @return boolean indicating whether TLS is enabled
+       */
+      bool tlsEnabled() const;
+
+      /**
+       * Retrieves the server's shared armure TLS Context - built once
+       * during initialization from the configured certificate/private
+       * key and reused for every accepted TLS connection. Only valid to
+       * call when tlsEnabled() is true.
+       * @return the server's TLS Context
+       */
+      const armure::Context& tlsContext() const;
 
 
    protected:
@@ -293,6 +323,8 @@ class HttpServer {
       bool m_compressionEnabled;
       bool m_usingConfigFile;
       bool m_keepAliveEnabled;
+      bool m_tlsEnabled;
+      std::optional<armure::Context> m_tlsContext;
       int m_threadPoolSize;
       int m_serverPort;
       int m_socketSendBufferSize;
