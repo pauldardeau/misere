@@ -55,6 +55,7 @@ void TestSocketTransport::runTests() {
    testReadPartial();
    testReadClosed();
    testWrite();
+   testWriteAfterPeerClosed();
    testUnownedSocketNotDeleted();
 }
 
@@ -145,6 +146,36 @@ void TestSocketTransport::testWrite() {
 
    require(bytesRead == (ssize_t) payload.size(), "peer should receive the number of bytes written");
    requireStringEquals(payload, string(buffer, bytesRead), "peer should receive exactly what was written");
+}
+
+//******************************************************************************
+
+void TestSocketTransport::testWriteAfterPeerClosed() {
+   TEST_CASE("testWriteAfterPeerClosed");
+
+   // Demonstrates, for the TLS write path specifically (SocketTransport
+   // is what TlsConnection's underlying armure::Connection writes
+   // through), the scenario that motivated installing
+   // signal(SIGPIPE, SIG_IGN) at process startup (see src/main.cpp):
+   // writing to a socket whose peer has already closed must fail
+   // cleanly - a TransportError Result - rather than raising SIGPIPE and
+   // killing the process. This test only exercises that safely because
+   // test_misere's own main() (tests/Tests.cpp) ignores SIGPIPE too.
+   SocketPair pair;
+   Socket* socket = new Socket(pair.fds[0]);
+   SocketTransport transport(socket, true);
+
+   ::close(pair.fds[1]);
+   pair.fds[1] = -1; // already closed - don't let ~SocketPair() close it again
+
+   const std::string payload = "written after the peer is gone";
+   std::vector<std::byte> bytes(payload.size());
+   memcpy(bytes.data(), payload.data(), payload.size());
+
+   armure::Result<std::size_t> result = transport.write(std::span<const std::byte>(bytes));
+   requireFalse(result.has_value(), "write should fail (not crash the process) once the peer has closed");
+   require(armure::ErrorCode::TransportError == result.error().code(),
+           "a write failure should map to ErrorCode::TransportError");
 }
 
 //******************************************************************************

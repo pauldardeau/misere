@@ -17,6 +17,7 @@ protected:
    void testReadPartial();
    void testReadClosed();
    void testWrite();
+   void testWriteAfterPeerClosed();
    void testUnownedSocketNotDeleted();
 
 public:

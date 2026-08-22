@@ -55,17 +55,17 @@ void Tests::run() {
 }
 
 int main(int argc, char* argv[]) {
-   // chaudiere::Socket's write()/send() have no SIGPIPE protection
-   // (no MSG_NOSIGNAL, no SO_NOSIGPIPE) - writing to a socket whose peer
-   // has already closed raises SIGPIPE, which by default terminates the
-   // process outright rather than surfacing as an ordinary write
-   // failure. TestTlsConnection's close()-then-close() sequence hits
-   // exactly this (closing one side's socket, then writing a
-   // close_notify from the other). Ignoring SIGPIPE here is the standard
-   // fix for any process making raw socket writes - see this task's
-   // final report for why misere's own server entry point likely needs
-   // the same treatment, not just this test binary.
+#ifdef SIGPIPE
+   // test_misere is a separate executable from misere_cli (src/main.cpp)
+   // - process-wide signal disposition doesn't cross that boundary, so
+   // this binary needs its own copy of the same fix rather than
+   // inheriting main.cpp's. See main.cpp's own comment for the full
+   // rationale (chaudiere::Socket's writes have no SIGPIPE protection of
+   // their own); TestTlsConnection's close()-then-close() sequence
+   // (closing one side's socket, then writing a close_notify from the
+   // other) is what originally surfaced this here.
    ::signal(SIGPIPE, SIG_IGN);
+#endif
 
    Tests tests;
    tests.run();

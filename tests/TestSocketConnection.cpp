@@ -51,6 +51,7 @@ void TestSocketConnection::runTests() {
    testRead();
    testReadPartial();
    testWrite();
+   testWriteAfterPeerClosed();
    testClose();
    testUnownedSocketNotDeleted();
 }
@@ -118,6 +119,32 @@ void TestSocketConnection::testWrite() {
 
    require(bytesRead == (ssize_t) payload.size(), "peer should receive the number of bytes written");
    requireStringEquals(payload, string(buffer, bytesRead), "peer should receive exactly what was written");
+}
+
+//******************************************************************************
+
+void TestSocketConnection::testWriteAfterPeerClosed() {
+   TEST_CASE("testWriteAfterPeerClosed");
+
+   // Demonstrates the scenario that motivated installing
+   // signal(SIGPIPE, SIG_IGN) at process startup (see src/main.cpp):
+   // writing to a socket whose peer has already closed must fail
+   // cleanly - write() returning false - rather than raising SIGPIPE and
+   // killing the process outright. This test only exercises that safely
+   // because test_misere's own main() (tests/Tests.cpp) ignores SIGPIPE
+   // the same way misere_cli's main.cpp now does; the two are separate
+   // executables, so this binary needs its own copy rather than
+   // inheriting the production fix - see both files' comments.
+   SocketPair pair;
+   Socket* socket = new Socket(pair.fds[0]);
+   SocketConnection connection(socket, true);
+
+   ::close(pair.fds[1]);
+   pair.fds[1] = -1; // already closed - don't let ~SocketPair() close it again
+
+   const string payload = "written after the peer is gone";
+   requireFalse(connection.write(payload.data(), payload.size()),
+                "write() should fail (not crash the process) once the peer has closed");
 }
 
 //******************************************************************************
