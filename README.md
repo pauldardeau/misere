@@ -19,6 +19,11 @@ Dependencies
 - **Poivre** - C++ unit test framework, included as a git submodule
   (`poivre/`). Only needed to build and run `tests/`; the library itself
   (`src/`) has no dependency on it.
+- **Armure** - C++ TLS abstraction over mbedTLS (misère never calls
+  mbedTLS directly), included as a git submodule (`armure/`). Required to
+  build `src/` - see [TLS / HTTPS](#tls--https) below for what it's used
+  for and [Building](#building) for why this means CMake, not the plain
+  Makefile.
 
 Clone with `--recurse-submodules`, or after cloning:
 
@@ -33,6 +38,14 @@ make -C chaudiere/src  # builds libchaudiere.so
 make -C src            # builds libmisere.so and the misere executable
 make -C tests          # builds test_misere (needs the poivre submodule)
 ```
+
+**This currently does not work.** `src/` unconditionally includes armure's
+headers (`HttpServer.h`/`HttpRequestHandler.cpp` - see [TLS /
+HTTPS](#tls--https) below), and armure has no Makefile of its own - it's
+built via CMake, which fetches and builds mbedTLS automatically
+(`FetchContent`, no separate mbedTLS install needed). **Use the CMake
+build below** until/unless the plain Makefile is updated to also build
+armure and mbedTLS by hand.
 
 ### Building with CMake
 
@@ -241,6 +254,91 @@ cleanly. If you can't bound concurrent connections in advance, prefer
 leaving `keep_alive = false`, or keep `keep_alive_max_requests`/
 `keep_alive_timeout` low enough to keep connection turnover high.
 
+TLS / HTTPS
+-----------
+Misère can serve HTTPS instead of plain HTTP. TLS is a property of the
+*listener*, not of the HTTP layer - `HttpRequest`/`HttpResponse`/your
+handlers are completely unaware of whether TLS is involved either way.
+The actual handshake/encryption is done by
+[**Armure**](https://github.com/pauldardeau/armure) (a git submodule,
+`armure/`) over mbedTLS; misère itself never includes an mbedTLS header
+or calls an mbedTLS function directly. Since armure has no Makefile of
+its own, TLS support - and therefore all of `src/` now that `HttpServer.h`
+includes an armure header unconditionally - requires the **CMake** build
+(see [Building](#building) above).
+
+### Enabling it
+
+Add three keys to the `[server]` section of your `.ini` file, alongside
+the settings already documented above:
+
+```ini
+[server]
+port = 443
+tls_enabled = true
+tls_certificate = /path/to/server-cert.pem
+tls_private_key = /path/to/server-key.pem
+```
+
+- **`tls_enabled`** - same true/false convention as `keep_alive` and the
+  other boolean settings (`true`/`yes`/`1`). Turns HTTPS on for this
+  server instance. Omitting the key entirely, or any other value, leaves
+  the server as plain HTTP - exactly the behavior it had before TLS
+  support existed.
+- **`tls_certificate`** / **`tls_private_key`** - paths to a PEM- or
+  DER-encoded certificate and private key, loaded once when the server
+  starts and reused for every connection it accepts. An
+  encrypted/passphrase-protected private key isn't currently supported -
+  there's no config key for a passphrase.
+
+A single `HttpServer` is **either** HTTP **or** HTTPS, never both at
+once - there's no way to run a plain and a TLS listener from the same
+instance, and misère does not perform an automatic HTTP -> HTTPS
+redirect. If you need both, run two separate `HttpServer` instances (two
+config files, two ports).
+
+The embedded constructor - `HttpServer(int port)`, for programmatic use
+without a config file - has no TLS configuration surface; it always
+starts a plain HTTP server. Use the config-file constructor
+(`HttpServer(configFilePath)`) for HTTPS.
+
+### Startup validation
+
+If `tls_enabled = true`, both `tls_certificate` and `tls_private_key` are
+required, and both files must load and parse successfully. A missing
+key, a missing/unreadable file, or a certificate or key that fails to
+parse all fail server initialization outright - `HttpServer::run()`
+returns non-zero immediately, without ever binding a socket or accepting
+a connection. There is no silent fallback to plain HTTP if the TLS
+configuration is broken. Check the log output (`log_level = info` or
+more verbose) for the specific reason a given file failed to load.
+
+### Generating a self-signed certificate for local testing
+
+```bash
+openssl req -x509 -newkey ec -pkeyopt ec_paramgen_curve:prime256v1 \
+   -keyout server-key.pem -out server-cert.pem -days 365 -nodes \
+   -subj "/CN=localhost"
+```
+
+Fine for local development, but any TLS client that actually verifies
+certificates (a browser, `curl` without `-k`) will reject a self-signed
+certificate unless it's been explicitly told to trust it - that's
+expected behavior, not a misère bug.
+
+### What's not supported yet
+
+- **ALPN**, **SNI**, and **TLS session resumption**
+- **Client certificate authentication** (mutual TLS) - the server never
+  requests a client certificate
+- Simultaneous HTTP + HTTPS listeners on a single `HttpServer`
+- Automatic HTTP -> HTTPS redirects
+- Passphrase-protected private keys
+
+None of these are architectural dead ends - armure's own API
+(`ContextBuilder`, `VerifyMode`, etc.) already has room for most of
+them - they're simply not wired up to misère's configuration yet.
+
 Running
 -------
 ```bash
@@ -255,6 +353,9 @@ make -C src
 make -C tests
 LD_LIBRARY_PATH=src:chaudiere/src tests/test_misere
 ```
+
+Same caveat as [Building](#building) above - this doesn't currently work.
+Use the CMake + `ctest` flow shown there instead.
 
 Load Testing
 ------------
