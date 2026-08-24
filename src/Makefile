@@ -1,51 +1,27 @@
 # Copyright Paul Dardeau, SwampBits LLC 2014
 # BSD License
 
-CC = c++
-CC_OPTS = -c -Wall -fPIC -O2 -pthread -std=c++20 -I../chaudiere/src -I../poivre
-LINK_CMD = c++
-# remove -ldl for non-linux
-LINK_LIBS = -lpthread -ldl
-
 EXE_NAME = misere
 SO_NAME = libmisere.so
 
-OBJS =  HttpClient.o \
-HTTP.o \
-HttpException.o \
-HttpRequest.o \
-HttpRequestHandler.o \
-HttpResponse.o \
-HttpServer.o \
-HttpSocketServiceHandler.o \
-HttpTransaction.o \
-HttpConnection.o \
-SocketConnection.o \
-AbstractHandler.o \
-EchoHandler.o \
-GMTDateTimeHandler.o \
-ServerDateTimeHandler.o \
-ServerObjectsDebugging.o \
-ServerStatsHandler.o \
-ServerStatusHandler.o \
-Url.o
-
-MAIN_OBJS = main.o
-
-
-all : $(SO_NAME) $(EXE_NAME)
+# HttpServer.h unconditionally depends on armure (TLS support - see
+# ../README.md's "TLS / HTTPS" section), and armure has no Makefile of
+# its own: it's built via CMake, which also fetches and builds mbedTLS
+# automatically. There's no way for this plain Makefile to produce a
+# working build any more, so it fails fast here with a clear pointer
+# instead of a confusing pile of linker errors.
+all :
+	@echo "error: the plain Makefile build no longer works." >&2
+	@echo "HttpServer.h unconditionally depends on armure (TLS support), which" >&2
+	@echo "has no Makefile of its own - it's built via CMake, which also" >&2
+	@echo "fetches/builds mbedTLS automatically. See README.md." >&2
+	@echo "" >&2
+	@echo "Build with CMake instead, from the project root:" >&2
+	@echo "  cmake -S . -B build" >&2
+	@echo "  cmake --build build" >&2
+	@exit 1
 
 clean :
 	rm -f *.o
 	rm -f $(SO_NAME)
 	rm -f $(EXE_NAME)
-
-$(SO_NAME) : $(OBJS)
-	$(LINK_CMD) -shared -fPIC $(OBJS) -o $(SO_NAME) $(LINK_LIBS)
-
-$(EXE_NAME) : $(SO_NAME) $(MAIN_OBJS)
-	$(CC) -c -Wall -O2 -pthread -std=c++20 -I../chaudiere/src -I../poivre main.cpp -o main.o
-	$(LINK_CMD) $(MAIN_OBJS) -o $(EXE_NAME) ./$(SO_NAME) ../chaudiere/src/libchaudiere.so $(LINK_LIBS)
-
-%.o : %.cpp
-	$(CC) $(CC_OPTS) $< -o $@

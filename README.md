@@ -35,17 +35,17 @@ Building
 --------
 ```bash
 make -C chaudiere/src  # builds libchaudiere.so
-make -C src            # builds libmisere.so and the misere executable
-make -C tests          # builds test_misere (needs the poivre submodule)
+make -C src            # fails fast - see below
+make -C tests          # fails fast - see below
 ```
 
-**This currently does not work.** `src/` unconditionally includes armure's
-headers (`HttpServer.h`/`HttpRequestHandler.cpp` - see [TLS /
+**`make -C src`/`make -C tests` no longer work** and fail fast with a
+message pointing here, rather than build. `src/` unconditionally includes
+armure's headers (`HttpServer.h`/`HttpRequestHandler.cpp` - see [TLS /
 HTTPS](#tls--https) below), and armure has no Makefile of its own - it's
 built via CMake, which fetches and builds mbedTLS automatically
 (`FetchContent`, no separate mbedTLS install needed). **Use the CMake
-build below** until/unless the plain Makefile is updated to also build
-armure and mbedTLS by hand.
+build below.**
 
 ### Building with CMake
 
@@ -67,8 +67,7 @@ target_link_libraries(my_target PRIVATE misere)
 ```
 
 No `-I` needed - the include directory, chaudière (linked transitively), and the C++20
-requirement all propagate automatically. The Makefile isn't going anywhere; both build
-systems compile the same sources.
+requirement all propagate automatically.
 
 Objectives/Purpose
 -------------------
@@ -347,15 +346,14 @@ Running
 
 Testing
 -------
-```bash
-make -C chaudiere/src
-make -C src
-make -C tests
-LD_LIBRARY_PATH=src:chaudiere/src tests/test_misere
-```
+Same caveat as [Building](#building) above - `make -C tests` fails fast
+and points here rather than build. Use CMake + `ctest`:
 
-Same caveat as [Building](#building) above - this doesn't currently work.
-Use the CMake + `ctest` flow shown there instead.
+```bash
+cmake -S . -B build
+cmake --build build
+ctest --test-dir build --output-on-failure
+```
 
 Load Testing
 ------------

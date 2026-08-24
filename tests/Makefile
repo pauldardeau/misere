@@ -1,39 +1,24 @@
 # Copyright Paul Dardeau, SwampBits LLC 2014
 # BSD License
 
-CC = c++
-CC_OPTS = -c -pthread -std=c++20 -I../src -I../chaudiere/src -I../poivre
-
 EXE_NAME = test_misere
-LIB_NAMES = ../src/libmisere.so ../chaudiere/src/libchaudiere.so
 
-POIVRE_OBJS = TestCase.o \
-TestSuite.o
-
-OBJS = MockSocket.o \
-TestHttpClient.o \
-TestHTTP.o \
-TestHttpException.o \
-TestHttpRequest.o \
-TestHttpResponse.o \
-TestHttpServer.o \
-TestHttpTransaction.o \
-TestSocketConnection.o \
-TestUrl.o \
-Tests.o \
-$(POIVRE_OBJS)
-
-all : $(EXE_NAME)
+# Same reasoning as ../src/Makefile: TLS support (armure) is CMake-only,
+# so this plain Makefile can no longer produce a working build. Fails
+# fast with a clear pointer instead of a confusing pile of linker
+# errors (missing TestSocketTransport/TestTlsConnection/
+# TestHttpsIntegration object files, then missing armure/mbedTLS
+# symbols even once those are added back).
+all :
+	@echo "error: the plain Makefile build no longer works." >&2
+	@echo "TLS support (armure) is CMake-only - see ../README.md." >&2
+	@echo "" >&2
+	@echo "Build and run tests with CMake instead, from the project root:" >&2
+	@echo "  cmake -S . -B build" >&2
+	@echo "  cmake --build build" >&2
+	@echo "  ctest --test-dir build --output-on-failure" >&2
+	@exit 1
 
 clean :
 	rm -f *.o
 	rm -f $(EXE_NAME)
-
-$(EXE_NAME) : $(OBJS)
-	$(CC) $(OBJS) -o $(EXE_NAME) $(LIB_NAMES) -lpthread -ldl
-
-$(POIVRE_OBJS) : %.o : ../poivre/%.cpp
-	$(CC) $(CC_OPTS) $< -o $@
-
-%.o : %.cpp
-	$(CC) $(CC_OPTS) $< -o $@
